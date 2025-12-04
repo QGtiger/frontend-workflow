@@ -1,0 +1,31 @@
+/**
+ * Copyright (c) 2025 Bytedance Ltd. and/or its affiliates
+ * SPDX-License-Identifier: MIT
+ */
+
+import { type FlowNodeRegistry } from "../typings";
+import { TryCatchNodeRegistry } from "./trycatch";
+import { SwitchNodeRegistry } from "./switch";
+import { StartNodeRegistry } from "./start";
+import { LoopNodeRegistry } from "./loop";
+import { IFBlockNodeRegistry } from "./if-block";
+import { IFNodeRegistry } from "./if";
+import { EndNodeRegistry } from "./end";
+import { CatchBlockNodeRegistry } from "./catch-block";
+import { CaseDefaultNodeRegistry } from "./case-default";
+import { CaseNodeRegistry } from "./case";
+import { BreakLoopNodeRegistry } from "./break-loop";
+
+export const FlowNodeRegistries: FlowNodeRegistry[] = [
+  StartNodeRegistry,
+  EndNodeRegistry,
+  SwitchNodeRegistry,
+  LoopNodeRegistry,
+  CaseNodeRegistry,
+  TryCatchNodeRegistry,
+  CatchBlockNodeRegistry,
+  IFNodeRegistry,
+  IFBlockNodeRegistry,
+  BreakLoopNodeRegistry,
+  CaseDefaultNodeRegistry,
+];
