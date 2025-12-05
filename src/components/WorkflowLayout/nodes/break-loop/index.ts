@@ -35,7 +35,8 @@ export const BreakLoopNodeRegistry: FlowNodeRegistry = {
       id: `break_${nanoid()}`,
       type: "breakLoop",
       data: {
-        title: "BreakLoop",
+        name: "BreakLoop",
+        description: "Break in current Loop.",
       },
     };
   },

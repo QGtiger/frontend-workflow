@@ -12,60 +12,21 @@ export const initialData: FlowDocumentJSON = {
       type: "start",
       blocks: [],
       data: {
-        title: "Start",
-        outputs: {
-          type: "object",
-          properties: {
-            query: {
-              type: "string",
-              default: "Hello Flow.",
-            },
-            enable: {
-              type: "boolean",
-              default: true,
-            },
-            array_obj: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  int: {
-                    type: "number",
-                  },
-                  str: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-          },
-        },
+        name: "Start",
       },
     },
     {
       id: "switch_0",
       type: "switch",
       data: {
-        title: "Switch",
+        name: "Switch",
       },
       blocks: [
         {
           id: "case_0",
           type: "case",
           data: {
-            title: "Case_0",
-            inputsValues: {
-              condition: { type: "constant", content: true },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Case_0",
           },
           blocks: [],
         },
@@ -73,26 +34,14 @@ export const initialData: FlowDocumentJSON = {
           id: "case_1",
           type: "case",
           data: {
-            title: "Case_1",
-            inputsValues: {
-              condition: { type: "constant", content: true },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Case_1",
           },
         },
         {
           id: "case_default_1",
           type: "caseDefault",
           data: {
-            title: "Default",
+            name: "Default",
           },
           blocks: [],
         },
@@ -102,37 +51,21 @@ export const initialData: FlowDocumentJSON = {
       id: "loop_0",
       type: "loop",
       data: {
-        title: "Loop",
-        loopFor: {
-          type: "ref",
-          content: ["start_0", "array_obj"],
-        },
+        name: "Loop",
       },
       blocks: [
         {
           id: "if_0",
           type: "if",
           data: {
-            title: "If",
-            inputsValues: {
-              condition: { type: "constant", content: true },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "If",
           },
           blocks: [
             {
               id: "if_true",
               type: "ifBlock",
               data: {
-                title: "true",
+                name: "true",
               },
               blocks: [],
             },
@@ -140,14 +73,14 @@ export const initialData: FlowDocumentJSON = {
               id: "if_false",
               type: "ifBlock",
               data: {
-                title: "false",
+                name: "false",
               },
               blocks: [
                 {
                   id: "break_0",
                   type: "breakLoop",
                   data: {
-                    title: "BreakLoop",
+                    name: "BreakLoop",
                   },
                 },
               ],
@@ -160,7 +93,7 @@ export const initialData: FlowDocumentJSON = {
       id: "tryCatch_0",
       type: "tryCatch",
       data: {
-        title: "TryCatch",
+        name: "TryCatch",
       },
       blocks: [
         {
@@ -172,19 +105,7 @@ export const initialData: FlowDocumentJSON = {
           id: "catchBlock_0",
           type: "catchBlock",
           data: {
-            title: "Catch Block 1",
-            inputsValues: {
-              condition: { type: "constant", content: true },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Catch Block 1",
           },
           blocks: [],
         },
@@ -192,19 +113,7 @@ export const initialData: FlowDocumentJSON = {
           id: "catchBlock_1",
           type: "catchBlock",
           data: {
-            title: "Catch Block 2",
-            inputsValues: {
-              condition: { type: "constant", content: true },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Catch Block 2",
           },
           blocks: [],
         },
@@ -215,14 +124,7 @@ export const initialData: FlowDocumentJSON = {
       type: "end",
       blocks: [],
       data: {
-        title: "End",
-        inputsValues: {
-          success: {
-            type: "constant",
-            content: true,
-            schema: { type: "boolean" },
-          },
-        },
+        name: "End",
       },
     },
   ],

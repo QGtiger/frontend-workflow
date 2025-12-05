@@ -30,7 +30,8 @@ export const CaseNodeRegistry: FlowNodeRegistry = {
       id: `Case_${nanoid(5)}`,
       type: "case",
       data: {
-        title: `Case_${id++}`,
+        name: `Case_${id++}`,
+        description: "Execute the branch when the condition is met.",
       },
     };
   },

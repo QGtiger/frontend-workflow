@@ -25,26 +25,14 @@ export const SwitchNodeRegistry: FlowNodeRegistry = {
       id: `switch_${nanoid(5)}`,
       type: "switch",
       data: {
-        title: "Switch",
+        name: "Switch",
       },
       blocks: [
         {
           id: nanoid(5),
           type: "case",
           data: {
-            title: "Case_0",
-            inputsValues: {
-              condition: { type: "constant", content: "" },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Case_0",
           },
           blocks: [],
         },
@@ -52,26 +40,14 @@ export const SwitchNodeRegistry: FlowNodeRegistry = {
           id: nanoid(5),
           type: "case",
           data: {
-            title: "Case_1",
-            inputsValues: {
-              condition: { type: "constant", content: "" },
-            },
-            inputs: {
-              type: "object",
-              required: ["condition"],
-              properties: {
-                condition: {
-                  type: "boolean",
-                },
-              },
-            },
+            name: "Case_1",
           },
         },
         {
           id: nanoid(5),
           type: "caseDefault",
           data: {
-            title: "Default",
+            name: "Default",
           },
           blocks: [],
         },

@@ -28,6 +28,10 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    */
   const form = nodeRender.form;
 
+  // TODO 通过 node.getNodeRegistry 获取节点注册信息，包括 meta info
+  // 配合 node.data 反哺 name description 这样的话， 一些节点的 desciption 字段就不需要了
+  console.log("node", nodeRender.data, node.getNodeRegistry());
+
   return (
     <ConfigProvider
       /**

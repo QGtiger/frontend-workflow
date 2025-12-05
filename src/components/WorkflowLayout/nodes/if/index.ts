@@ -25,26 +25,14 @@ export const IFNodeRegistry: FlowNodeRegistry = {
       id: `if_${nanoid(5)}`,
       type: "if",
       data: {
-        title: "If",
-        inputsValues: {
-          condition: { type: "constant", content: true },
-        },
-        inputs: {
-          type: "object",
-          required: ["condition"],
-          properties: {
-            condition: {
-              type: "boolean",
-            },
-          },
-        },
+        name: "If",
       },
       blocks: [
         {
           id: nanoid(5),
           type: "ifBlock",
           data: {
-            title: "true",
+            name: "true",
           },
           blocks: [],
         },
@@ -52,7 +40,7 @@ export const IFNodeRegistry: FlowNodeRegistry = {
           id: nanoid(5),
           type: "ifBlock",
           data: {
-            title: "false",
+            name: "false",
           },
         },
       ],

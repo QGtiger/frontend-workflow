@@ -26,19 +26,8 @@ export const CatchBlockNodeRegistry: FlowNodeRegistry = {
       id: `Catch_${nanoid(5)}`,
       type: "catchBlock",
       data: {
-        title: `Catch Block ${id++}`,
-        inputs: {
-          type: "object",
-          required: ["condition"],
-          inputsValues: {
-            condition: "",
-          },
-          properties: {
-            condition: {
-              type: "string",
-            },
-          },
-        },
+        name: `Catch Block ${id++}`,
+        description: "Execute the catch branch when the condition is met.",
       },
     };
   },

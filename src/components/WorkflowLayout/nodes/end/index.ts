@@ -62,15 +62,9 @@ export const EndNodeRegistry: FlowNodeRegistry = {
       id: `end_${nanoid()}`,
       type: "end",
       data: {
-        title: "End",
-        outputs: {
-          type: "object",
-          properties: {
-            result: {
-              type: "string",
-            },
-          },
-        },
+        name: "End",
+        description:
+          "The final node of the workflow, used to return the result information after the workflow is run.",
       },
     };
   },
