@@ -5,6 +5,7 @@
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconIf from "../../assets/icon-if.png";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const IFBlockNodeRegistry: FlowNodeRegistry = {
   type: "ifBlock",
@@ -30,4 +31,5 @@ export const IFBlockNodeRegistry: FlowNodeRegistry = {
   },
   canAdd: () => false,
   canDelete: (ctx, node) => false,
+  formMeta: defaultFormMeta,
 };

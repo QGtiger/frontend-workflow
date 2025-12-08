@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconTryCatch from "../../assets/icon-trycatch.svg";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const TryCatchNodeRegistry: FlowNodeRegistry = {
   type: "tryCatch",
@@ -41,4 +42,5 @@ export const TryCatchNodeRegistry: FlowNodeRegistry = {
       ],
     };
   },
+  formMeta: defaultFormMeta,
 };

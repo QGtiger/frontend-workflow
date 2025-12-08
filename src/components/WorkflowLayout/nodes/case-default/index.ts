@@ -5,6 +5,7 @@
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconCase from "../../assets/icon-case.png";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const CaseDefaultNodeRegistry: FlowNodeRegistry = {
   type: "caseDefault",
@@ -31,4 +32,5 @@ export const CaseDefaultNodeRegistry: FlowNodeRegistry = {
     description: "Switch default branch",
   },
   canDelete: (ctx, node) => false,
+  formMeta: defaultFormMeta,
 };

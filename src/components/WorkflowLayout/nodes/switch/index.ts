@@ -8,6 +8,7 @@ import { FlowNodeSplitType } from "@flowgram.ai/fixed-layout-editor";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconCondition from "../../assets/icon-condition.svg";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const SwitchNodeRegistry: FlowNodeRegistry = {
   extend: FlowNodeSplitType.DYNAMIC_SPLIT,
@@ -54,4 +55,5 @@ export const SwitchNodeRegistry: FlowNodeRegistry = {
       ],
     };
   },
+  formMeta: defaultFormMeta,
 };

@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconCase from "../../assets/icon-case.png";
+import { defaultFormMeta } from "../default-form-meta";
 
 let id = 3;
 export const CatchBlockNodeRegistry: FlowNodeRegistry = {
@@ -31,4 +32,5 @@ export const CatchBlockNodeRegistry: FlowNodeRegistry = {
       },
     };
   },
+  formMeta: defaultFormMeta,
 };

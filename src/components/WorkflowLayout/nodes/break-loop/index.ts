@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconBreak from "../../assets/icon-break.svg";
+import { defaultFormMeta } from "../default-form-meta";
 
 /**
  * Break 节点用于在 loop 中根据条件终止并跳出
@@ -40,4 +41,5 @@ export const BreakLoopNodeRegistry: FlowNodeRegistry = {
       },
     };
   },
+  formMeta: defaultFormMeta,
 };

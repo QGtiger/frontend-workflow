@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconLoop from "../../assets/icon-loop.svg";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const LoopNodeRegistry: FlowNodeRegistry = {
   type: "loop",
@@ -27,4 +28,5 @@ export const LoopNodeRegistry: FlowNodeRegistry = {
       },
     };
   },
+  formMeta: defaultFormMeta,
 };

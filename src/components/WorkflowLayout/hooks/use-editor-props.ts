@@ -18,7 +18,7 @@ import {
 } from "@flowgram.ai/fixed-layout-editor";
 
 import { type FlowNodeRegistry } from "../typings";
-// import { shortcutGetter } from "../shortcuts";
+import { shortcutGetter } from "../shortcuts";
 // import { CustomService } from "../services";
 // import { GroupBoxHeader, GroupNode } from "../plugins/group-plugin";
 // import { createClipboardPlugin, createVariablePanelPlugin } from "../plugins";
@@ -131,7 +131,7 @@ export function useEditorProps(
 
       // Config shortcuts
       shortcuts: (registry: ShortcutsRegistry, ctx) => {
-        // registry.addHandlers(...shortcutGetter.map((getter) => getter(ctx)));
+        registry.addHandlers(...shortcutGetter.map((getter) => getter(ctx)));
       },
       /**
        * Drag/Drop config
@@ -172,7 +172,7 @@ export function useEditorProps(
        * Node engine enable, you can configure formMeta in the FlowNodeRegistry
        */
       nodeEngine: {
-        enable: false,
+        enable: true,
       },
       /**
        * Variable engine enable

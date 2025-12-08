@@ -13,7 +13,7 @@ import { NodeList } from "../node-list";
 import { PlusCircleOutlined, CopyOutlined } from "@ant-design/icons";
 import { generateNodeId } from "./utils";
 import { PasteIcon, Wrap } from "./styles";
-import { readData } from "../../utils";
+import { readData } from "../../shortcuts/utils";
 
 const generateNewIdForChildren = (n: FlowNodeEntity): FlowNodeEntity => {
   if (n.blocks) {

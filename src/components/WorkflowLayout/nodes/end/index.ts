@@ -8,6 +8,7 @@ import { FlowNodeBaseType } from "@flowgram.ai/fixed-layout-editor";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconEnd from "../../assets/icon-end.jpg";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const EndNodeRegistry: FlowNodeRegistry = {
   type: "end",
@@ -68,4 +69,5 @@ export const EndNodeRegistry: FlowNodeRegistry = {
       },
     };
   },
+  formMeta: defaultFormMeta,
 };

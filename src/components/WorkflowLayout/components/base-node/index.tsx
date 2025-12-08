@@ -5,6 +5,7 @@ import {
 import { ConfigProvider } from "antd";
 
 import { BaseNodeStyle, ErrorIcon } from "./styles";
+import { NodeRenderModel } from "../../models/NodeRenderModal";
 
 // const { selection, playground, document } = useClientContext();
 //   const refresh = useRefresh();
@@ -27,10 +28,6 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    * 只有在节点引擎开启时候才能使用表单
    */
   const form = nodeRender.form;
-
-  // TODO 通过 node.getNodeRegistry 获取节点注册信息，包括 meta info
-  // 配合 node.data 反哺 name description 这样的话， 一些节点的 desciption 字段就不需要了
-  console.log("node", nodeRender.data, node.getNodeRegistry());
 
   return (
     <ConfigProvider
@@ -69,8 +66,9 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
           outline: form?.state.invalid ? "1px solid red" : "none",
         }}
       >
-        {/* TODO 显示节点 */}
-        22
+        <NodeRenderModel.Provider value={nodeRender}>
+          {form?.render?.()}
+        </NodeRenderModel.Provider>
       </BaseNodeStyle>
     </ConfigProvider>
   );

@@ -8,6 +8,7 @@ import { FlowNodeSplitType } from "@flowgram.ai/fixed-layout-editor";
 
 import type { FlowNodeRegistry } from "../../typings";
 import iconIf from "../../assets/icon-if.png";
+import { defaultFormMeta } from "../default-form-meta";
 
 export const IFNodeRegistry: FlowNodeRegistry = {
   extend: FlowNodeSplitType.STATIC_SPLIT,
@@ -46,4 +47,5 @@ export const IFNodeRegistry: FlowNodeRegistry = {
       ],
     };
   },
+  formMeta: defaultFormMeta,
 };
