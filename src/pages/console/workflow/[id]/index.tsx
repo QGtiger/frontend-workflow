@@ -11,6 +11,7 @@ export default function WorkflowDetail() {
         <WorkflowLayoutEditor
           nodes={workflowData?.nodes ?? []}
           onNodesChange={() => {}}
+          onAddNode={console.log}
         />
       </div>
     </div>

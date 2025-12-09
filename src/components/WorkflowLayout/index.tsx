@@ -8,14 +8,12 @@ import { useEditorProps } from "./hooks/use-editor-props";
 import { initialData } from "./initial-data";
 import { FlowNodeRegistries } from "./nodes";
 import { DemoTools } from "./components/DemoTools";
-import type { FlowNodeJSON } from "./typings";
+import {
+  WorkflowLayoutEditorModel,
+  type WorkflowLayoutEditorModelProps,
+} from "./models/WorkflowLayoutEditorModel";
 
-interface WorkflowLayoutEditorProps {
-  nodes: FlowNodeJSON[];
-  onNodesChange?: (nodes: FlowNodeJSON[]) => void;
-}
-
-export function WorkflowLayoutEditor(props: WorkflowLayoutEditorProps) {
+export function WorkflowLayoutEditor(props: WorkflowLayoutEditorModelProps) {
   const { nodes, onNodesChange } = props;
   /**
    * Editor Config
@@ -26,11 +24,11 @@ export function WorkflowLayoutEditor(props: WorkflowLayoutEditorProps) {
   console.log("initialData", initialData);
   console.log("FlowNodeRegistries", FlowNodeRegistries);
   return (
-    <div className="doc-feature-overview">
+    <WorkflowLayoutEditorModel.Provider value={props}>
       <FixedLayoutEditorProvider {...editorProps}>
         <EditorRenderer />
         <DemoTools />
       </FixedLayoutEditorProvider>
-    </div>
+    </WorkflowLayoutEditorModel.Provider>
   );
 }

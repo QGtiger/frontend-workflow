@@ -14,6 +14,8 @@ import { PlusCircleOutlined, CopyOutlined } from "@ant-design/icons";
 import { generateNodeId } from "./utils";
 import { PasteIcon, Wrap } from "./styles";
 import { readData } from "../../shortcuts/utils";
+import { WorkflowLayoutEditorModel } from "../../models/WorkflowLayoutEditorModel";
+import { FlowNodeRegistries } from "../../nodes";
 
 const generateNewIdForChildren = (n: FlowNodeEntity): FlowNodeEntity => {
   if (n.blocks) {
@@ -35,6 +37,7 @@ export default function Adder(props: {
   to?: FlowNodeEntity;
   hoverActivated: boolean;
 }) {
+  const { onAddNode } = WorkflowLayoutEditorModel.useModel();
   const { from } = props;
   const isVertical = from.isVertical;
   const [visible, setVisible] = useState(false);
@@ -99,68 +102,65 @@ export default function Adder(props: {
   if (playground.config.readonly) return null;
 
   return (
-    <Popover
-      open={visible}
-      onOpenChange={setVisible}
-      content={<NodeList onSelect={add} from={from} />}
-      placement="right"
-      trigger="click"
+    <Wrap
+      style={
+        props.hoverActivated
+          ? {
+              width: 15,
+              height: 15,
+            }
+          : {}
+      }
+      onMouseDown={(e) => e.stopPropagation()}
     >
-      <Wrap
-        style={
-          props.hoverActivated
-            ? {
-                width: 15,
-                height: 15,
-              }
-            : {}
-        }
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        {props.hoverActivated ? (
-          <PlusCircleOutlined
-            onClick={() => {
-              setVisible(true);
-            }}
-            onMouseEnter={() => {
-              const data = clipboard.readText();
-              setPasteIconVisible(!!data);
-            }}
-            style={{
-              backgroundColor: "#fff",
-              color: "#3370ff",
-              borderRadius: 15,
-            }}
-          />
-        ) : (
-          ""
-        )}
-        {activated && pasteIconVisible && (
-          <Popover showArrow content="Paste">
-            <PasteIcon
-              onClick={handlePaste}
-              style={
-                isVertical
-                  ? {
-                      right: -25,
-                      top: 0,
-                    }
-                  : {
-                      right: 0,
-                      top: -20,
-                    }
-              }
-            >
-              <CopyOutlined
-                style={{
-                  backgroundColor: "var(--semi-color-bg-0)",
-                  borderRadius: 15,
-                }}
-              />
-            </PasteIcon>
-          </Popover>
-        )}
-      </Wrap>
-    </Popover>
+      {props.hoverActivated ? (
+        <PlusCircleOutlined
+          onClick={() => {
+            onAddNode?.({
+              builtInNodes: FlowNodeRegistries.filter(
+                (registry) => !registry.meta?.addDisable
+              ),
+              from,
+            });
+          }}
+          onMouseEnter={() => {
+            const data = clipboard.readText();
+            setPasteIconVisible(!!data);
+          }}
+          style={{
+            backgroundColor: "#fff",
+            color: "#3370ff",
+            borderRadius: 15,
+          }}
+        />
+      ) : (
+        ""
+      )}
+      {activated && pasteIconVisible && (
+        <Popover showArrow content="Paste">
+          <PasteIcon
+            onClick={handlePaste}
+            style={
+              isVertical
+                ? {
+                    right: -25,
+                    top: 0,
+                  }
+                : {
+                    right: 0,
+                    top: -20,
+                  }
+            }
+          >
+            <CopyOutlined
+              style={{
+                backgroundColor: "var(--semi-color-bg-0)",
+                borderRadius: 15,
+              }}
+            />
+          </PasteIcon>
+        </Popover>
+      )}
+    </Wrap>
   );
 }
