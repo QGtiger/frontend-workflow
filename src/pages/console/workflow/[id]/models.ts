@@ -1,6 +1,7 @@
 import { createCustomModel } from "@/common/createModel";
 import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
+import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 
 export type WorkflowDetailData = {
@@ -16,9 +17,16 @@ export type WorkflowDetailData = {
 export const WorkflowDetailModel = createCustomModel(() => {
   const { id } = useParams();
 
+  useLayoutEffect(() => {
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, []);
+
   const { data, loading } = useRequest(
     async (): Promise<WorkflowDetailData> => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       // TODO 查询接口
       return {
         nodes: [
@@ -30,6 +38,14 @@ export const WorkflowDetailModel = createCustomModel(() => {
               name: "Start",
             },
           },
+          {
+            id: "end_0",
+            type: "end",
+            blocks: [],
+            data: {
+              name: "End",
+            },
+          },
         ],
         name: "Workflow 1",
         description: "Workflow 1 description",
@@ -38,7 +54,9 @@ export const WorkflowDetailModel = createCustomModel(() => {
         status: "unpublished",
       };
     },
-    {}
+    {
+      refreshDeps: [id],
+    }
   );
 
   return {

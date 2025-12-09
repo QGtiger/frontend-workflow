@@ -1,21 +1,25 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Input, List } from "antd";
+import { Button, Input, List, Spin } from "antd";
 import { WorkflowLayoutModel } from "./models";
-
-// 模拟工作流列表数据
-const mockWorkflows = [
-  { id: "1", name: "数据处理流程" },
-  { id: "2", name: "用户注册流程" },
-  { id: "3", name: "订单审批流程" },
-];
+import { useWorkflowId } from "./hooks";
 
 function WorkflowLayoutContent() {
-  const { collapsed, collapsedAction } = WorkflowLayoutModel.useModel();
+  const workflowId = useWorkflowId();
+  const navigate = useNavigate();
+  const { collapsed, collapsedAction, workflows, loading } =
+    WorkflowLayoutModel.useModel();
+
+  if (loading)
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Spin />
+      </div>
+    );
 
   return (
     <div className="flex h-full">
@@ -41,10 +45,17 @@ function WorkflowLayoutContent() {
         {/* 工作流列表 */}
         <div className="flex-1 overflow-auto px-2">
           <List
-            dataSource={mockWorkflows}
+            dataSource={workflows}
             renderItem={(item) => (
-              <List.Item className=" rounded-md px-1! py-1.5! border-none! cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="w-full">
+              <List.Item
+                className={` rounded-md px-1! py-1.5! border-none! cursor-pointer hover:bg-gray-50 transition-colors ${
+                  workflowId === item.id ? "bg-gray-50" : ""
+                }`}
+              >
+                <div
+                  className="w-full cursor-pointer"
+                  onClick={() => navigate(`/console/workflow/${item.id}`)}
+                >
                   <div className="text-sm text-gray-800 truncate">
                     {item.name}
                   </div>
