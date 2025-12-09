@@ -19,13 +19,17 @@ import { BreakLoopNodeRegistry } from "./break-loop";
 export const FlowNodeRegistries: FlowNodeRegistry[] = [
   StartNodeRegistry,
   EndNodeRegistry,
+
   SwitchNodeRegistry,
-  LoopNodeRegistry,
   CaseNodeRegistry,
+  CaseDefaultNodeRegistry,
+
+  LoopNodeRegistry,
+  BreakLoopNodeRegistry,
+
   TryCatchNodeRegistry,
   CatchBlockNodeRegistry,
+
   IFNodeRegistry,
   IFBlockNodeRegistry,
-  BreakLoopNodeRegistry,
-  CaseDefaultNodeRegistry,
 ];

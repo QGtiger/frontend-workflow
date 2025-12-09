@@ -65,7 +65,6 @@ export default function Adder(props: {
   const handlePaste = async (e: any) => {
     try {
       e.stopPropagation();
-      // TODO 复制
       const nodes = await readData(clipboard);
 
       if (!nodes) {
