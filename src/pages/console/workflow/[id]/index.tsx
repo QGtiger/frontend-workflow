@@ -3,6 +3,8 @@ import Header from "./components/Header";
 import { WorkflowDetailModel } from "./models";
 import { useConnectorSelectorModal } from "./hooks";
 import { CustomNodeRegistry } from "./utils";
+import { CustomNode } from "./components/NodeRender/CustomNode";
+import { SideBarRender } from "./components/NodeRender/SideBarRender";
 
 export default function WorkflowDetail() {
   const { workflowData } = WorkflowDetailModel.useModel();
@@ -25,6 +27,12 @@ export default function WorkflowDetail() {
             });
           }}
           nodeRegistries={[CustomNodeRegistry]}
+          renderNodeForm={({ node, isSideBar, registry }) => {
+            if (!isSideBar) {
+              return <CustomNode node={node} />;
+            }
+            return <SideBarRender node={node} />;
+          }}
         />
         {showConnectorSelectorModalContextHolder}
       </div>
