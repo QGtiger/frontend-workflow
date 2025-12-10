@@ -1,7 +1,10 @@
 import { createCustomModel } from "@/common/createModel";
-import type { FlowNodeRegistry } from "@/components/WorkflowLayout/typings";
+import type {
+  FlowNodeJSON,
+  FlowNodeRegistry,
+} from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
-import { Input, Modal, Segmented, Empty } from "antd";
+import { Input, Modal, Segmented, Empty, message } from "antd";
 import { useMemo, useState } from "react";
 import {
   SearchOutlined,
@@ -14,6 +17,7 @@ import {
 } from "./components/ConnectorSelectorModal/ConnectorListItem";
 import classNames from "classnames";
 import { ScrollArea } from "@/components/ScrollArea";
+import { generateCustomNodeData } from "./utils";
 
 interface IPaaSConnector {
   code: string;
@@ -80,7 +84,7 @@ function ConnectorSelectorContent({
   builtInLogicNodes,
   onSelect,
 }: {
-  onSelect: (registry: FlowNodeRegistry) => void;
+  onSelect: (dataJson: FlowNodeJSON) => void;
   builtInLogicNodes: FlowNodeRegistry[];
 }) {
   const { iPaaSConnectors, queryIPaaSConnectorActions } =
@@ -197,8 +201,28 @@ function ConnectorSelectorContent({
     description: string;
     registry?: FlowNodeRegistry;
   }) => {
+    // 内置的话直接调用 registry.onAdd 方法
     if (action.registry) {
-      onSelect(action.registry);
+      const d = action.registry.onAdd?.();
+      if (d) {
+        onSelect(d);
+      } else {
+        message.error("节点 registry onAdd 返回空节点数据");
+      }
+    } else {
+      // 应用的话生成自定义节点数据
+      if (activeConnector) {
+        onSelect(
+          generateCustomNodeData({
+            name: action.name,
+            description: action.description,
+            connectorCode: activeConnector.code,
+            actionCode: action.code,
+            version: 1,
+            icon: activeConnector.icon,
+          })
+        );
+      }
     }
   };
 
@@ -444,7 +468,7 @@ export function useConnectorSelectorModal() {
 
   const showConnectorSelectorModal = (config: {
     builtInNodes: FlowNodeRegistry[];
-    add: (registry: FlowNodeRegistry) => void;
+    addBlock: (dataJSON: FlowNodeJSON) => void;
   }) => {
     const ins = modal.confirm({
       width: 900,
@@ -461,8 +485,8 @@ export function useConnectorSelectorModal() {
       content: (
         <ConnectorSelectorContent
           builtInLogicNodes={config.builtInNodes}
-          onSelect={(registry) => {
-            config.add(registry);
+          onSelect={(dataJson) => {
+            config.addBlock(dataJson);
             ins.destroy();
           }}
         />

@@ -32,7 +32,7 @@ export const BreakLoopNodeRegistry: FlowNodeRegistry = {
     }
     return false;
   },
-  onAdd(ctx, from) {
+  onAdd() {
     return {
       id: `break_${nanoid()}`,
       type: "breakLoop",

@@ -15,6 +15,7 @@ import { CatchBlockNodeRegistry } from "./catch-block";
 import { CaseDefaultNodeRegistry } from "./case-default";
 import { CaseNodeRegistry } from "./case";
 import { BreakLoopNodeRegistry } from "./break-loop";
+import { CustomNodeRegistry } from "./custom";
 
 export const FlowNodeRegistries: FlowNodeRegistry[] = [
   StartNodeRegistry,
@@ -32,4 +33,6 @@ export const FlowNodeRegistries: FlowNodeRegistry[] = [
 
   IFNodeRegistry,
   IFBlockNodeRegistry,
+
+  CustomNodeRegistry,
 ];

@@ -29,8 +29,8 @@ export default function BranchAdder(props: PropsType) {
     const block = operation.addBlock(
       node,
       node.flowNodeType === "switch"
-        ? CaseNodeRegistry.onAdd!(ctx, node)
-        : CatchBlockNodeRegistry.onAdd!(ctx, node),
+        ? CaseNodeRegistry.onAdd!()
+        : CatchBlockNodeRegistry.onAdd!(),
       {
         index: 0,
       }

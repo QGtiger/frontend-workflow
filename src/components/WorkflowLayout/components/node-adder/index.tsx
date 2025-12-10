@@ -18,6 +18,7 @@ import { PasteIcon, Wrap } from "./styles";
 import { readData } from "../../shortcuts/utils";
 import { WorkflowLayoutEditorModel } from "../../models/WorkflowLayoutEditorModel";
 import { FlowNodeRegistries } from "../../nodes";
+import type { FlowNodeJSON } from "../../typings";
 
 const generateNewIdForChildren = (n: FlowNodeEntity): FlowNodeEntity => {
   if (n.blocks) {
@@ -121,14 +122,18 @@ export default function Adder(props: {
                 (registry) => !registry.meta?.addDisable
               ),
               from,
-              add: (registry) => {
-                const addProps = registry.onAdd?.(
-                  ctx as unknown as FixedLayoutPluginContext,
-                  from
-                );
-                if (addProps) {
-                  add(addProps);
-                }
+              addBlock: (dataJson: FlowNodeJSON) => {
+                const blocks = dataJson.blocks ? dataJson.blocks : undefined;
+                const block = operation.addFromNode(from, {
+                  ...dataJson,
+                  blocks,
+                });
+                setTimeout(() => {
+                  playground.scrollToView({
+                    bounds: block.bounds,
+                    scrollToCenter: true,
+                  });
+                }, 10);
               },
             });
           }}

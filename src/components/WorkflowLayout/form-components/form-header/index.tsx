@@ -10,8 +10,7 @@ import { DownOutlined, LeftOutlined, MoreOutlined } from "@ant-design/icons";
 
 import type { FlowNodeRegistry } from "../../typings";
 import { FlowCommandId } from "../../shortcuts/constants";
-import { getIcon } from "./utils";
-import { Header, Operators } from "./styles";
+import { Header, Operators, Icon } from "./styles";
 import { NodeRenderModel, useNodeData } from "../../models/NodeRenderModal";
 import { useCreation } from "ahooks";
 
@@ -61,11 +60,15 @@ export function FormHeader() {
   const { node, expanded, startDrag, toggleExpand, readonly } =
     NodeRenderModel.useModel();
 
-  const { name } = useNodeData();
+  const { name, icon, description } = useNodeData();
   const handleExpand = (e: React.MouseEvent) => {
     toggleExpand();
     e.stopPropagation(); // Disable clicking prevents the sidebar from opening
   };
+
+  console.log("icon", icon);
+  console.log("name", name);
+  console.log("description", description);
 
   return (
     <Header
@@ -75,7 +78,7 @@ export function FormHeader() {
         e.stopPropagation();
       }}
     >
-      {getIcon(node)}
+      {icon ? <Icon src={icon} /> : null}
       <Typography.Text ellipsis={{ tooltip: true }}>{name}</Typography.Text>
       {node.renderData.expandable && (
         <Button

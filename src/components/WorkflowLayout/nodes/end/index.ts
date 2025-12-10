@@ -58,7 +58,7 @@ export const EndNodeRegistry: FlowNodeRegistry = {
   canDelete(ctx, node) {
     return node.parent !== ctx.document.root;
   },
-  onAdd(ctx, from) {
+  onAdd() {
     return {
       id: `end_${nanoid()}`,
       type: "end",

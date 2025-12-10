@@ -17,12 +17,10 @@ export default function WorkflowDetail() {
         <WorkflowLayoutEditor
           nodes={workflowData?.nodes ?? []}
           onNodesChange={() => {}}
-          onAddNode={({ builtInNodes, from, add }) => {
+          onAddNode={({ builtInNodes, from, addBlock }) => {
             showConnectorSelectorModal({
               builtInNodes: builtInNodes,
-              add: (registry) => {
-                add(registry);
-              },
+              addBlock,
             });
           }}
         />

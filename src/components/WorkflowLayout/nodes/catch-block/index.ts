@@ -23,7 +23,7 @@ export const CatchBlockNodeRegistry: FlowNodeRegistry = {
   },
   canAdd: () => false,
   canDelete: (ctx, node) => node.parent!.blocks.length >= 2,
-  onAdd(ctx, from) {
+  onAdd() {
     return {
       id: `Catch_${nanoid(5)}`,
       type: "catchBlock",

@@ -8,7 +8,7 @@ export interface WorkflowLayoutEditorModelProps {
   onAddNode?: (config: {
     builtInNodes: FlowNodeRegistry[];
     from: FlowNodeEntity;
-    add: (registry: FlowNodeRegistry) => void;
+    addBlock: (dataJSON: FlowNodeJSON) => void;
   }) => void;
 }
 

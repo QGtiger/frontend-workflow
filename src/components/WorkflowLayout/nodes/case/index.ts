@@ -27,7 +27,7 @@ export const CaseNodeRegistry: FlowNodeRegistry = {
     description: "当条件满足时执行分支",
   },
   canDelete: (ctx, node) => node.parent!.blocks.length >= 3,
-  onAdd(ctx, from) {
+  onAdd() {
     return {
       id: `Case_${nanoid(5)}`,
       type: "case",
