@@ -66,10 +66,6 @@ export function FormHeader() {
     e.stopPropagation(); // Disable clicking prevents the sidebar from opening
   };
 
-  console.log("icon", icon);
-  console.log("name", name);
-  console.log("description", description);
-
   return (
     <Header
       onMouseDown={(e) => {
