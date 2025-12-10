@@ -2,6 +2,7 @@ import { WorkflowLayoutEditor } from "@/components/WorkflowLayout";
 import Header from "./components/Header";
 import { WorkflowDetailModel } from "./models";
 import { useConnectorSelectorModal } from "./hooks";
+import { CustomNodeRegistry } from "./utils";
 
 export default function WorkflowDetail() {
   const { workflowData } = WorkflowDetailModel.useModel();
@@ -23,6 +24,7 @@ export default function WorkflowDetail() {
               addBlock,
             });
           }}
+          nodeRegistries={[CustomNodeRegistry]}
         />
         {showConnectorSelectorModalContextHolder}
       </div>
