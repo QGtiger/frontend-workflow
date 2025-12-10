@@ -5,6 +5,7 @@ import { useConnectorSelectorModal } from "./hooks";
 import { CustomNodeRegistry } from "./utils";
 import { CustomNode } from "./components/NodeRender/CustomNode";
 import { SideBarRender } from "./components/NodeRender/SideBarRender";
+import { CustomNodeRenderModel } from "./components/NodeRender/model";
 
 export default function WorkflowDetail() {
   const { workflowData } = WorkflowDetailModel.useModel();
@@ -27,11 +28,12 @@ export default function WorkflowDetail() {
             });
           }}
           nodeRegistries={[CustomNodeRegistry]}
-          renderNodeForm={({ node, isSideBar, registry }) => {
-            if (!isSideBar) {
-              return <CustomNode node={node} />;
-            }
-            return <SideBarRender node={node} />;
+          renderNodeForm={(props) => {
+            return (
+              <CustomNodeRenderModel.Provider value={props}>
+                {props.isSideBar ? <SideBarRender /> : <CustomNode />}
+              </CustomNodeRenderModel.Provider>
+            );
           }}
         />
         {showConnectorSelectorModalContextHolder}

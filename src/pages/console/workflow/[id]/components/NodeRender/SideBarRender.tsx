@@ -1,7 +1,5 @@
-import { CustomNodeHeader } from "./Header";
-import type { WithNodeProps } from "./type";
+import { SideBarHeader } from "./SideBarHeader";
 
-export function SideBarRender(props: WithNodeProps) {
-  const { node } = props;
-  return <CustomNodeHeader node={node} />;
+export function SideBarRender() {
+  return <SideBarHeader />;
 }

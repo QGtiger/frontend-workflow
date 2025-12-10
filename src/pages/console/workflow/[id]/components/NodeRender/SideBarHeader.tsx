@@ -1,22 +1,14 @@
 import classNames from "classnames";
 import { Typography } from "antd";
 import { NodeDropdown } from "./NodeDropdown";
-import { CustomNodeRenderModel, useCustomNodeData } from "./model";
+import { useCustomNodeData } from "./model";
 
-export function CustomNodeHeader({ className }: { className?: string }) {
-  const {
-    nodeRender: { startDrag },
-  } = CustomNodeRenderModel.useModel();
+export function SideBarHeader() {
   const { name, icon } = useCustomNodeData();
   return (
     <div
-      onMouseDown={(e) => {
-        startDrag(e);
-        e.stopPropagation();
-      }}
       className={classNames(
-        " flex justify-between items-center w-full rounded-lg p-2 cursor-move overflow-hidden",
-        className
+        " flex justify-between items-center w-full rounded-lg  overflow-hidden p-4"
       )}
       style={{
         background: "linear-gradient(#f2f2ff 0%, rgb(251, 251, 251) 100%)",
