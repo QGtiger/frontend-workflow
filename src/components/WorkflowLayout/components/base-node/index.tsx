@@ -6,6 +6,8 @@ import { ConfigProvider } from "antd";
 
 import { BaseNodeStyle, ErrorIcon } from "./styles";
 import { NodeRenderModel } from "../../models/NodeRenderModal";
+import { usePanelManager } from "@flowgram.ai/panel-manager-plugin";
+import { nodeFormPanelFactory } from "../sidebar";
 
 // const { selection, playground, document } = useClientContext();
 //   const refresh = useRefresh();
@@ -29,6 +31,8 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    */
   const form = nodeRender.form;
 
+  const panelManager = usePanelManager();
+
   return (
     <ConfigProvider
       /**
@@ -50,8 +54,11 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
           if (nodeRender.dragging) {
             return;
           }
-          // TODO 打开右侧面板"
-          console.log("打开右侧面板", nodeRender);
+          panelManager.open(nodeFormPanelFactory.key, "right", {
+            props: {
+              nodeId: nodeRender.node.id,
+            },
+          });
         }}
         style={{
           /**

@@ -10,6 +10,11 @@ export interface WorkflowLayoutEditorModelProps {
     from: FlowNodeEntity;
     addBlock: (dataJSON: FlowNodeJSON) => void;
   }) => void;
+  renderNodeForm?: (opts: {
+    node: FlowNodeEntity;
+    isSideBar?: boolean;
+    registry: FlowNodeRegistry;
+  }) => React.ReactNode;
 }
 
 export const WorkflowLayoutEditorModel = createCustomModel(

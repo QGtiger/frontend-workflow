@@ -2,7 +2,11 @@ import type { NodeRenderReturnType } from "@flowgram.ai/fixed-layout-editor";
 import { createCustomModel } from "../common/createModel";
 
 export const NodeRenderModel = createCustomModel(
-  (props: NodeRenderReturnType) => {
+  (
+    props: NodeRenderReturnType & {
+      isSideBar?: boolean;
+    }
+  ) => {
     return props;
   }
 );

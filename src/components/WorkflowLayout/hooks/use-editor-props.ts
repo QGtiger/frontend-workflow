@@ -6,6 +6,7 @@
 import { useMemo } from "react";
 
 import { debounce } from "lodash-es";
+import { createPanelManagerPlugin } from "@flowgram.ai/panel-manager-plugin";
 import { createMinimapPlugin } from "@flowgram.ai/minimap-plugin";
 import { defaultFixedSemiMaterials } from "@flowgram.ai/fixed-semi-materials";
 import {
@@ -29,6 +30,7 @@ import { shortcutGetter } from "../shortcuts";
 import NodeAdder from "../components/node-adder";
 import BranchAdder from "../components/branch-adder";
 import { BaseNode } from "../components/base-node";
+import { nodeFormPanelFactory } from "../components/sidebar";
 
 // import { DragNode, AgentAdder } from "../components";
 
@@ -288,9 +290,9 @@ export function useEditorProps(
          * 变量面板插件
          */
         // createVariablePanelPlugin({}),
-        // createPanelManagerPlugin({
-        //   factories: [nodeFormPanelFactory],
-        // }),
+        createPanelManagerPlugin({
+          factories: [nodeFormPanelFactory],
+        }),
       ],
     }),
     [initialData, nodeRegistries]
