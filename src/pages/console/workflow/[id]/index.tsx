@@ -1,9 +1,15 @@
 import { WorkflowLayoutEditor } from "@/components/WorkflowLayout";
 import Header from "./components/Header";
 import { WorkflowDetailModel } from "./models";
+import { useConnectorSelectorModal } from "./hooks";
 
 export default function WorkflowDetail() {
   const { workflowData } = WorkflowDetailModel.useModel();
+  const {
+    showConnectorSelectorModal,
+    showConnectorSelectorModalContextHolder,
+  } = useConnectorSelectorModal();
+
   return (
     <div className="h-full flex flex-col">
       <Header />
@@ -11,8 +17,16 @@ export default function WorkflowDetail() {
         <WorkflowLayoutEditor
           nodes={workflowData?.nodes ?? []}
           onNodesChange={() => {}}
-          onAddNode={console.log}
+          onAddNode={({ builtInNodes, from, add }) => {
+            showConnectorSelectorModal({
+              builtInNodes: builtInNodes,
+              add: (registry) => {
+                add(registry);
+              },
+            });
+          }}
         />
+        {showConnectorSelectorModalContextHolder}
       </div>
     </div>
   );

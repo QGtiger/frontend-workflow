@@ -16,8 +16,9 @@ export const BreakLoopNodeRegistry: FlowNodeRegistry = {
   type: "breakLoop",
   extend: "end",
   info: {
+    name: "中断循环",
     icon: iconBreak,
-    description: "Break in current Loop.",
+    description: "退出循环",
   },
   meta: {
     style: {

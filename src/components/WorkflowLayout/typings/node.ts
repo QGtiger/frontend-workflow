@@ -81,6 +81,7 @@ export interface FlowNodeRegistry extends FlowNodeRegistryDefault {
   meta?: FlowNodeMeta;
   info: {
     icon: string;
+    name: string;
     description: string;
   };
   canAdd?: (ctx: FixedLayoutPluginContext, from: FlowNodeEntity) => boolean;

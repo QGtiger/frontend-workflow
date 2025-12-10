@@ -5,11 +5,13 @@
 
 import { useMemo, useState } from "react";
 
-import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
-import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
+import {
+  useClientContext,
+  type FlowNodeEntity,
+  type FixedLayoutPluginContext,
+} from "@flowgram.ai/fixed-layout-editor";
 import { Popover, message, Typography } from "antd";
 
-import { NodeList } from "../node-list";
 import { PlusCircleOutlined, CopyOutlined } from "@ant-design/icons";
 import { generateNodeId } from "./utils";
 import { PasteIcon, Wrap } from "./styles";
@@ -34,14 +36,13 @@ const generateNewIdForChildren = (n: FlowNodeEntity): FlowNodeEntity => {
 
 export default function Adder(props: {
   from: FlowNodeEntity;
-  to?: FlowNodeEntity;
   hoverActivated: boolean;
 }) {
   const { onAddNode } = WorkflowLayoutEditorModel.useModel();
   const { from } = props;
   const isVertical = from.isVertical;
-  const [visible, setVisible] = useState(false);
-  const { playground, operation, clipboard } = useClientContext();
+  const ctx = useClientContext();
+  const { playground, operation, clipboard } = ctx;
 
   const [pasteIconVisible, setPasteIconVisible] = useState(false);
 
@@ -62,7 +63,6 @@ export default function Adder(props: {
         scrollToCenter: true,
       });
     }, 10);
-    setVisible(false);
   };
 
   const handlePaste = async (e: any) => {
@@ -121,6 +121,15 @@ export default function Adder(props: {
                 (registry) => !registry.meta?.addDisable
               ),
               from,
+              add: (registry) => {
+                const addProps = registry.onAdd?.(
+                  ctx as unknown as FixedLayoutPluginContext,
+                  from
+                );
+                if (addProps) {
+                  add(addProps);
+                }
+              },
             });
           }}
           onMouseEnter={() => {

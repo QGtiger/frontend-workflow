@@ -27,7 +27,8 @@ export const IFBlockNodeRegistry: FlowNodeRegistry = {
   },
   info: {
     icon: iconIf,
-    description: "",
+    name: "条件分支",
+    description: "条件分支",
   },
   canAdd: () => false,
   canDelete: (ctx, node) => false,

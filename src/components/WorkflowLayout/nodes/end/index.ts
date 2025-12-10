@@ -20,8 +20,8 @@ export const EndNodeRegistry: FlowNodeRegistry = {
   },
   info: {
     icon: iconEnd,
-    description:
-      "The final node of the workflow, used to return the result information after the workflow is run.",
+    name: "结束",
+    description: "流程结束节点",
   },
   canAdd(ctx, from) {
     // You can only add to the last node of the branch

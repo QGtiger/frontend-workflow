@@ -13,7 +13,8 @@ export const TryCatchNodeRegistry: FlowNodeRegistry = {
   type: "tryCatch",
   info: {
     icon: iconTryCatch,
-    description: "try catch.",
+    name: "异常捕获",
+    description: "捕获异常并执行相应的处理分支",
   },
   meta: {
     expandable: false, // disable expanded

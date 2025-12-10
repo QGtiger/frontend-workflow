@@ -22,8 +22,9 @@ export const CaseNodeRegistry: FlowNodeRegistry = {
     addDisable: true,
   },
   info: {
+    name: "分支",
     icon: iconCase,
-    description: "Execute the branch when the condition is met.",
+    description: "当条件满足时执行分支",
   },
   canDelete: (ctx, node) => node.parent!.blocks.length >= 3,
   onAdd(ctx, from) {

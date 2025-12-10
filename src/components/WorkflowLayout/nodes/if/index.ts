@@ -15,8 +15,8 @@ export const IFNodeRegistry: FlowNodeRegistry = {
   type: "if",
   info: {
     icon: iconIf,
-    description:
-      "Only the corresponding branch will be executed if the set conditions are met.",
+    name: "条件",
+    description: "当条件满足时执行true分支，否则执行false分支",
   },
   meta: {
     expandable: false, // disable expanded

@@ -17,8 +17,9 @@ export const CatchBlockNodeRegistry: FlowNodeRegistry = {
     addDisable: true,
   },
   info: {
+    name: "捕获分支",
     icon: iconCase,
-    description: "Execute the catch branch when the condition is met.",
+    description: "当异常时执行捕获分支",
   },
   canAdd: () => false,
   canDelete: (ctx, node) => node.parent!.blocks.length >= 2,
