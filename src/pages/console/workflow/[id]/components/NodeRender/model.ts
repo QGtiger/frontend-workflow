@@ -4,6 +4,7 @@ import {
   useNodeRender,
   type FlowNodeEntity,
 } from "@flowgram.ai/fixed-layout-editor";
+import type { CustomNodeData } from "../../types";
 
 export const CustomNodeRenderModel = createCustomModel(
   (props: {
@@ -15,6 +16,12 @@ export const CustomNodeRenderModel = createCustomModel(
     return {
       ...props,
       nodeRender,
+      updateData: (data: Partial<CustomNodeData>) => {
+        nodeRender.updateData({
+          ...nodeRender.data,
+          ...data,
+        });
+      },
     };
   }
 );
@@ -28,7 +35,7 @@ export function useCustomNodeData<
   } = CustomNodeRenderModel.useModel();
 
   return {
-    name: data.name || registry.info.description,
+    name: data.name || registry.info.name,
     description: data.description || registry.info.description,
     icon: data.icon || registry.info.icon,
   } as T;
