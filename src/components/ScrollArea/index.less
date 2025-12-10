@@ -1,0 +1,17 @@
+@border-base-tertiary: rgba(15, 17, 24, 0.15);
+
+.simplebar-content-wrapper {
+  outline: none;
+}
+
+.simplebar-scrollbar {
+  &::before {
+    background-color: @border-base-tertiary;
+  }
+  &.simplebar-visible {
+    &::before {
+      background-color: @border-base-tertiary;
+      opacity: 1;
+    }
+  }
+}
