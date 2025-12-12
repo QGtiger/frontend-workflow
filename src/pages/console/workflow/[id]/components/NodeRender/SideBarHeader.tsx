@@ -9,14 +9,14 @@ function InputWithOutlined(
     updateKey: "name" | "description" | "icon";
   }
 ) {
-  const { updateKey } = props;
+  const { updateKey, ...inputProps } = props;
   const data = useCustomNodeData();
   const finalValue = data[updateKey];
   const [value, setValue] = useState(finalValue);
   const { updateData } = CustomNodeRenderModel.useModel();
   return (
     <Input
-      {...props}
+      {...inputProps}
       value={value}
       onChange={(e) => {
         setValue(e.target.value);
