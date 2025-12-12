@@ -1,9 +1,9 @@
 import { Form } from "antd";
-import { type ReactNode } from "react";
+import { type ComponentType, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import { excuteScriptByValidateRules } from "../utils/excuteScript";
 import { formValueNormalize, replaceHtmlATagsWithMarkdown } from "../utils";
-import { useEditor, useIpaasSchemaStore } from "../store";
+import { useIpaasSchemaStore } from "../store";
 import type { IPaasDynamicFormItem } from "../type";
 import { useCreation } from "ahooks";
 
@@ -28,30 +28,47 @@ function CommonLayout(node1: ReactNode, node2: ReactNode) {
   );
 }
 
+function DefaultRenderEditor({
+  Fc,
+  props,
+}: {
+  // 编辑器组件
+  Fc: ComponentType<any>;
+  props: any;
+}) {
+  return <Fc {...props} />;
+}
+
 function WrapperFieldComponent(props: {
   formItemState: IPaasDynamicFormItem;
   [x: string]: any;
 }) {
   const { formItemState, ...otherProps } = props;
   const { type, payload } = props.formItemState;
-  const FieldComponent = useEditor(type);
-  const { editorLayoutWithDesc } = useIpaasSchemaStore();
+  const form = Form.useFormInstance();
+  const {
+    editorLayoutWithDesc = CommonLayout,
+    editorMap,
+    renderEditor = DefaultRenderEditor,
+  } = useIpaasSchemaStore();
   const _config = {
     ...DefaultConfig,
     ...payload.editor.config,
   };
 
-  const _editorLayoutWithDesc = editorLayoutWithDesc || CommonLayout;
   return (
     <div className="relative">
-      {_editorLayoutWithDesc(
-        // eslint-disable-next-line react-hooks/static-components
-        <FieldComponent
-          name={payload.code}
-          editorkind={payload.editor.kind}
-          {...otherProps}
-          {..._config}
-        />,
+      {editorLayoutWithDesc(
+        renderEditor({
+          schema: payload,
+          form,
+          Fc: editorMap[type],
+          props: {
+            ...otherProps,
+            name: payload.code,
+            ..._config,
+          },
+        }),
         payload.description && (
           <div className="desc text-[#888f9d] text-xs">
             <ReactMarkdown

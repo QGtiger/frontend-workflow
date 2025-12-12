@@ -2,7 +2,6 @@ import { type FormInstance, Input, InputNumber } from "antd";
 import React, { type ComponentType, createContext, useContext } from "react";
 import { createStore, useStore } from "zustand";
 import DefaultValueWarpper from "./utils/DefaulValueWarpper";
-import { useCreation } from "ahooks";
 import CustomSelect from "./components/material/CustomSelect";
 import CustomMultiSelect from "./components/material/CustomMultiSelect";
 import CustomDatetimePicker from "./components/material/CustomDatetimePicker";
@@ -20,17 +19,13 @@ interface IpaasSchemaStoreState {
     node2: React.ReactNode
   ) => React.ReactNode;
 
-  commonEditorWarpper?: (
-    Component: ComponentType<{
-      value: any;
-      onChange: (value: any) => void;
-      editorkind?: string;
-      name?: string;
-    }>
-  ) => ComponentType<{
-    value: any;
-    onChange: (value: any) => void;
-  }>; // 通用编辑器包装器
+  renderEditor?: (opts: {
+    schema: IPaasFormSchema;
+    form: FormInstance;
+    // 编辑器组件
+    Fc: ComponentType<any>;
+    props: any;
+  }) => React.ReactNode;
 
   dynamicScriptExcuteWithOptions?: (config: {
     script: string;
@@ -118,16 +113,9 @@ export function createIpaasSchemaStore(config: IpaasSchemaStoreConfig) {
 
 export function useEditor(type: string): ComponentType<any> {
   const store = useContext(StoreContext);
-  const { editorMap, commonEditorWarpper } = useStore(store);
+  const { editorMap } = useStore(store);
 
-  return useCreation(() => {
-    const T = editorMap[type] || editorMap.Input;
-    if (commonEditorWarpper) {
-      return commonEditorWarpper(T);
-    } else {
-      return T;
-    }
-  }, [type, editorMap, commonEditorWarpper]);
+  return editorMap[type || "Input"];
 }
 
 export function useIpaasSchemaStore() {

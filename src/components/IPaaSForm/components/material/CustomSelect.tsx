@@ -9,10 +9,6 @@ export default function CustomSelect(
   props: {
     value: any;
     name: string;
-    selectcache?: {
-      value: any;
-      label: string;
-    }[];
   } & IPaasFormFieldEditorConfig["Select"] &
     SelectProps
 ) {
@@ -20,7 +16,6 @@ export default function CustomSelect(
     depItems,
     isDynamic,
     dynamicScript,
-    selectcache,
     options: propsOptions,
     name,
     ...otherProps
@@ -85,15 +80,6 @@ export default function CustomSelect(
 
   return (
     <Select
-      labelRender={(labelInvalue) => {
-        const { label, value } = labelInvalue;
-
-        if (label) {
-          return label;
-        }
-        const item = selectcache?.find((it) => it.value === value);
-        return item?.label || value;
-      }}
       popupRender={(menu) => {
         return (
           <div className="flex flex-col gap-2 p-2">

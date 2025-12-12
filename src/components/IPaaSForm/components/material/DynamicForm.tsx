@@ -12,7 +12,7 @@ export default function DynamicForm(
     name: string;
   } & IPaasFormFieldEditorConfig["DynamicActionForm"]
 ) {
-  const { depItems, dynamicScript, name, ...otherProps } = props;
+  const { depItems, dynamicScript, name } = props;
   const formIns = Form.useFormInstance();
   const { dynamicDebounce, dynamicScriptExcuteWithFormSchema } =
     useIpaasSchemaStore();
@@ -69,14 +69,15 @@ export default function DynamicForm(
 
   const preDepValuesRef = useRef<any[]>([]);
   const depValues = Form.useWatch(depItems || ["__gg__"]);
+  const depValuesStr = JSON.stringify(depValues);
 
   useEffect(() => {
-    if (JSON.stringify(depValues) !== JSON.stringify(preDepValuesRef.current)) {
+    if (depValuesStr !== JSON.stringify(preDepValuesRef.current)) {
       cancel();
       refresh();
       preDepValuesRef.current = depValues;
     }
-  });
+  }, [depValuesStr, cancel, refresh, depValues]);
 
   if (!subSchema || loading) {
     return <div className="rounded-md bg-[#f2f3f5] p-2">Loading...</div>;
