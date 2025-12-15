@@ -35,18 +35,138 @@ export const WorkflowDetailModel = createCustomModel(() => {
           {
             id: "start_0",
             type: "start",
-            blocks: [],
             data: {
               name: "Start",
             },
+            blocks: [],
+          },
+          {
+            id: "custom_58whW",
+            type: "custom",
+            data: {
+              name: "执行查询",
+              description: "执行 SQL 查询并返回结果",
+              connectorCode: "connector1",
+              actionCode: "action1",
+              version: 1,
+              icon: "https://api.iconify.design/mdi:api.svg",
+              outputStruct: [
+                {
+                  code: "result",
+                  type: "object",
+                  label: "结果",
+                  children: [
+                    {
+                      code: "data",
+                      label: "数据",
+                      type: "string",
+                    },
+                  ],
+                },
+              ],
+            },
+            blocks: [],
+          },
+          {
+            id: "switch_Gro26",
+            type: "switch",
+            data: {
+              name: "Switch",
+            },
+            blocks: [
+              {
+                id: "G2AY2",
+                type: "case",
+                data: {
+                  name: "Case_0",
+                },
+                blocks: [
+                  {
+                    id: "custom_96gkk",
+                    type: "custom",
+                    data: {
+                      name: "执行查询",
+                      description: "执行 SQL 查询并返回结果",
+                      connectorCode: "connector1",
+                      actionCode: "action1",
+                      version: 1,
+                      icon: "https://api.iconify.design/mdi:api.svg",
+                      outputStruct: [
+                        {
+                          code: "result",
+                          type: "object",
+                          label: "结果",
+                          children: [
+                            {
+                              code: "data",
+                              label: "数据",
+                              type: "string",
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    blocks: [],
+                  },
+                ],
+              },
+              {
+                id: "vPmBH",
+                type: "case",
+                data: {
+                  name: "Case_1",
+                },
+                blocks: [],
+              },
+              {
+                id: "WBwr9",
+                type: "caseDefault",
+                data: {
+                  name: "Default",
+                },
+                blocks: [],
+              },
+            ],
+          },
+          {
+            id: "custom_3b2AN",
+            type: "custom",
+            data: {
+              name: "执行查询",
+              description: "执行 SQL 查询并返回结果",
+              connectorCode: "connector1",
+              actionCode: "action1",
+              version: 1,
+              icon: "https://api.iconify.design/mdi:api.svg",
+              outputStruct: [
+                {
+                  code: "result",
+                  type: "object",
+                  label: "结果",
+                  children: [
+                    {
+                      code: "data",
+                      label: "数据",
+                      type: "string",
+                    },
+                  ],
+                },
+              ],
+              inputs: {
+                query: {
+                  isExpression: true,
+                },
+              },
+            },
+            blocks: [],
           },
           {
             id: "end_0",
             type: "end",
-            blocks: [],
             data: {
               name: "End",
             },
+            blocks: [],
           },
         ],
         name: "Workflow 1",

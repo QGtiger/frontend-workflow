@@ -106,8 +106,6 @@ export function SideBarRender() {
     []
   );
 
-  console.log(inputsSchema);
-
   return (
     <div className="flex flex-col h-full">
       <SideBarHeader />

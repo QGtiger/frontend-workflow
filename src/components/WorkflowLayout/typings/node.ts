@@ -14,6 +14,7 @@ interface FlowBaseNodeJSON extends FlowNodeJSONDefault {
   data: {
     // 节点名称
     name: string;
+    [x: string]: any;
   };
 }
 
