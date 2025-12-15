@@ -22,6 +22,7 @@ import {
   FlowNodeEntity,
   useClientContext,
 } from "@flowgram.ai/fixed-layout-editor";
+import type { NodeOutputStructItem } from "./types";
 
 function ConnectorSelectorContent({
   builtInLogicNodes,
@@ -151,6 +152,7 @@ function ConnectorSelectorContent({
     name: string;
     description: string;
     registry?: FlowNodeRegistry;
+    outputsSchema?: NodeOutputStructItem[];
   }) => {
     // 内置的话直接调用 registry.onAdd 方法
     if (action.registry) {
@@ -171,6 +173,7 @@ function ConnectorSelectorContent({
             actionCode: action.code,
             version: 1,
             icon: activeConnector.icon,
+            outputStruct: action.outputsSchema,
           })
         );
       }

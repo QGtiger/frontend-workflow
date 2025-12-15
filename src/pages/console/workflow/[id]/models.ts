@@ -4,6 +4,7 @@ import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import type { NodeOutputStructItem } from "./types";
 
 export type WorkflowDetailData = {
   nodes: FlowNodeJSON[];
@@ -80,6 +81,7 @@ export interface IPaaSConnectorAction {
   name: string;
   description: string;
   inputsSchema?: IPaasFormSchema[];
+  outputsSchema?: NodeOutputStructItem[];
 }
 
 export const ConnectorSelectorModel = createCustomModel(() => {
@@ -122,6 +124,20 @@ export const ConnectorSelectorModel = createCustomModel(() => {
               editor: {
                 kind: "Input",
               },
+            },
+          ],
+          outputsSchema: [
+            {
+              code: "result",
+              type: "object",
+              label: "结果",
+              children: [
+                {
+                  code: "data",
+                  label: "数据",
+                  type: "string",
+                },
+              ],
             },
           ],
         },

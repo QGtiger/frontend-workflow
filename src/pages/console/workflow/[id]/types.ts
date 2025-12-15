@@ -8,11 +8,11 @@ export type NodeInputValue = {
 
 type NodeInputs = Record<string, NodeInputValue>;
 
-interface OutputStructItem {
-  name: string;
+export interface NodeOutputStructItem {
+  code: string;
   type: string;
   label: string;
-  children?: OutputStructItem[];
+  children?: NodeOutputStructItem[];
 }
 
 export type CustomNodeData = {
@@ -30,7 +30,7 @@ export type CustomNodeData = {
   // 节点参数
   inputs?: NodeInputs;
   // 节点输出结构
-  outputStruct?: OutputStructItem[];
+  outputStruct?: NodeOutputStructItem[];
   // 单步调试样本数据
   sampleData?: Record<string, any>;
   // 认证ID
