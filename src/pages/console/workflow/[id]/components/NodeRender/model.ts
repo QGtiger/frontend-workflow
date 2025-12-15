@@ -7,11 +7,7 @@ import {
 import type { CustomNodeData } from "../../types";
 
 export const CustomNodeRenderModel = createCustomModel(
-  (props: {
-    node: FlowNodeEntity;
-    isSideBar?: boolean;
-    registry: FlowNodeRegistry;
-  }) => {
+  (props: { node: FlowNodeEntity; registry: FlowNodeRegistry }) => {
     const nodeRender = useNodeRender(props.node);
     return {
       ...props,

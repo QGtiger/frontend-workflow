@@ -6,8 +6,8 @@ import { ConfigProvider } from "antd";
 
 import { BaseNodeStyle, ErrorIcon } from "./styles";
 import { NodeRenderModel } from "../../models/NodeRenderModal";
-import { usePanelManager } from "@flowgram.ai/panel-manager-plugin";
-import { nodeFormPanelFactory } from "../sidebar";
+import { WorkflowLayoutEditorModel } from "../../models/WorkflowLayoutEditorModel";
+import classNames from "classnames";
 
 // const { selection, playground, document } = useClientContext();
 //   const refresh = useRefresh();
@@ -20,6 +20,8 @@ import { nodeFormPanelFactory } from "../sidebar";
 //   const node = nodeId ? document.getNode(nodeId) : undefined;
 
 export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
+  const { onNodeSelect, renderNodeStyle } =
+    WorkflowLayoutEditorModel.useModel();
   /**
    * Provides methods related to node rendering
    * 提供节点渲染相关的方法
@@ -30,8 +32,6 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    * 只有在节点引擎开启时候才能使用表单
    */
   const form = nodeRender.form;
-
-  const panelManager = usePanelManager();
 
   return (
     <ConfigProvider
@@ -49,16 +49,14 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
          **/
         onMouseEnter={nodeRender.onMouseEnter}
         onMouseLeave={nodeRender.onMouseLeave}
-        className={nodeRender.activated ? "activated" : ""}
+        className={classNames(nodeRender.activated ? "activated" : "")}
         onClick={() => {
           if (nodeRender.dragging) {
             return;
           }
-          panelManager.open(nodeFormPanelFactory.key, "right", {
-            props: {
-              nodeId: nodeRender.node.id,
-            },
-          });
+          if (nodeRender.node.id) {
+            onNodeSelect?.(nodeRender.node.id);
+          }
         }}
         style={{
           /**
@@ -71,6 +69,7 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
           ...nodeRender.node.getNodeRegistry().meta.style,
           opacity: nodeRender.dragging ? 0.3 : 1,
           outline: form?.state.invalid ? "1px solid red" : "none",
+          ...renderNodeStyle?.(nodeRender.node),
         }}
       >
         <NodeRenderModel.Provider value={nodeRender}>

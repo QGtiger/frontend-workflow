@@ -12,9 +12,11 @@ export interface WorkflowLayoutEditorModelProps {
   }) => void;
   renderNodeForm?: (opts: {
     node: FlowNodeEntity;
-    isSideBar?: boolean;
     registry: FlowNodeRegistry;
   }) => React.ReactNode;
+
+  onNodeSelect?: (nodeId: string) => void;
+  renderNodeStyle?: (node: FlowNodeEntity) => React.CSSProperties;
 }
 
 export const WorkflowLayoutEditorModel = createCustomModel(

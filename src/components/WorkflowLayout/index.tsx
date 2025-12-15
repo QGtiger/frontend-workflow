@@ -17,12 +17,11 @@ import { NodeRenderModel } from "./models/NodeRenderModal";
 import type { PropsWithChildren } from "react";
 
 const RenderForm = () => {
-  const { isSideBar, node } = NodeRenderModel.useModel();
+  const { node } = NodeRenderModel.useModel();
   const { renderNodeForm } = WorkflowLayoutEditorModel.useModel();
   return (
     renderNodeForm?.({
       node: node,
-      isSideBar: isSideBar,
       registry: node.getNodeRegistry<FlowNodeRegistry>(),
     }) || "未配置表单渲染"
   );
