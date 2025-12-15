@@ -2,6 +2,7 @@ import { autocompletion, startCompletion } from "@codemirror/autocomplete";
 import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.css";
+import "./theme.css";
 
 const autoInsertDoubleBraces = keymap.of([
   {
