@@ -1,13 +1,12 @@
-type NodeInputs = Record<
-  string,
-  {
-    value: any;
-    label: string;
-    type: string;
-    // 是否是表达式
-    isExpression?: boolean;
-  }
->;
+export type NodeInputValue = {
+  value?: any;
+  label?: string;
+  type?: string;
+  // 是否是表达式
+  isExpression?: boolean;
+};
+
+type NodeInputs = Record<string, NodeInputValue>;
 
 interface OutputStructItem {
   name: string;

@@ -111,11 +111,18 @@ export function createIpaasSchemaStore(config: IpaasSchemaStoreConfig) {
   return store;
 }
 
+export function getEditorByType(
+  type: string,
+  editorMap: Record<string, ComponentType<any>>
+): ComponentType<any> {
+  return editorMap[type] || editorMap["Input"];
+}
+
 export function useEditor(type: string): ComponentType<any> {
   const store = useContext(StoreContext);
   const { editorMap } = useStore(store);
 
-  return editorMap[type || "Input"];
+  return getEditorByType(type, editorMap);
 }
 
 export function useIpaasSchemaStore() {

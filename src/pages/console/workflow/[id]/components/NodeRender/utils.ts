@@ -1,3 +1,6 @@
+import type { IPaasFormSchema } from "@/components/IPaaSForm";
+import type { FlowNodeType } from "@flowgram.ai/fixed-layout-editor";
+
 /**
  * 执行 JavaScript 代码
  * @param script JavaScript 代码字符串
@@ -50,4 +53,37 @@ export function executeScript(
   } catch (error: any) {
     throw new Error(`Script execution failed: ${error.message}`);
   }
+}
+
+export function getBuiltInRegistryInputsSchema(
+  type: FlowNodeType
+): IPaasFormSchema[] {
+  if (type === "case") {
+    return [
+      {
+        code: "condition",
+        name: "条件",
+        type: "array",
+        required: true,
+        editor: {
+          kind: "ConditionEditor" as any,
+          config: {},
+        },
+      },
+    ];
+  } else if (type === "loop") {
+    return [
+      {
+        code: "loopItem",
+        name: "循环项",
+        type: "array",
+        required: true,
+        editor: {
+          kind: "ArrayItemEditor" as any,
+          config: {},
+        },
+      },
+    ];
+  }
+  return [];
 }

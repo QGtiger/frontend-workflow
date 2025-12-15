@@ -1,4 +1,5 @@
 import { createCustomModel } from "@/common/createModel";
+import type { IPaasFormSchema } from "@/components/IPaaSForm";
 import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
 import { useCallback, useLayoutEffect, useRef } from "react";
@@ -78,6 +79,7 @@ export interface IPaaSConnectorAction {
   code: string;
   name: string;
   description: string;
+  inputsSchema?: IPaasFormSchema[];
 }
 
 export const ConnectorSelectorModel = createCustomModel(() => {

@@ -3,7 +3,7 @@ import { type ComponentType, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import { excuteScriptByValidateRules } from "../utils/excuteScript";
 import { formValueNormalize, replaceHtmlATagsWithMarkdown } from "../utils";
-import { useIpaasSchemaStore } from "../store";
+import { getEditorByType, useIpaasSchemaStore } from "../store";
 import type { IPaasDynamicFormItem } from "../type";
 import { useCreation } from "ahooks";
 
@@ -62,7 +62,7 @@ function WrapperFieldComponent(props: {
         renderEditor({
           schema: payload,
           form,
-          Fc: editorMap[type],
+          Fc: getEditorByType(type, editorMap),
           props: {
             ...otherProps,
             name: payload.code,
