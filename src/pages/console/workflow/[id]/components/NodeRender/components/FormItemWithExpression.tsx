@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { motion } from "framer-motion";
 import { useRef, type ComponentType } from "react";
 import type { NodeInputValue } from "../../../types";
+import { CMEditor } from "./CMEditor";
 
 export function FormItemWithExpression(props: {
   Componet: ComponentType<any>;
@@ -35,7 +36,15 @@ export function FormItemWithExpression(props: {
       onClick={() => showExpressionAction.setTrue()}
     >
       {isExpression ? (
-        value
+        <CMEditor
+          value={value}
+          onChange={(v) => {
+            onChange?.({
+              ...valueWithExpression,
+              value: v,
+            });
+          }}
+        />
       ) : (
         <Componet
           {...restProps}
