@@ -25,6 +25,7 @@ export default function WorkflowDetail() {
             showConnectorSelectorModal({
               builtInNodes: builtInNodes,
               addBlock,
+              from,
             });
           }}
           nodeRegistries={[CustomNodeRegistry]}
@@ -35,8 +36,9 @@ export default function WorkflowDetail() {
               </CustomNodeRenderModel.Provider>
             );
           }}
-        />
-        {showConnectorSelectorModalContextHolder}
+        >
+          {showConnectorSelectorModalContextHolder}
+        </WorkflowLayoutEditor>
       </div>
     </div>
   );

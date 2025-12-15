@@ -14,6 +14,7 @@ import {
 import type { FlowNodeRegistry } from "./typings";
 import { useCreation } from "ahooks";
 import { NodeRenderModel } from "./models/NodeRenderModal";
+import type { PropsWithChildren } from "react";
 
 const RenderForm = () => {
   const { isSideBar, node } = NodeRenderModel.useModel();
@@ -28,9 +29,11 @@ const RenderForm = () => {
 };
 
 export function WorkflowLayoutEditor(
-  props: WorkflowLayoutEditorModelProps & {
-    nodeRegistries?: FlowNodeRegistry[];
-  }
+  props: PropsWithChildren<
+    WorkflowLayoutEditorModelProps & {
+      nodeRegistries?: FlowNodeRegistry[];
+    }
+  >
 ) {
   const { nodes, onNodesChange, nodeRegistries = [], renderNodeForm } = props;
 
@@ -59,6 +62,7 @@ export function WorkflowLayoutEditor(
       <FixedLayoutEditorProvider {...editorProps}>
         <EditorRenderer />
         <DemoTools />
+        {props.children}
       </FixedLayoutEditorProvider>
     </WorkflowLayoutEditorModel.Provider>
   );

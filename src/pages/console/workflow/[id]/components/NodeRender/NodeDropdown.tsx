@@ -23,32 +23,34 @@ function DropdownContent({ children }: PropsWithChildren) {
   }, [registry, node]);
 
   return (
-    <Dropdown
-      trigger={["click"]}
-      menu={{
-        items: [
-          {
-            key: "copy",
-            label: "Copy",
-            onClick: () => {
-              clientContext.playground.commandService.executeCommand(
-                FlowCommandId.COPY,
-                node
-              );
+    <div className="" onClick={(e) => e.stopPropagation()}>
+      <Dropdown
+        trigger={["click"]}
+        menu={{
+          items: [
+            {
+              key: "copy",
+              label: "Copy",
+              onClick: () => {
+                clientContext.playground.commandService.executeCommand(
+                  FlowCommandId.COPY,
+                  node
+                );
+              },
+              disabled: registry.meta!.copyDisable === true,
             },
-            disabled: registry.meta!.copyDisable === true,
-          },
-          {
-            key: "delete",
-            label: "Delete",
-            onClick: deleteNode,
-            disabled: deleteDisabled,
-          },
-        ],
-      }}
-    >
-      {children}
-    </Dropdown>
+            {
+              key: "delete",
+              label: "Delete",
+              onClick: deleteNode,
+              disabled: deleteDisabled,
+            },
+          ],
+        }}
+      >
+        {children}
+      </Dropdown>
+    </div>
   );
 }
 

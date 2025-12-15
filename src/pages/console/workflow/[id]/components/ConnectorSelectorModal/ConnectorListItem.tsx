@@ -7,7 +7,7 @@ export interface ConnectorItem {
   icon: string;
   category: "built-in" | "app";
   registry?: FlowNodeRegistry;
-  version?: string;
+  version?: number;
 }
 
 // 连接器列表项组件

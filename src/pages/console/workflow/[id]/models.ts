@@ -72,7 +72,7 @@ export interface IPaaSConnector {
   name: string;
   description: string;
   icon: string;
-  version: string;
+  version: number;
 }
 
 export interface IPaaSConnectorAction {
@@ -90,14 +90,14 @@ export const ConnectorSelectorModel = createCustomModel(() => {
         name: "HTTP 请求",
         description: "发送 HTTP 请求到外部 API",
         icon: "https://api.iconify.design/mdi:api.svg",
-        version: "1.0.0",
+        version: 1,
       },
       {
         code: "connector2",
         name: "数据库",
         description: "连接并操作数据库",
         icon: "https://api.iconify.design/mdi:database.svg",
-        version: "1.0.0",
+        version: 1,
       },
     ] as IPaaSConnector[];
   });
@@ -106,18 +106,58 @@ export const ConnectorSelectorModel = createCustomModel(() => {
   const actionsCache = useRef<Map<string, IPaaSConnectorAction[]>>(new Map());
 
   const { runAsync: _queryIPaaSConnectorActions } = useRequest(
-    async (opts: { code: string; version: string }) => {
+    async (opts: { code: string; version: number }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return [
         {
-          code: `${opts.code}.${opts.version}.action1`,
+          code: `action1`,
           name: "执行查询",
           description: "执行 SQL 查询并返回结果",
+          inputsSchema: [
+            {
+              code: "query",
+              name: "查询",
+              type: "string",
+              required: true,
+              editor: {
+                kind: "Input",
+              },
+            },
+          ],
         },
         {
-          code: `${opts.code}.${opts.version}.action2`,
+          code: `action2`,
           name: "插入数据",
           description: "向数据库表中插入新记录",
+          inputsSchema: [
+            {
+              code: "data",
+              name: "数据",
+              type: "object",
+              required: true,
+              editor: {
+                kind: "Input",
+              },
+            },
+            {
+              code: "table",
+              name: "表",
+              type: "string",
+              required: true,
+              editor: {
+                kind: "Select",
+                config: {
+                  options: [
+                    {
+                      label: "表1",
+                      value: "table1",
+                    },
+                  ],
+                  placeholder: "请选择表",
+                },
+              },
+            },
+          ],
         },
       ] as IPaaSConnectorAction[];
     },
@@ -128,7 +168,7 @@ export const ConnectorSelectorModel = createCustomModel(() => {
 
   // 带缓存的查询函数
   const queryIPaaSConnectorActions = useCallback(
-    async (opts: { code: string; version: string }) => {
+    async (opts: { code: string; version: number }) => {
       const cacheKey = `${opts.code}@${opts.version}`;
 
       // 命中缓存，直接返回
@@ -144,6 +184,19 @@ export const ConnectorSelectorModel = createCustomModel(() => {
     [_queryIPaaSConnectorActions]
   );
 
+  const queryIPaaSConnectorAction = useCallback(
+    async (opts: { code: string; version: number; actionCode: string }) => {
+      const actions = await queryIPaaSConnectorActions(opts);
+      const action = actions.find((a) => a.code === opts.actionCode);
+      if (action) {
+        return action;
+      } else {
+        throw new Error(`Action ${opts.actionCode} not found`);
+      }
+    },
+    [queryIPaaSConnectorActions]
+  );
+
   // 清除缓存（可选，用于刷新数据）
   const clearActionsCache = useCallback((key?: string) => {
     if (key) {
@@ -156,6 +209,7 @@ export const ConnectorSelectorModel = createCustomModel(() => {
   return {
     iPaaSConnectors: data,
     queryIPaaSConnectorActions,
+    queryIPaaSConnectorAction,
     clearActionsCache,
   };
 });

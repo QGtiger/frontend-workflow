@@ -10,6 +10,7 @@ import type { CustomNodeData } from "../../types";
 import { useRequest } from "ahooks";
 import { FormItemWithExpression } from "./components/FormItemWithExpression";
 import ConditionEditor from "./components/ConditionEditor";
+import { ConnectorSelectorModel } from "../../models";
 
 // // 提取常量，避免重复
 // const COMMON_DESCRIPTION =
@@ -80,13 +81,17 @@ export function SideBarRender() {
   const [form] = Form.useForm();
   const data = useCustomNodeData<CustomNodeData>();
   const { registry, updateData } = CustomNodeRenderModel.useModel();
-
-  console.log(data.inputs, data);
+  const { queryIPaaSConnectorAction } = ConnectorSelectorModel.useModel();
 
   const { data: inputsSchema, loading: inputsSchemaLoading } = useRequest(
     async () => {
       if (registry.type === "custom") {
-        return [];
+        const action = await queryIPaaSConnectorAction({
+          code: data.connectorCode,
+          version: data.version,
+          actionCode: data.actionCode,
+        });
+        return action.inputsSchema;
       } else {
         return getBuiltInRegistryInputsSchema(registry.type);
       }
@@ -100,8 +105,6 @@ export function SideBarRender() {
     ({ script }: { script: string }) => executeScript(script),
     []
   );
-
-  console.log(inputsSchemaLoading);
 
   return (
     <div className="flex flex-col h-full">

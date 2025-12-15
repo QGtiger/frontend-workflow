@@ -22,7 +22,6 @@ export function SidebarNodeRenderer(props: { node: FlowNodeEntity }) {
     };
   }, [nodeRender]);
 
-  console.log("nodeRender", nodeRender);
   return (
     <NodeRenderModel.Provider value={nodeRenderProviderValue}>
       <div

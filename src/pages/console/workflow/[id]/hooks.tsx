@@ -18,13 +18,19 @@ import classNames from "classnames";
 import { ScrollArea } from "@/components/ScrollArea";
 import { generateCustomNodeData } from "./utils";
 import { ConnectorSelectorModel } from "./models";
+import {
+  FlowNodeEntity,
+  useClientContext,
+} from "@flowgram.ai/fixed-layout-editor";
 
 function ConnectorSelectorContent({
   builtInLogicNodes,
   onSelect,
+  from,
 }: {
   onSelect: (dataJson: FlowNodeJSON) => void;
   builtInLogicNodes: FlowNodeRegistry[];
+  from: FlowNodeEntity;
 }) {
   const { iPaaSConnectors, queryIPaaSConnectorActions } =
     ConnectorSelectorModel.useModel();
@@ -36,17 +42,21 @@ function ConnectorSelectorContent({
     null
   );
 
+  const context = useClientContext();
+
   // 转换内置节点为统一格式
   const builtInConnectors: ConnectorItem[] = useMemo(() => {
-    return builtInLogicNodes.map((c) => ({
-      code: String(c.type),
-      name: c.info.name || c.info.description || String(c.type),
-      description: c.info.description,
-      icon: c.info.icon,
-      category: "built-in" as const,
-      registry: c,
-    }));
-  }, [builtInLogicNodes]);
+    return builtInLogicNodes
+      .map((c) => ({
+        code: String(c.type),
+        name: c.info.name || c.info.description || String(c.type),
+        description: c.info.description,
+        icon: c.info.icon,
+        category: "built-in" as const,
+        registry: c,
+      }))
+      .filter((it) => it.registry?.canAdd?.(context, from) ?? true);
+  }, [builtInLogicNodes, context, from]);
 
   // 转换 iPaaS 连接器为统一格式
   const appConnectors: ConnectorItem[] = useMemo(() => {
@@ -81,7 +91,9 @@ function ConnectorSelectorContent({
   // 分组连接器
   const groupedConnectors = useMemo(() => {
     return {
-      "built-in": filteredConnectors.filter((c) => c.category === "built-in"),
+      "built-in": filteredConnectors.filter((c) => {
+        return c.category === "built-in";
+      }),
       app: filteredConnectors.filter((c) => c.category === "app"),
     };
   }, [filteredConnectors]);
@@ -408,6 +420,7 @@ export function useConnectorSelectorModal() {
   const showConnectorSelectorModal = (config: {
     builtInNodes: FlowNodeRegistry[];
     addBlock: (dataJSON: FlowNodeJSON) => void;
+    from: FlowNodeEntity;
   }) => {
     const ins = modal.confirm({
       width: 900,
@@ -428,6 +441,7 @@ export function useConnectorSelectorModal() {
             config.addBlock(dataJson);
             ins.destroy();
           }}
+          from={config.from}
         />
       ),
     });
