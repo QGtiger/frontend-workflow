@@ -35,6 +35,7 @@ export function useCustomNodeData<
   } = CustomNodeRenderModel.useModel();
 
   return {
+    ...data,
     name: data.name || registry.info.name,
     description: data.description || registry.info.description,
     icon: data.icon || registry.info.icon,

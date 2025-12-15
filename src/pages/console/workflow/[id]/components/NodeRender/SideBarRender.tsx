@@ -5,6 +5,8 @@ import "./SideBarRender.css";
 import { executeScript } from "./utils";
 import { Button, Form } from "antd";
 import { useCallback } from "react";
+import { useCustomNodeData } from "./model";
+import type { CustomNodeData } from "../../types";
 
 // 提取常量，避免重复
 const COMMON_DESCRIPTION =
@@ -33,14 +35,14 @@ const DYNAMIC_FORM_SCRIPT = `async function main() {
 
 export function SideBarRender() {
   const [form] = Form.useForm();
+  const data = useCustomNodeData<CustomNodeData>();
+
+  console.log(data.inputs);
 
   const handleValuesChange = useCallback(
     (changedFields: any, allFields: any) => {
-      // TODO: 生产环境移除调试日志
-      if (process.env.NODE_ENV === "development") {
-        console.log("changedFields", changedFields);
-        console.log("allFields", allFields);
-      }
+      console.log("changedFields", changedFields);
+      console.log("allFields", allFields);
     },
     []
   );

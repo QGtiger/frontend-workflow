@@ -1,5 +1,5 @@
 import { useOutlet } from "react-router-dom";
-import { WorkflowDetailModel } from "./models";
+import { ConnectorSelectorModel, WorkflowDetailModel } from "./models";
 import { Spin } from "antd";
 
 function WorkflowDetailContent() {
@@ -16,8 +16,10 @@ function WorkflowDetailContent() {
 
 export default function WorkflowDetailLayout() {
   return (
-    <WorkflowDetailModel.Provider>
-      <WorkflowDetailContent />
-    </WorkflowDetailModel.Provider>
+    <ConnectorSelectorModel.Provider>
+      <WorkflowDetailModel.Provider>
+        <WorkflowDetailContent />
+      </WorkflowDetailModel.Provider>
+    </ConnectorSelectorModel.Provider>
   );
 }

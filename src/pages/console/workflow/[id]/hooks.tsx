@@ -1,4 +1,3 @@
-import { createCustomModel } from "@/common/createModel";
 import type {
   FlowNodeJSON,
   FlowNodeRegistry,
@@ -18,67 +17,7 @@ import {
 import classNames from "classnames";
 import { ScrollArea } from "@/components/ScrollArea";
 import { generateCustomNodeData } from "./utils";
-
-interface IPaaSConnector {
-  code: string;
-  name: string;
-  description: string;
-  icon: string;
-  version: string;
-}
-
-interface IPaaSConnectorAction {
-  code: string;
-  name: string;
-  description: string;
-}
-
-const ConnectorSelectorModel = createCustomModel(() => {
-  const { data } = useRequest(async () => {
-    return [
-      {
-        code: "connector1",
-        name: "HTTP 请求",
-        description: "发送 HTTP 请求到外部 API",
-        icon: "https://api.iconify.design/mdi:api.svg",
-        version: "1.0.0",
-      },
-      {
-        code: "connector2",
-        name: "数据库",
-        description: "连接并操作数据库",
-        icon: "https://api.iconify.design/mdi:database.svg",
-        version: "1.0.0",
-      },
-    ] as IPaaSConnector[];
-  });
-
-  const { runAsync: queryIPaaSConnectorActions } = useRequest(
-    async (opts: { code: string; version: string }) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return [
-        {
-          code: `${opts.code}.${opts.version}.action1`,
-          name: "执行查询",
-          description: "执行 SQL 查询并返回结果",
-        },
-        {
-          code: `${opts.code}.${opts.version}.action2`,
-          name: "插入数据",
-          description: "向数据库表中插入新记录",
-        },
-      ] as IPaaSConnectorAction[];
-    },
-    {
-      manual: true,
-    }
-  );
-
-  return {
-    iPaaSConnectors: data,
-    queryIPaaSConnectorActions,
-  };
-});
+import { ConnectorSelectorModel } from "./models";
 
 function ConnectorSelectorContent({
   builtInLogicNodes,
@@ -497,10 +436,6 @@ export function useConnectorSelectorModal() {
 
   return {
     showConnectorSelectorModal,
-    showConnectorSelectorModalContextHolder: (
-      <ConnectorSelectorModel.Provider>
-        {modalContextHolder}
-      </ConnectorSelectorModel.Provider>
-    ),
+    showConnectorSelectorModalContextHolder: modalContextHolder,
   };
 }

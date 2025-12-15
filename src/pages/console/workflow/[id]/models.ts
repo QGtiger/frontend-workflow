@@ -1,7 +1,7 @@
 import { createCustomModel } from "@/common/createModel";
 import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
-import { useLayoutEffect } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 export type WorkflowDetailData = {
@@ -63,5 +63,97 @@ export const WorkflowDetailModel = createCustomModel(() => {
     workflowId: id,
     loading,
     workflowData: data,
+  };
+});
+
+export interface IPaaSConnector {
+  code: string;
+  name: string;
+  description: string;
+  icon: string;
+  version: string;
+}
+
+export interface IPaaSConnectorAction {
+  code: string;
+  name: string;
+  description: string;
+}
+
+export const ConnectorSelectorModel = createCustomModel(() => {
+  const { data } = useRequest(async () => {
+    return [
+      {
+        code: "connector1",
+        name: "HTTP 请求",
+        description: "发送 HTTP 请求到外部 API",
+        icon: "https://api.iconify.design/mdi:api.svg",
+        version: "1.0.0",
+      },
+      {
+        code: "connector2",
+        name: "数据库",
+        description: "连接并操作数据库",
+        icon: "https://api.iconify.design/mdi:database.svg",
+        version: "1.0.0",
+      },
+    ] as IPaaSConnector[];
+  });
+
+  // 缓存 Map: key = `${code}@${version}`
+  const actionsCache = useRef<Map<string, IPaaSConnectorAction[]>>(new Map());
+
+  const { runAsync: _queryIPaaSConnectorActions } = useRequest(
+    async (opts: { code: string; version: string }) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return [
+        {
+          code: `${opts.code}.${opts.version}.action1`,
+          name: "执行查询",
+          description: "执行 SQL 查询并返回结果",
+        },
+        {
+          code: `${opts.code}.${opts.version}.action2`,
+          name: "插入数据",
+          description: "向数据库表中插入新记录",
+        },
+      ] as IPaaSConnectorAction[];
+    },
+    {
+      manual: true,
+    }
+  );
+
+  // 带缓存的查询函数
+  const queryIPaaSConnectorActions = useCallback(
+    async (opts: { code: string; version: string }) => {
+      const cacheKey = `${opts.code}@${opts.version}`;
+
+      // 命中缓存，直接返回
+      if (actionsCache.current.has(cacheKey)) {
+        return actionsCache.current.get(cacheKey)!;
+      }
+
+      // 请求数据并缓存
+      const result = await _queryIPaaSConnectorActions(opts);
+      actionsCache.current.set(cacheKey, result);
+      return result;
+    },
+    [_queryIPaaSConnectorActions]
+  );
+
+  // 清除缓存（可选，用于刷新数据）
+  const clearActionsCache = useCallback((key?: string) => {
+    if (key) {
+      actionsCache.current.delete(key);
+    } else {
+      actionsCache.current.clear();
+    }
+  }, []);
+
+  return {
+    iPaaSConnectors: data,
+    queryIPaaSConnectorActions,
+    clearActionsCache,
   };
 });
