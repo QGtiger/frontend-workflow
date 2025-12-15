@@ -3,6 +3,7 @@ import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.css";
 import "./theme.css";
+import { dollarCompletions } from "./autocompletion/dollarCompletions";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -46,6 +47,10 @@ export function CMEditor({
         autoInsertDoubleBraces,
         EditorView.lineWrapping,
         autocompletion({ icons: false, aboveCursor: true, closeOnBlur: false }),
+
+        autocompletion({
+          override: [dollarCompletions],
+        }),
       ]}
       basicSetup={{
         lineNumbers: false,

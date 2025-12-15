@@ -186,6 +186,19 @@
 .cm-editor .cm-tooltip-hover a:active {
   text-decoration: underline;
 }
+.cm-editor .cm-tooltip.cm-completionInfo .autocomplete-info-link,
+.cm-editor .cm-tooltip.cm-cursorInfo .autocomplete-info-link,
+.cm-editor .cm-tooltip-hover .autocomplete-info-link {
+  display: inline;
+  font-size: var(--font-size-2xs);
+  color: var(--prim-color-secondary);
+}
+.cm-editor .cm-tooltip.cm-completionInfo .autocomplete-info-link:hover,
+.cm-editor .cm-tooltip.cm-cursorInfo .autocomplete-info-link:hover,
+.cm-editor .cm-tooltip-hover .autocomplete-info-link:hover {
+  color: var(--prim-color-secondary-shade-100);
+  text-decoration: underline;
+}
 .cm-editor .cm-tooltip.cm-completionInfo .autocomplete-info-header,
 .cm-editor .cm-tooltip.cm-cursorInfo .autocomplete-info-header,
 .cm-editor .cm-tooltip-hover .autocomplete-info-header {
