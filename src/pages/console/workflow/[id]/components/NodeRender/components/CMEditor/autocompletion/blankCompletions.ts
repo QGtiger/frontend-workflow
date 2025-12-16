@@ -9,7 +9,6 @@ import type { WorkflowStoreApi } from "../../../../../workflowStore";
 export function blankCompletions(workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
     const word = context.matchBefore(/\{\{\s/);
-    console.log("word22", word);
 
     if (!word) return null;
 
