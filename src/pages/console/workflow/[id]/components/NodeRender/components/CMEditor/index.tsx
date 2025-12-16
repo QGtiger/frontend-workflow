@@ -6,6 +6,7 @@ import "./theme.css";
 import { dollarCompletions } from "./autocompletion/dollarCompletions";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
 import { highlightExpressions } from "./highlightExtension";
+import { blankCompletions } from "./autocompletion/blankCompletions";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -53,7 +54,10 @@ export function CMEditor({
         autocompletion({ icons: false, aboveCursor: true, closeOnBlur: false }),
 
         autocompletion({
-          override: [dollarCompletions(workflowStoreApi)],
+          override: [
+            dollarCompletions(workflowStoreApi),
+            blankCompletions(workflowStoreApi),
+          ],
         }),
         highlightExpressions,
       ]}

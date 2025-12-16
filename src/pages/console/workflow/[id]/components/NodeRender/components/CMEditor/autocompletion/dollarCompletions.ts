@@ -43,13 +43,9 @@ const applyCompletion = (
 };
 
 export function dollarOptions(
-  context: CompletionContext,
+  prefix: string,
   workflowStoreApi: WorkflowStoreApi
 ) {
-  const word = context.matchBefore(/\$[^$]*/);
-
-  if (!word) return null;
-
   const allPreviousNodesCompletions = workflowStoreApi
     .getAllPreviousNodes()
     .map((it) => {
@@ -69,26 +65,29 @@ export function dollarOptions(
   let options = [...ROOT_DOLLAR_COMPLETIONS].concat(
     allPreviousNodesCompletions
   );
-  const userInput = word.text;
 
-  if (userInput !== "$") {
-    options = options.filter((o) => prefixMatch(o.label, userInput));
-  }
+  options = options.filter((o) => prefixMatch(o.label, prefix));
 
-  return {
-    options,
-    from: word.from,
-    filter: false,
-    getMatch(completion: Completion) {
-      const lcp = longestCommonPrefix(userInput, completion.label);
-
-      return [0, lcp.length];
-    },
-  };
+  return options;
 }
 
 export const dollarCompletions = function (workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
-    return dollarOptions(context, workflowStoreApi);
+    const word = context.matchBefore(/\$[^$]*/);
+
+    if (!word) return null;
+
+    const userInput = word.text;
+
+    return {
+      options: dollarOptions(userInput, workflowStoreApi),
+      from: word.from,
+      filter: false,
+      getMatch(completion: Completion) {
+        const lcp = longestCommonPrefix(userInput, completion.label);
+
+        return [0, lcp.length];
+      },
+    };
   });
 };
