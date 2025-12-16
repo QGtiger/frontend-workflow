@@ -12,8 +12,8 @@ import {
   requiredInExpression,
 } from "./utils";
 import type { WorkflowStoreApi } from "../../../../../workflowStore";
-import { createInfoBoxRenderer } from "./CreateInfoBox";
-import { PREVIOUS_NODES_SECTION } from "./SectionHeader";
+import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
+import { PREVIOUS_NODES_SECTION } from "./utils/SectionHeader";
 
 /**
  * 自定义补全应用，处理括号重复问题

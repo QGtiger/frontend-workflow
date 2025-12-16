@@ -1,6 +1,6 @@
 import type { Completion } from "@codemirror/autocomplete";
-import { RECOMMENDED_SECTION } from "./SectionHeader";
-import { createInfoBoxRenderer } from "./CreateInfoBox";
+import { RECOMMENDED_SECTION } from "./utils/SectionHeader";
+import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
 
 export const ROOT_DOLLAR_COMPLETIONS: Completion[] = [
   {
