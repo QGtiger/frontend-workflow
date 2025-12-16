@@ -11,16 +11,6 @@ import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
  */
 const GLOBAL_OPTIONS = [
   {
-    label: "Array",
-    info: createInfoBoxRenderer({
-      name: "Array",
-      returnType: "ArrayConstructor",
-      description: "用于创建和操作数组的全局对象",
-      docURL:
-        "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array",
-    }),
-  },
-  {
     label: "Math",
     info: createInfoBoxRenderer({
       name: "Math",
@@ -41,13 +31,11 @@ const GLOBAL_OPTIONS = [
     }),
   },
   {
-    label: "Date",
+    label: "DateTime",
     info: createInfoBoxRenderer({
-      name: "Date",
-      returnType: "DateConstructor",
+      name: "DateTime",
+      returnType: "DateTimeConstructor",
       description: "用于处理日期和时间的全局对象",
-      docURL:
-        "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Date",
     }),
   },
   {
@@ -60,52 +48,21 @@ const GLOBAL_OPTIONS = [
         "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/JSON",
     }),
   },
-  {
-    label: "String",
-    info: createInfoBoxRenderer({
-      name: "String",
-      returnType: "StringConstructor",
-      description: "用于创建和操作字符串的全局对象",
-      docURL:
-        "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String",
-    }),
-  },
-  {
-    label: "Number",
-    info: createInfoBoxRenderer({
-      name: "Number",
-      returnType: "NumberConstructor",
-      description: "用于创建和操作数字的全局对象",
-      docURL:
-        "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number",
-    }),
-  },
 ];
 
 /**
  * 非 $ 开头的全局变量补全
- * 支持 Array, Math, Object, Date, JSON, String, Number
+ * 支持 Math, Object, DateTime, JSON
  */
 export const nonDollarCompletions = requiredInExpression(
   (context: CompletionContext) => {
-    const date = /(\s+)D[ate]*/;
+    const datetime = /(\s+)D[ateTime]*/;
     const math = /(\s+)M[ath]*/;
     const object = /(\s+)O[bject]*/;
-    const array = /(\s+)A[rray]*/;
     const json = /(\s+)J[son]*/;
-    const string = /(\s+)S[tring]*/;
-    const number = /(\s+)N[umber]*/;
 
     const combinedRegex = new RegExp(
-      [
-        date.source,
-        math.source,
-        object.source,
-        array.source,
-        json.source,
-        string.source,
-        number.source,
-      ].join("|")
+      [datetime.source, math.source, object.source, json.source].join("|")
     );
 
     const word = context.matchBefore(combinedRegex);

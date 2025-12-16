@@ -120,8 +120,8 @@
 .cm-editor .cm-tooltip-hover .autocomplete-info-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) 0;
+  gap: 4px;
+  padding: 6px 0;
   height: 100%;
   overflow-y: auto;
 }
@@ -417,6 +417,7 @@
   border-bottom-left-radius: 4px;
   border-left: 1px solid hsl(220, 25%, 88%);
   border-right: none;
+  overflow: auto;
 }
 .cm-editor .cm-tooltip.cm-completionInfo.cm-completionInfo-right {
   background-color: hsl(220, 50%, 97.5%);
@@ -440,4 +441,116 @@
 .cm-editor .cm-tooltip-hover .autocomplete-info-container {
   height: auto;
   max-height: min(220px, 20vh);
+}
+
+/* ============ 紧凑 Info Box 样式 ============ */
+.cm-editor .cm-tooltip.cm-completionInfo .autocomplete-info-box,
+.cm-editor .cm-tooltip.cm-cursorInfo .autocomplete-info-box,
+.cm-editor .cm-tooltip-hover .autocomplete-info-box {
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-signature,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-signature,
+.cm-editor .cm-tooltip-hover .info-signature {
+  font-family: var(--font-family-monospace);
+  color: var(--color-autocomplete-item-selected);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-desc,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-desc,
+.cm-editor .cm-tooltip-hover .info-desc {
+  color: var(--color-text-base);
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-section-title,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-section-title,
+.cm-editor .cm-tooltip-hover .info-section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-base);
+  margin-bottom: 6px;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-args,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-args,
+.cm-editor .cm-tooltip-hover .info-args {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--prim-gray-100);
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-arg-line,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-arg-line,
+.cm-editor .cm-tooltip-hover .info-arg-line {
+  font-size: 11px;
+  color: var(--color-text-base);
+  line-height: 1.5;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-examples,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-examples,
+.cm-editor .cm-tooltip-hover .info-examples {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--prim-gray-100);
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-example-item,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-example-item,
+.cm-editor .cm-tooltip-hover .info-example-item {
+  border: 1px solid #dcdada9e;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.cm-editor
+  .cm-tooltip.cm-completionInfo
+  .info-example-item
+  + .info-example-item,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-example-item + .info-example-item,
+.cm-editor .cm-tooltip-hover .info-example-item + .info-example-item {
+  margin-top: 4px;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-example-code,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-example-code,
+.cm-editor .cm-tooltip-hover .info-example-code {
+  font-family: var(--font-family-monospace);
+  font-size: 11px;
+  color: var(--color-text-dark);
+  line-height: 1.5;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-example-result,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-example-result,
+.cm-editor .cm-tooltip-hover .info-example-result {
+  font-family: var(--font-family-monospace);
+  font-size: 11px;
+  color: var(--prim-gray-420);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-doc-link,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-doc-link,
+.cm-editor .cm-tooltip-hover .info-doc-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--prim-color-secondary);
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo .info-doc-link:hover,
+.cm-editor .cm-tooltip.cm-cursorInfo .info-doc-link:hover,
+.cm-editor .cm-tooltip-hover .info-doc-link:hover {
+  text-decoration: underline;
 }

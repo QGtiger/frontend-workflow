@@ -3,6 +3,8 @@ import type {
   CompletionResult,
 } from "@codemirror/autocomplete";
 
+import type { SyntaxNode, Tree } from "@lezer/common";
+
 export const prefixMatch = (first: string, second: string) =>
   first.toLocaleLowerCase().startsWith(second.toLocaleLowerCase());
 
@@ -34,4 +36,34 @@ export function longestCommonPrefix(...strings: string[]) {
     }
     return prefix;
   }, strings[0]);
+}
+
+function read(node: SyntaxNode | null, source: string) {
+  return node ? source.slice(node.from, node.to) : "";
+}
+
+/**
+ * Split user input into base (to resolve) and tail (to filter).
+ */
+export function splitBaseTail(
+  syntaxTree: Tree,
+  userInput: string
+): [string, string] {
+  const lastNode = syntaxTree.resolveInner(userInput.length, -1);
+
+  switch (lastNode.type.name) {
+    case ".":
+      return [read(lastNode.parent, userInput).slice(0, -1), ""];
+    case "MemberExpression":
+      return [read(lastNode.parent, userInput), read(lastNode, userInput)];
+    case "PropertyName":
+      // eslint-disable-next-line no-case-declarations
+      const tail = read(lastNode, userInput);
+      return [
+        read(lastNode.parent, userInput).slice(0, -(tail.length + 1)),
+        tail,
+      ];
+    default:
+      return ["", ""];
+  }
 }
