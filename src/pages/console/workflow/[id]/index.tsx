@@ -13,6 +13,10 @@ import { useEffect, useMemo } from "react";
 import { motion, useAnimation } from "framer-motion";
 import classNames from "classnames";
 import { Resizable } from "re-resizable";
+import {
+  UpdateWorkflowStoreProvider,
+  WorkflowStoreProvider,
+} from "./workflowStore";
 
 function SideBarPanel() {
   const { selectedId, setSelectedId } = NodeSelectModel.useModel();
@@ -55,47 +59,51 @@ function SideBarPanel() {
   if (!node || !registry) return null;
 
   return (
-    <CustomNodeRenderModel.Provider
-      value={{
-        node,
-        registry,
-      }}
-    >
-      {node && registry && (
-        <motion.div
-          initial={{ opacity: 0, x: "100%" }} // 初始状态为透明并向右偏移
-          animate={controls}
-          transition={{
-            duration: 0.3, // 动画持续时间
+    <WorkflowStoreProvider flowDocument={document}>
+      <UpdateWorkflowStoreProvider updateProps={{ currentNodeId: node.id }}>
+        <CustomNodeRenderModel.Provider
+          value={{
+            node,
+            registry,
           }}
-          id="config-panel"
-          className={classNames(
-            " mr-2 flex flex-col absolute right-0 top-0 z-10  h-full   py-2",
-            { " pointer-events-none": !selectedId }
-          )}
         >
-          <Resizable
-            enable={{
-              top: false,
-              right: true,
-              bottom: false,
-              left: true,
-              topRight: false,
-              bottomRight: false,
-              bottomLeft: false,
-              topLeft: false,
-            }}
-            maxWidth={700}
-            minWidth={368}
-            defaultSize={{ width: 400, height: "100%" }}
-            className=" h-full bg-white rounded-xl overflow-hidden"
-            style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }}
-          >
-            <SideBarRender key={selectedId} />
-          </Resizable>
-        </motion.div>
-      )}
-    </CustomNodeRenderModel.Provider>
+          {node && registry && (
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }} // 初始状态为透明并向右偏移
+              animate={controls}
+              transition={{
+                duration: 0.3, // 动画持续时间
+              }}
+              id="config-panel"
+              className={classNames(
+                " mr-2 flex flex-col absolute right-0 top-0 z-10  h-full   py-2",
+                { " pointer-events-none": !selectedId }
+              )}
+            >
+              <Resizable
+                enable={{
+                  top: false,
+                  right: true,
+                  bottom: false,
+                  left: true,
+                  topRight: false,
+                  bottomRight: false,
+                  bottomLeft: false,
+                  topLeft: false,
+                }}
+                maxWidth={700}
+                minWidth={368}
+                defaultSize={{ width: 400, height: "100%" }}
+                className=" h-full bg-white rounded-xl overflow-hidden"
+                style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }}
+              >
+                <SideBarRender key={selectedId} />
+              </Resizable>
+            </motion.div>
+          )}
+        </CustomNodeRenderModel.Provider>
+      </UpdateWorkflowStoreProvider>
+    </WorkflowStoreProvider>
   );
 }
 

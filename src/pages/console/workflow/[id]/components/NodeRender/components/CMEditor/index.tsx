@@ -1,4 +1,8 @@
-import { autocompletion, startCompletion } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  CompletionContext,
+  startCompletion,
+} from "@codemirror/autocomplete";
 import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.css";
@@ -7,6 +11,7 @@ import { dollarCompletions } from "./autocompletion/dollarCompletions";
 import { CustomNodeRenderModel, useCustomNodeData } from "../../model";
 import { getAllPreviousNodes } from "./utils";
 import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
+import { useWorkflowStoreApi } from "../../../../workflowStore";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -39,11 +44,8 @@ export function CMEditor({
   value?: string;
   onChange?: (value: string) => void;
 }) {
-  const { node } = CustomNodeRenderModel.useModel();
-  const { document } = useClientContext();
-  const ancestors = getAllPreviousNodes(node.id, document);
+  const workflowStoreApi = useWorkflowStoreApi();
 
-  console.log("ancestors", ancestors);
   return (
     <CodeMirror
       theme="light"
@@ -57,7 +59,7 @@ export function CMEditor({
         autocompletion({ icons: false, aboveCursor: true, closeOnBlur: false }),
 
         autocompletion({
-          override: [dollarCompletions],
+          override: [dollarCompletions(workflowStoreApi)],
         }),
       ]}
       basicSetup={{

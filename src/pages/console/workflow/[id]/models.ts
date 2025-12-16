@@ -85,7 +85,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
                     id: "custom_96gkk",
                     type: "custom",
                     data: {
-                      name: "执行查询",
+                      name: "执行查询3",
                       description: "执行 SQL 查询并返回结果",
                       connectorCode: "connector1",
                       actionCode: "action1",
@@ -132,7 +132,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
             id: "custom_3b2AN",
             type: "custom",
             data: {
-              name: "执行查询",
+              name: "执行查询2",
               description: "执行 SQL 查询并返回结果",
               connectorCode: "connector1",
               actionCode: "action1",
