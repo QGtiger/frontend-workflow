@@ -1,17 +1,11 @@
-import {
-  autocompletion,
-  CompletionContext,
-  startCompletion,
-} from "@codemirror/autocomplete";
+import { autocompletion, startCompletion } from "@codemirror/autocomplete";
 import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.css";
 import "./theme.css";
 import { dollarCompletions } from "./autocompletion/dollarCompletions";
-import { CustomNodeRenderModel, useCustomNodeData } from "../../model";
-import { getAllPreviousNodes } from "./utils";
-import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
+import { highlightExpressions } from "./highlightExtension";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -61,6 +55,7 @@ export function CMEditor({
         autocompletion({
           override: [dollarCompletions(workflowStoreApi)],
         }),
+        highlightExpressions,
       ]}
       basicSetup={{
         lineNumbers: false,
