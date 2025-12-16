@@ -8,6 +8,7 @@ import type { EditorView } from "@uiw/react-codemirror";
 import type { WorkflowStoreApi } from "../../../../../workflowStore";
 import {
   longestCommonPrefix,
+  prefixMatch,
   requiredInExpression,
   splitBaseTail,
 } from "./utils";
@@ -17,43 +18,31 @@ import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
 import { RECOMMENDED_SECTION } from "./utils/SectionHeader";
 
 /**
- * 自定义补全应用，处理括号重复和光标位置
+ * 创建补全应用函数
+ * @param hasArgs 是否有参数，有参数时光标在括号中间
  */
-const applyCompletion = (
-  view: EditorView,
-  completion: Completion,
-  from: number,
-  to: number
-) => {
-  const label = completion.label;
-  const doc = view.state.doc.toString();
-  const afterCursor = doc.slice(to);
+const createApplyCompletion = (hasArgs: boolean) => {
+  return (
+    view: EditorView,
+    completion: Completion,
+    from: number,
+    to: number
+  ) => {
+    const label = completion.label;
 
-  // 跳过已存在的尾部括号
-  let skipChars = 0;
-  if (label.endsWith("')") && afterCursor.startsWith("')")) {
-    skipChars = 2;
-  } else if (label.endsWith(")") && afterCursor.startsWith(")")) {
-    skipChars = 1;
-  }
-
-  // 判断是否是函数调用
-  const isFunction = label.endsWith("()") || label.includes("(");
-  const hasArgs = label.includes("(") && !label.endsWith("()");
-
-  view.dispatch({
-    ...insertCompletionText(view.state, label, from, to + skipChars),
-    annotations: pickedCompletion.of(completion),
-  });
-
-  // 如果是函数且有参数，将光标移到括号内
-  if (isFunction && hasArgs) {
-    const openParenIndex = label.indexOf("(");
-    const cursorPos = from + openParenIndex + 1;
     view.dispatch({
-      selection: { anchor: cursorPos },
+      ...insertCompletionText(view.state, label, from, to),
+      annotations: pickedCompletion.of(completion),
     });
-  }
+
+    // 有参数，光标移到括号中间
+    if (hasArgs) {
+      const cursorPos = from + label.length - 1; // 在 ) 前面
+      view.dispatch({
+        selection: { anchor: cursorPos },
+      });
+    }
+  };
 };
 
 const regexes = {
@@ -99,10 +88,11 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
 
     if (base === "DateTime") {
       options = Object.values(dateTimeExtensions.functions).map((func) => {
+        const hasArgs = (func.doc.args?.length ?? 0) > 0;
         const label = `${func.name}()`;
         return {
           label,
-          apply: applyCompletion,
+          apply: createApplyCompletion(hasArgs),
           info: createInfoBoxRenderer(func.doc),
           section: RECOMMENDED_SECTION,
         };
@@ -112,7 +102,7 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     const from = word.to - tail.length;
     return {
       from,
-      options,
+      options: options.filter((o) => prefixMatch(o.label, tail)),
       filter: false,
       getMatch(completion: Completion) {
         const lcp = longestCommonPrefix(tail, completion.label);
