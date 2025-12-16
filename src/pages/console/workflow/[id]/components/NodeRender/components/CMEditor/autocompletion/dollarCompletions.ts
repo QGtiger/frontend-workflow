@@ -42,46 +42,53 @@ const applyCompletion = (
   });
 };
 
+export function dollarOptions(
+  context: CompletionContext,
+  workflowStoreApi: WorkflowStoreApi
+) {
+  const word = context.matchBefore(/\$[^$]*/);
+
+  if (!word) return null;
+
+  const allPreviousNodesCompletions = workflowStoreApi
+    .getAllPreviousNodes()
+    .map((it) => {
+      const label = `$('${it.name}')`;
+      return {
+        label,
+        apply: applyCompletion,
+        info: createInfoBoxRenderer({
+          name: label,
+          returnType: "Object",
+          description: it.description,
+        }),
+        section: PREVIOUS_NODES_SECTION,
+      };
+    });
+
+  let options = [...ROOT_DOLLAR_COMPLETIONS].concat(
+    allPreviousNodesCompletions
+  );
+  const userInput = word.text;
+
+  if (userInput !== "$") {
+    options = options.filter((o) => prefixMatch(o.label, userInput));
+  }
+
+  return {
+    options,
+    from: word.from,
+    filter: false,
+    getMatch(completion: Completion) {
+      const lcp = longestCommonPrefix(userInput, completion.label);
+
+      return [0, lcp.length];
+    },
+  };
+}
+
 export const dollarCompletions = function (workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
-    const word = context.matchBefore(/\$[^$]*/);
-
-    if (!word) return null;
-
-    const allPreviousNodesCompletions = workflowStoreApi
-      .getAllPreviousNodes()
-      .map((it) => {
-        const label = `$('${it.name}')`;
-        return {
-          label,
-          apply: applyCompletion,
-          info: createInfoBoxRenderer({
-            name: label,
-            returnType: "Object",
-            description: it.description,
-          }),
-          section: PREVIOUS_NODES_SECTION,
-        };
-      });
-
-    let options = [...ROOT_DOLLAR_COMPLETIONS].concat(
-      allPreviousNodesCompletions
-    );
-    const userInput = word.text;
-
-    if (userInput !== "$") {
-      options = options.filter((o) => prefixMatch(o.label, userInput));
-    }
-
-    return {
-      options,
-      from: word.from,
-      filter: false,
-      getMatch(completion: Completion) {
-        const lcp = longestCommonPrefix(userInput, completion.label);
-
-        return [0, lcp.length];
-      },
-    };
+    return dollarOptions(context, workflowStoreApi);
   });
 };
