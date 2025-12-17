@@ -150,7 +150,7 @@ isWeekend.doc = {
 
 // ============ 导出 DateTime 对象 ============
 
-export const DateTime = {
+export const DateTimeMethods = {
   now,
   format,
   isToday,
@@ -163,11 +163,5 @@ export const DateTime = {
  */
 export const dateTimeExtensions = {
   typeName: "DateTime",
-  functions: {
-    now,
-    format,
-    isToday,
-    getDayOfWeek,
-    isWeekend,
-  },
+  functions: DateTimeMethods,
 };

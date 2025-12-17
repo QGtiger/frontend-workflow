@@ -16,6 +16,11 @@ import { javascriptLanguage } from "@codemirror/lang-javascript";
 import { dateTimeExtensions } from "@/common/DateTime";
 import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
 import { RECOMMENDED_SECTION } from "./utils/SectionHeader";
+import type { DocFunction } from "@/common/type";
+import { mathExtensions } from "@/common/Math";
+import { jsonExtensions } from "@/common/JSON";
+import { objectExtensions } from "@/common/Object";
+import { arrayExtensions } from "@/common/Array";
 
 /**
  * 创建补全应用函数
@@ -62,6 +67,7 @@ const regexes = {
   datetimeGlobal: /DateTime\.(.*)/, // DateTime.
   objectGlobal: /Object\.(.*)/, // Object. or Object.method(arg).
   jsonGlobal: /JSON\.(.*)/, // JSON.
+  arrayGlobal: /Array\.(.*)/, // Array.
 };
 
 const DATATYPE_REGEX = new RegExp(
@@ -69,6 +75,22 @@ const DATATYPE_REGEX = new RegExp(
     .map((regex) => regex.source)
     .join("|")
 );
+
+function getOptionsByStaticMethod(
+  funcMap: Record<string, DocFunction<(...args: any[]) => any>>
+) {
+  return Object.values(funcMap).map((func) => {
+    const _doc = func.doc;
+    const hasArgs = (_doc.args?.length ?? 0) > 0;
+    const label = `${_doc.name}()`;
+    return {
+      label,
+      apply: createApplyCompletion(hasArgs),
+      info: createInfoBoxRenderer(_doc),
+      section: RECOMMENDED_SECTION,
+    };
+  }) as Completion[];
+}
 
 export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
@@ -86,17 +108,17 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
 
     let options: Completion[] = [];
 
+    // 静态方法的提示
     if (base === "DateTime") {
-      options = Object.values(dateTimeExtensions.functions).map((func) => {
-        const hasArgs = (func.doc.args?.length ?? 0) > 0;
-        const label = `${func.doc.name}()`;
-        return {
-          label,
-          apply: createApplyCompletion(hasArgs),
-          info: createInfoBoxRenderer(func.doc),
-          section: RECOMMENDED_SECTION,
-        };
-      }) as Completion[];
+      options = getOptionsByStaticMethod(dateTimeExtensions.functions);
+    } else if (base === "Math") {
+      options = getOptionsByStaticMethod(mathExtensions.functions);
+    } else if (base === "JSON") {
+      options = getOptionsByStaticMethod(jsonExtensions.functions);
+    } else if (base === "Object") {
+      options = getOptionsByStaticMethod(objectExtensions.functions);
+    } else if (base === "Array") {
+      options = getOptionsByStaticMethod(arrayExtensions.functions);
     }
 
     const from = word.to - tail.length;
