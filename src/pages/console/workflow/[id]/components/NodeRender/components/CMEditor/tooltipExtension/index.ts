@@ -94,6 +94,10 @@ function getParamHintTooltip(state: EditorState): Tooltip | null {
   const argList = findNearestParent(node, "ArgList");
   if (!argList) return null;
 
+  // 确保光标在 ArgList 内部（在 ( 和 ) 之间）
+  // argList.from 是 "(" 的位置，argList.to 是 ")" 后的位置
+  if (localPos <= argList.from || localPos >= argList.to) return null;
+
   // 查找 CallExpression (函数调用)
   const callExpr = findNearestParent(argList, "CallExpression");
   if (!callExpr) return null;
@@ -115,7 +119,7 @@ function getParamHintTooltip(state: EditorState): Tooltip | null {
   }
 
   const doc = getFunctionDoc(objectName, methodName);
-  if (!doc || !doc.args?.length) return null;
+  if (!doc) return null;
 
   const argIndex = getArgIndex(argList, localPos);
 

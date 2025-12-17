@@ -1,0 +1,386 @@
+// ============ 变量 ============
+@tooltip-bg: var(--prim-gray-0);
+@tooltip-border: hsl(220, 25%, 88%);
+@tooltip-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.07);
+@tooltip-radius: 4px;
+@font-mono: var(--font-family-monospace);
+@color-primary: var(--color-autocomplete-item-selected);
+@color-text: var(--color-text-base);
+@color-text-light: var(--color-text-light);
+@color-text-dark: var(--color-text-dark);
+@color-border-light: var(--prim-gray-100);
+
+// ============ 基础编辑器 ============
+.cm-editor {
+  outline: none !important;
+}
+
+.cm-placeholder {
+  color: #c2c2c2 !important;
+}
+
+// ============ 自动补全列表 ============
+.cm-editor .cm-tooltip-autocomplete {
+  background-color: hsl(220, 50%, 100%) !important;
+  box-shadow: @tooltip-shadow;
+  border: none;
+
+  .cm-tooltip {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  > ul[role="listbox"] {
+    font-family: @font-mono;
+    max-height: min(220px, 20vh);
+    max-width: 240px;
+    min-width: 200px;
+    border: 1px solid @tooltip-border;
+    border-radius: @tooltip-radius 0 0 @tooltip-radius;
+
+    &:has(+ .cm-completionInfo-left) {
+      border-radius: 0 @tooltip-radius @tooltip-radius 0;
+    }
+
+    &:has(+ .cm-completionInfo) {
+      height: min(220px, 20vh);
+    }
+
+    // 列表项
+    li[role="option"] {
+      color: @color-text;
+      display: flex;
+      line-height: var(--font-line-height-xloose);
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-5xs) var(--spacing-2xs);
+      gap: var(--spacing-2xs);
+      scroll-padding: 40px;
+      scroll-margin: 40px;
+
+      .cm-completionLabel {
+        font-size: var(--font-size-2xs);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .cm-completionDetail {
+        color: @color-text-light;
+        font-size: var(--font-size-3xs);
+        margin-left: 0;
+        font-style: normal;
+      }
+    }
+
+    li[aria-selected] {
+      background-color: var(--color-background-base);
+      color: @color-primary;
+    }
+
+    // Section Header
+    > .cm-section-header {
+      padding: var(--spacing-4xs) var(--spacing-3xs);
+      border-bottom: 1px solid var(--color-foreground-light);
+      background-color: hsl(220, 50%, 100%);
+      position: sticky;
+      top: 0;
+
+      &:not(:first-child) {
+        margin-top: var(--spacing-2xs);
+      }
+    }
+
+    .cm-section-title {
+      color: @color-text-dark;
+      font-family: var(--font-family);
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-3xs);
+      text-transform: uppercase;
+      padding: var(--spacing-5xs) var(--spacing-4xs);
+    }
+  }
+}
+
+// ============ Completion Info 面板 ============
+.cm-editor .cm-tooltip.cm-completionInfo {
+  background-color: @tooltip-bg;
+  border: 1px solid @tooltip-border;
+  box-shadow: @tooltip-shadow;
+  clip-path: inset(-12px -12px -12px 0);
+  border-left: none;
+  border-radius: 0 @tooltip-radius @tooltip-radius 0;
+  line-height: 1.35;
+  padding: 0;
+  top: 0 !important;
+  left: 100% !important;
+  right: auto !important;
+  max-width: 280px !important;
+  height: 100%;
+  width: 400px;
+
+  &.cm-completionInfo-left-narrow,
+  &.cm-completionInfo-right-narrow {
+    display: none;
+  }
+
+  &.cm-completionInfo-left {
+    left: auto !important;
+    right: 100% !important;
+    border-radius: @tooltip-radius 0 0 @tooltip-radius;
+    border-left: 1px solid @tooltip-border;
+    border-right: none;
+    overflow: auto;
+  }
+
+  &.cm-completionInfo-right {
+    background-color: hsl(220, 50%, 97.5%);
+    min-width: 200px;
+  }
+
+  &:not(:has(div)) {
+    padding: var(--spacing-xs);
+  }
+
+  &:has(.cm-tooltip-lint) {
+    padding: 0;
+    overflow: hidden;
+
+    .cm-diagnostic {
+      border-left: none;
+    }
+  }
+}
+
+// ============ Cursor Info / Hover Tooltip ============
+.cm-editor .cm-tooltip.cm-cursorInfo,
+.cm-editor .cm-tooltip-hover {
+  background-color: hsl(220, 50%, 97.5%);
+  border: 1px solid @tooltip-border;
+  box-shadow: @tooltip-shadow;
+  border-radius: @tooltip-radius;
+  line-height: 1.35;
+  padding: 0;
+  max-width: 280px;
+
+  &:not(:has(div)) {
+    padding: var(--spacing-xs);
+  }
+
+  .cm-tooltip-section:not(:first-child) {
+    border-top: 1px solid @tooltip-border;
+  }
+
+  .autocomplete-info-container {
+    height: auto;
+    max-height: min(220px, 20vh);
+  }
+}
+
+// ============ 通用 Info Box 样式 ============
+.cm-editor .autocomplete-info-box {
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  background: @tooltip-bg;
+  border-radius: @tooltip-radius;
+}
+
+.cm-editor .cm-tooltip {
+  .info-signature {
+    font-family: @font-mono;
+    color: @color-primary;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .info-desc {
+    color: @color-text;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+
+  .info-section-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: @color-text;
+    margin-bottom: 6px;
+  }
+
+  .info-args {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid @color-border-light;
+  }
+
+  .info-arg-line {
+    font-size: 11px;
+    color: @color-text;
+    line-height: 1.5;
+  }
+
+  .info-examples {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid @color-border-light;
+  }
+
+  .info-example-item {
+    border: 1px solid #dcdada9e;
+    border-radius: @tooltip-radius;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+
+    & + & {
+      margin-top: 4px;
+    }
+  }
+
+  .info-example-code {
+    font-family: @font-mono;
+    font-size: 11px;
+    color: @color-text-dark;
+    line-height: 1.5;
+    word-break: break-all;
+    word-wrap: break-word;
+  }
+
+  .info-example-result {
+    font-family: @font-mono;
+    font-size: 11px;
+    color: var(--prim-gray-420);
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+
+  .info-doc-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--prim-color-secondary);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  a {
+    color: @color-text-dark;
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ============ 参数提示高亮 ============
+.autocomplete-info-box {
+  .info-arg-active {
+    color: @color-primary;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .info-arg-line-active {
+    background: var(--prim-gray-50);
+    border-radius: 2px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+  }
+}
+
+// ============ 旧版 autocomplete-info 兼容样式 ============
+.cm-editor .cm-tooltip.cm-completionInfo,
+.cm-editor .cm-tooltip.cm-cursorInfo,
+.cm-editor .cm-tooltip-hover {
+  .autocomplete-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 0;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  strong.autocomplete-info-arg,
+  strong.autocomplete-info-arg-name {
+    font-weight: var(--font-weight-regular);
+    text-decoration: underline;
+    color: @color-text-dark;
+  }
+
+  .autocomplete-info-description {
+    padding: 0 var(--spacing-xs);
+    color: @color-text;
+    font-size: var(--font-size-2xs);
+
+    code {
+      padding: 0;
+      color: @color-text;
+      font-size: var(--font-size-2xs);
+      font-family: var(--font-family);
+      background-color: transparent;
+    }
+
+    p {
+      line-height: 1.35;
+    }
+  }
+
+  .autocomplete-info-header {
+    padding: 0 var(--spacing-xs);
+    color: @color-text;
+    font-size: var(--font-size-2xs);
+    font-family: @font-mono;
+    line-height: var(--font-line-height-compact);
+  }
+
+  .autocomplete-info-name {
+    color: @color-primary;
+  }
+
+  .autocomplete-info-link {
+    display: inline;
+    font-size: var(--font-size-2xs);
+    color: var(--prim-color-secondary);
+
+    &:hover {
+      color: var(--prim-color-secondary-shade-100);
+      text-decoration: underline;
+    }
+  }
+
+  .autocomplete-info-section-title {
+    margin: var(--spacing-3xs) 0;
+    padding: 0 var(--spacing-xs) var(--spacing-3xs) var(--spacing-xs);
+    border-bottom: 1px solid var(--color-autocomplete-section-header-border);
+    text-transform: uppercase;
+    color: @color-text-dark;
+    font-size: var(--font-size-3xs);
+    font-weight: var(--font-weight-bold);
+  }
+
+  // TypeScript 语法高亮
+  .ts-keyword,
+  .ts-punctuation {
+    color: var(--color-code-tags-keyword);
+  }
+
+  .ts-stringLiteral,
+  .ts-primitive {
+    color: var(--color-code-tags-primitive);
+  }
+
+  .ts-localName,
+  .ts-parameterName,
+  .ts-methodName {
+    color: #005cc5;
+  }
+
+  .ts-typeName,
+  .ts-interfaceName,
+  .ts-className,
+  .ts-aliasName {
+    color: #6f42c1;
+  }
+}

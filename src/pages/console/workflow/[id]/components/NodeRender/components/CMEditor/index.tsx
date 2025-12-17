@@ -1,7 +1,7 @@
 import { autocompletion, startCompletion } from "@codemirror/autocomplete";
 import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
-import "./index.css";
+import "./index.less";
 import "./theme.css";
 import { dollarCompletions } from "./autocompletion/dollarCompletions";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
