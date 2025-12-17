@@ -1,57 +1,42 @@
-import type { DocMetadata } from "./type";
+import type { DocFunction } from "./type";
 
-/**
- * 带文档的函数类型
- */
-type DocFunction<T extends (...args: any[]) => any> = T & { doc: DocMetadata };
+// new Date 的 重构参数
+type DateParams = Date | number | string;
 
 // ============ 静态方法实现 ============
 
-const now: DocFunction<() => Date> = () => new Date();
+const now: DocFunction<() => number> = () => Date.now();
 now.doc = {
   name: "now",
-  description: "返回当前日期时间",
-  returnType: "Date",
+  description: "返回当前时间的毫秒时间戳，等同于 Date.now()",
+  returnType: "number",
   isFunction: true,
-  examples: [
-    { example: "DateTime.now()", evaluated: "2024-01-15T10:30:00.000Z" },
-  ],
+  examples: [{ example: "DateTime.now()", evaluated: "1705312200000" }],
 };
 
-const today: DocFunction<() => Date> = () => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
-today.doc = {
-  name: "today",
-  description: "返回今天的日期（时间为 00:00:00）",
-  returnType: "Date",
-  isFunction: true,
-  examples: [
-    { example: "DateTime.today()", evaluated: "2024-01-15T00:00:00.000Z" },
-  ],
-};
-
-const format: DocFunction<(date: Date, pattern?: string) => string> = (
-  date,
-  pattern = "YYYY-MM-DD HH:mm:ss"
+const format: DocFunction<(pattern: string, date?: DateParams) => string> = (
+  pattern,
+  date
 ) => {
+  const d = date ? new Date(date) : new Date();
   const pad = (n: number) => n.toString().padStart(2, "0");
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  const seconds = pad(d.getSeconds());
+  const milliseconds = d.getMilliseconds().toString().padStart(3, "0");
 
   return pattern
     .replace("YYYY", year.toString())
+    .replace("YY", year.toString().slice(-2))
     .replace("MM", month)
     .replace("DD", day)
     .replace("HH", hours)
     .replace("mm", minutes)
-    .replace("ss", seconds);
+    .replace("ss", seconds)
+    .replace("SSS", milliseconds);
 };
 format.doc = {
   name: "format",
@@ -59,50 +44,39 @@ format.doc = {
   returnType: "string",
   isFunction: true,
   args: [
-    { name: "date", type: "Date", description: "要格式化的日期" },
     {
       name: "pattern",
       type: "string",
+      description:
+        "格式模式，支持 YYYY/YY(年)、MM(月)、DD(日)、HH(时)、mm(分)、ss(秒)、SSS(毫秒)",
+    },
+    {
+      name: "date",
+      type: "Date | number | string",
       optional: true,
-      description: "格式模式，默认 YYYY-MM-DD HH:mm:ss",
+      description: "要格式化的日期或时间戳，默认当前时间",
     },
   ],
   examples: [
+    { example: "DateTime.format('YYYY-MM-DD')", evaluated: "'2024-01-15'" },
     {
-      example: "DateTime.format(DateTime.now(), 'YYYY-MM-DD')",
-      evaluated: "'2024-01-15'",
+      example: "DateTime.format('YYYY/MM/DD HH:mm:ss')",
+      evaluated: "'2024/01/15 10:30:00'",
     },
     {
-      example: "DateTime.format(DateTime.now(), 'HH:mm')",
-      evaluated: "'10:30'",
+      example: "DateTime.format('YY年MM月DD日', 1705312200000)",
+      evaluated: "'24年01月15日'",
     },
   ],
 };
 
-const timestamp: DocFunction<(date?: Date) => number> = (date) =>
-  (date || new Date()).getTime();
-timestamp.doc = {
-  name: "timestamp",
-  description: "获取时间戳（毫秒）",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    {
-      name: "date",
-      type: "Date",
-      optional: true,
-      description: "日期，默认当前时间",
-    },
-  ],
-  examples: [{ example: "DateTime.timestamp()", evaluated: "1705312200000" }],
-};
-
-const isToday: DocFunction<(date: Date) => boolean> = (date) => {
+const isToday: DocFunction<(date?: DateParams) => boolean> = (date) => {
+  const d = date ? new Date(date) : new Date();
   const today = new Date();
   return (
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate()
+    d.getFullYear() === today.getFullYear() &&
+    d.getMonth() === today.getMonth() &&
+    d.getDate() === today.getDate()
   );
 };
 isToday.doc = {
@@ -110,9 +84,67 @@ isToday.doc = {
   description: "判断日期是否是今天",
   returnType: "boolean",
   isFunction: true,
-  args: [{ name: "date", type: "Date", description: "要判断的日期" }],
+  args: [
+    {
+      name: "date",
+      type: "Date | number | string",
+      optional: true,
+      description: "要判断的日期或时间戳，默认当前时间",
+    },
+  ],
   examples: [
-    { example: "DateTime.isToday(DateTime.now())", evaluated: "true" },
+    { example: "DateTime.isToday()", evaluated: "true" },
+    { example: "DateTime.isToday(1705312200000)", evaluated: "false" },
+  ],
+};
+
+const getDayOfWeek: DocFunction<(date?: DateParams) => number> = (date) => {
+  const d = date ? new Date(date) : new Date();
+  return d.getDay();
+};
+getDayOfWeek.doc = {
+  name: "getDayOfWeek",
+  description: "获取星期几（0-6，0 表示周日，1-6 表示周一到周六）",
+  returnType: "number",
+  isFunction: true,
+  args: [
+    {
+      name: "date",
+      type: "Date | number | string",
+      optional: true,
+      description: "日期或时间戳，默认当前时间",
+    },
+  ],
+  examples: [
+    { example: "DateTime.getDayOfWeek()", evaluated: "3" },
+    { example: "DateTime.getDayOfWeek(1705312200000)", evaluated: "1" },
+  ],
+};
+
+const isWeekend: DocFunction<(date?: DateParams) => boolean> = (date) => {
+  const d = date ? new Date(date) : new Date();
+  const day = d.getDay();
+  return day === 0 || day === 6;
+};
+isWeekend.doc = {
+  name: "isWeekend",
+  description: "判断日期是否是周末（周六或周日）",
+  returnType: "boolean",
+  isFunction: true,
+  args: [
+    {
+      name: "date",
+      type: "Date | number | string",
+      optional: true,
+      description: "日期或时间戳，默认当前时间",
+    },
+  ],
+  examples: [
+    { example: "DateTime.isWeekend()", evaluated: "false" },
+    {
+      example: "DateTime.isWeekend(new Date('2024-01-13'))",
+      evaluated: "true",
+    },
   ],
 };
 
@@ -120,10 +152,10 @@ isToday.doc = {
 
 export const DateTime = {
   now,
-  today,
   format,
-  timestamp,
   isToday,
+  getDayOfWeek,
+  isWeekend,
 } as const;
 
 /**
@@ -133,9 +165,9 @@ export const dateTimeExtensions = {
   typeName: "DateTime",
   functions: {
     now,
-    today,
     format,
-    timestamp,
     isToday,
+    getDayOfWeek,
+    isWeekend,
   },
 };

@@ -18,3 +18,10 @@ export interface DocMetadata {
   }[];
   docURL?: string;
 }
+
+/**
+ * 带文档的函数类型
+ */
+export type DocFunction<T extends (...args: any[]) => any> = T & {
+  doc: DocMetadata;
+};
