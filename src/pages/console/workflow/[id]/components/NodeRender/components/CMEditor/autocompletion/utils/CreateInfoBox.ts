@@ -1,41 +1,13 @@
-import type { Completion } from "@codemirror/autocomplete";
-
-export interface DocMetadata {
-  name: string;
-  description: string;
-  returnType: string;
-  /** 是否是函数 */
-  isFunction?: boolean;
-  args?: {
-    name: string;
-    type: string;
-    optional?: boolean;
-    variadic?: boolean;
-    description: string;
-  }[];
-  examples?: {
-    example: string;
-    evaluated: string;
-    description?: string;
-  }[];
-  docURL?: string;
-}
-
-export interface InfoBoxOptions {
-  /** 高亮的参数索引（用于参数提示） */
-  activeArgIndex?: number;
-  /** 是否只显示当前参数描述（简洁模式） */
-  compact?: boolean;
-}
+import type { DocMetadata } from "@/common/type";
+import type { Completion, CompletionInfo } from "@codemirror/autocomplete";
 
 /**
  * 创建 Info Box DOM 元素
  */
 export function createInfoBox(
   doc: DocMetadata,
-  options: InfoBoxOptions = {}
+  activeArgIndex?: number
 ): HTMLElement {
-  const { activeArgIndex, compact } = options;
   const container = document.createElement("div");
   container.className = "autocomplete-info-box";
 
@@ -84,16 +56,16 @@ export function createInfoBox(
   container.appendChild(signature);
 
   // 简洁模式：只显示当前参数描述
-  if (compact && activeArgIndex !== undefined && doc.args?.[activeArgIndex]) {
-    const currentArg = doc.args[activeArgIndex];
-    const desc = document.createElement("div");
-    desc.className = "info-desc";
-    desc.textContent = `${currentArg.name}: ${currentArg.type}${
-      currentArg.description ? ` — ${currentArg.description}` : ""
-    }`;
-    container.appendChild(desc);
-    return container;
-  }
+  // if (activeArgIndex !== undefined && doc.args?.[activeArgIndex]) {
+  //   const currentArg = doc.args[activeArgIndex];
+  //   const desc = document.createElement("div");
+  //   desc.className = "info-desc";
+  //   desc.textContent = `${currentArg.name}: ${currentArg.type}${
+  //     currentArg.description ? ` — ${currentArg.description}` : ""
+  //   }`;
+  //   container.appendChild(desc);
+  //   return container;
+  // }
 
   // 描述
   if (doc.description) {
@@ -178,5 +150,15 @@ export function createInfoBox(
  * 创建 autocompletion 用的 info 渲染器
  */
 export function createInfoBoxRenderer(doc: DocMetadata) {
-  return (_completion: Completion) => createInfoBox(doc);
+  return (_completion: Completion, activeArgIndex?: number) =>
+    createInfoBox(doc, activeArgIndex);
 }
+
+export const isInfoBoxRenderer = (
+  info:
+    | string
+    | ((completion: Completion) => CompletionInfo | Promise<CompletionInfo>)
+    | undefined
+): info is ReturnType<typeof createInfoBoxRenderer> => {
+  return typeof info === "function";
+};

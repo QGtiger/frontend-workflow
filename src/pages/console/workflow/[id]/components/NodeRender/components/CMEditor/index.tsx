@@ -3,13 +3,10 @@ import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.less";
 import "./theme.css";
-import { dollarCompletions } from "./autocompletion/dollarCompletions";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
 import { highlightExpressions } from "./highlightExtension";
-import { blankCompletions } from "./autocompletion/blankCompletions";
-import { nonDollarCompletions } from "./autocompletion/nonDollarCompletions";
-import { datatypeCompletions } from "./autocompletion/datatypeCompletions";
 import { tooltipExtension } from "./tooltipExtension";
+import { createExpressionLanguageSupport } from "./languageDataExtension";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -55,15 +52,7 @@ export function CMEditor({
         autoInsertDoubleBraces,
         EditorView.lineWrapping,
         autocompletion({ icons: false, aboveCursor: true, closeOnBlur: false }),
-
-        autocompletion({
-          override: [
-            dollarCompletions(workflowStoreApi),
-            blankCompletions(workflowStoreApi),
-            nonDollarCompletions,
-            datatypeCompletions(workflowStoreApi),
-          ],
-        }),
+        createExpressionLanguageSupport(workflowStoreApi),
         highlightExpressions,
         tooltipExtension,
       ]}

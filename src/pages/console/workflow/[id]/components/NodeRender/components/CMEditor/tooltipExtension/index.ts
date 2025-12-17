@@ -6,8 +6,12 @@ import {
   type EditorState,
   type Tooltip,
 } from "@uiw/react-codemirror";
-import { dateTimeExtensions, type MethodDoc } from "@/common/DateTime";
-import { createInfoBox } from "../autocompletion/utils/CreateInfoBox";
+import {
+  CompletionContext,
+  type Completion,
+  type CompletionResult,
+} from "@codemirror/autocomplete";
+import { isInfoBoxRenderer } from "../autocompletion/utils/CreateInfoBox";
 
 // 直接使用 parser，不注册为编辑器扩展
 const jsParser = javascriptLanguage.parser;
@@ -60,22 +64,55 @@ function getArgIndex(argList: SyntaxNode, pos: number): number {
   return argIndex;
 }
 
-// ========== 4. 获取函数文档 ==========
-function getFunctionDoc(
-  objectName: string,
-  methodName: string
-): MethodDoc | null {
-  if (objectName === "DateTime") {
-    const func =
-      dateTimeExtensions.functions[
-        methodName as keyof typeof dateTimeExtensions.functions
-      ];
-    return func?.doc || null;
+// ========== 4. 字符串读取器 ==========
+const createStringReader = (str: string) => (node?: SyntaxNode | null) => {
+  return node ? str.slice(node.from, node.to) : "";
+};
+
+// ========== 5. 从 autocomplete 源获取补全信息 ==========
+function getCompletion(
+  state: EditorState,
+  pos: number,
+  filter: (completion: Completion) => boolean
+): Completion | null {
+  const context = new CompletionContext(state, pos, true);
+  const sources = state.languageDataAt<
+    (context: CompletionContext) => CompletionResult | null
+  >("autocomplete", pos);
+
+  for (const source of sources) {
+    const result = source(context);
+    const options = result?.options.filter(filter);
+    if (options && options.length > 0) {
+      return options[0];
+    }
   }
   return null;
 }
 
-// ========== 5. 获取参数提示 Tooltip ==========
+// ========== 6. 根据 callee 类型解析函数信息 ==========
+function resolveCalleeInfo(
+  callee: SyntaxNode,
+  readNode: (node?: SyntaxNode | null) => string
+): { objectName: string; methodName: string } | null {
+  switch (callee.name) {
+    case "MemberExpression": {
+      // DateTime.format() 形式
+      const objectName = readNode(callee.firstChild);
+      const methodName = readNode(callee.lastChild);
+      return { objectName, methodName };
+    }
+    case "VariableName": {
+      // 直接函数调用 format() 形式（暂不支持）
+      const methodName = readNode(callee);
+      return { objectName: "", methodName };
+    }
+    default:
+      return null;
+  }
+}
+
+// ========== 8. 获取参数提示 Tooltip ==========
 function getParamHintTooltip(state: EditorState): Tooltip | null {
   const pos = state.selection.main.head;
 
@@ -84,51 +121,78 @@ function getParamHintTooltip(state: EditorState): Tooltip | null {
   if (!exprInfo) return null;
 
   const { content, offset } = exprInfo;
-  const localPos = pos - offset; // 光标在表达式中的位置
+  const localPos = pos - offset;
+  const readNode = createStringReader(content);
 
-  // 用 parser 解析表达式
+  // 解析表达式
   const tree = jsParser.parse(content);
   const node = tree.resolveInner(localPos, -1);
 
-  // 查找 ArgList (参数列表)
+  // 查找 ArgList
   const argList = findNearestParent(node, "ArgList");
   if (!argList) return null;
 
-  // 确保光标在 ArgList 内部（在 ( 和 ) 之间）
-  // argList.from 是 "(" 的位置，argList.to 是 ")" 后的位置
+  // 确保光标在括号内部
   if (localPos <= argList.from || localPos >= argList.to) return null;
 
-  // 查找 CallExpression (函数调用)
+  // 查找 CallExpression
   const callExpr = findNearestParent(argList, "CallExpression");
   if (!callExpr) return null;
 
-  // 获取调用者
+  // 解析 callee
   const callee = callExpr.firstChild;
   if (!callee) return null;
 
-  let objectName = "";
-  let methodName = "";
+  const calleeInfo = resolveCalleeInfo(callee, readNode);
+  if (!calleeInfo) return null;
 
-  if (callee.name === "MemberExpression") {
-    const obj = callee.firstChild;
-    const prop = callee.lastChild;
-    if (obj && prop) {
-      objectName = content.slice(obj.from, obj.to);
-      methodName = content.slice(prop.from, prop.to);
-    }
-  }
+  const { objectName, methodName } = calleeInfo;
 
-  const doc = getFunctionDoc(objectName, methodName);
-  if (!doc) return null;
+  // 从 autocomplete 源获取补全信息
+  // 计算方法调用的全局位置（在 "." 之后）
+  const methodPos =
+    callee.name === "MemberExpression"
+      ? offset + (callee.lastChild?.to ?? callee.to)
+      : offset + callee.to;
+
+  const completion = getCompletion(
+    state,
+    methodPos,
+    (c) => c.label === `${methodName}()`
+  );
+
+  if (!completion) return null;
+
+  // const doc = completion ? getDocFromCompletion(completion) : null;
+  // if (!doc) return null;
+
+  // // 如果是 MemberExpression，更新 doc.name 加上对象名前缀
+  // const displayDoc =
+  //   objectName && doc.name && !doc.name.includes(".")
+  //     ? { ...doc, name: `${objectName}.${doc.name}` }
+  //     : doc;
 
   const argIndex = getArgIndex(argList, localPos);
 
   return {
     pos: offset + argList.from,
     above: true,
-    create: () => ({
-      dom: createInfoBox(doc, { activeArgIndex: argIndex, compact: false }),
-    }),
+    create: () => {
+      const element = document.createElement("div");
+      element.classList.add("cm-cursorInfo");
+      const info = completion.info;
+      if (typeof info === "string") {
+        element.textContent = info;
+      } else if (isInfoBoxRenderer(info)) {
+        const infoBox = info(completion, argIndex);
+        if (infoBox instanceof HTMLElement) {
+          element.appendChild(infoBox);
+        }
+      }
+      return {
+        dom: element,
+      };
+    },
   };
 }
 

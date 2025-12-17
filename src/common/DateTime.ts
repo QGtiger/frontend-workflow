@@ -1,29 +1,9 @@
-/**
- * 方法文档类型
- */
-export interface MethodDoc {
-  name: string;
-  description: string;
-  returnType: string;
-  isFunction?: boolean;
-  args?: {
-    name: string;
-    type: string;
-    optional?: boolean;
-    description: string;
-  }[];
-  examples?: {
-    example: string;
-    evaluated: string;
-    description?: string;
-  }[];
-  docURL?: string;
-}
+import type { DocMetadata } from "./type";
 
 /**
  * 带文档的函数类型
  */
-type DocFunction<T extends (...args: any[]) => any> = T & { doc: MethodDoc };
+type DocFunction<T extends (...args: any[]) => any> = T & { doc: DocMetadata };
 
 // ============ 静态方法实现 ============
 
