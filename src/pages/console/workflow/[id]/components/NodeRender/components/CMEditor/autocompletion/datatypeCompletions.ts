@@ -89,7 +89,7 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     if (base === "DateTime") {
       options = Object.values(dateTimeExtensions.functions).map((func) => {
         const hasArgs = (func.doc.args?.length ?? 0) > 0;
-        const label = `${func.name}()`;
+        const label = `${func.doc.name}()`;
         return {
           label,
           apply: createApplyCompletion(hasArgs),

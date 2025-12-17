@@ -6,7 +6,7 @@ import "./theme.css";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
 import { highlightExpressions } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
-import { createExpressionLanguageSupport } from "./languageDataExtension";
+import { createExpressionLanguageSupport } from "./langParse";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -64,6 +64,7 @@ export function CMEditor({
         // closeBrackets: false,
         foldGutter: false,
         drawSelection: false,
+        syntaxHighlighting: false,
       }}
     />
   );
