@@ -48,6 +48,16 @@ const GLOBAL_OPTIONS = [
         "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/JSON",
     }),
   },
+  {
+    label: "Array",
+    info: createInfoBoxRenderer({
+      name: "Array",
+      returnType: "Array",
+      description: "用于操作数组的全局对象",
+      docURL:
+        "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    }),
+  },
 ];
 
 /**
@@ -60,9 +70,16 @@ export const nonDollarCompletions = requiredInExpression(
     const math = /(\s+)M[ath]*/;
     const object = /(\s+)O[bject]*/;
     const json = /(\s+)J[son]*/;
+    const array = /(\s+)A[rray]*/;
 
     const combinedRegex = new RegExp(
-      [datetime.source, math.source, object.source, json.source].join("|")
+      [
+        datetime.source,
+        math.source,
+        object.source,
+        json.source,
+        array.source,
+      ].join("|")
     );
 
     const word = context.matchBefore(combinedRegex);
