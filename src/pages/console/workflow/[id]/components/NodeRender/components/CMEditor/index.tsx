@@ -42,30 +42,39 @@ export function CMEditor({
   const workflowStoreApi = useWorkflowStoreApi();
 
   return (
-    <CodeMirror
-      theme="light"
-      value={value}
-      onChange={onChange}
-      className=" border border-gray-300 border-solid rounded-md overflow-hidden px-1 bg-white py-px"
-      placeholder="请输入表达式"
-      extensions={[
-        autoInsertDoubleBraces,
-        EditorView.lineWrapping,
-        autocompletion({ icons: false, aboveCursor: true, closeOnBlur: false }),
-        createExpressionLanguageSupport(workflowStoreApi),
-        highlightExpressions,
-        tooltipExtension,
-      ]}
-      basicSetup={{
-        lineNumbers: false,
-        highlightActiveLine: false,
-        highlightSelectionMatches: false,
-        bracketMatching: false,
-        // closeBrackets: false,
-        foldGutter: false,
-        drawSelection: false,
-        syntaxHighlighting: false,
-      }}
-    />
+    <div className="cm-editor-wrapper">
+      <div className="cm-editor-fx-badge">
+        <span>fx</span>
+      </div>
+      <CodeMirror
+        theme="light"
+        value={value}
+        onChange={onChange}
+        className="cm-editor-input"
+        placeholder="请输入表达式"
+        extensions={[
+          autoInsertDoubleBraces,
+          EditorView.lineWrapping,
+          autocompletion({
+            icons: false,
+            aboveCursor: true,
+            closeOnBlur: false,
+          }),
+          createExpressionLanguageSupport(workflowStoreApi),
+          highlightExpressions,
+          tooltipExtension,
+        ]}
+        basicSetup={{
+          lineNumbers: false,
+          highlightActiveLine: false,
+          highlightSelectionMatches: false,
+          bracketMatching: false,
+          // closeBrackets: false,
+          foldGutter: false,
+          drawSelection: false,
+          syntaxHighlighting: false,
+        }}
+      />
+    </div>
   );
 }
