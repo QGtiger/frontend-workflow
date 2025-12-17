@@ -20,6 +20,9 @@ importers:
       '@codemirror/lang-javascript':
         specifier: ^6.2.4
         version: 6.2.4
+      '@codemirror/language':
+        specifier: ^6.11.3
+        version: 6.11.3
       '@flowgram.ai/fixed-layout-editor':
         specifier: 1.0.3
         version: 1.0.3(react-dom@18.1.0(react@18.1.0))(react@18.1.0)

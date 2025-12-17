@@ -9,6 +9,7 @@ import { highlightExpressions } from "./highlightExtension";
 import { blankCompletions } from "./autocompletion/blankCompletions";
 import { nonDollarCompletions } from "./autocompletion/nonDollarCompletions";
 import { datatypeCompletions } from "./autocompletion/datatypeCompletions";
+import { tooltipExtension } from "./tooltipExtension";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -64,6 +65,7 @@ export function CMEditor({
           ],
         }),
         highlightExpressions,
+        tooltipExtension,
       ]}
       basicSetup={{
         lineNumbers: false,

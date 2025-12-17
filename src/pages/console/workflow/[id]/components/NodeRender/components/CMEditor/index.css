@@ -443,85 +443,64 @@
   max-height: min(220px, 20vh);
 }
 
-/* ============ 紧凑 Info Box 样式 ============ */
-.cm-editor .cm-tooltip.cm-completionInfo .autocomplete-info-box,
-.cm-editor .cm-tooltip.cm-cursorInfo .autocomplete-info-box,
-.cm-editor .cm-tooltip-hover .autocomplete-info-box {
+/* ============ 通用 Info Box 样式（tooltip / completionInfo） ============ */
+.cm-editor .autocomplete-info-box {
   padding: 6px 8px;
   font-size: 12px;
   line-height: 1.4;
+  background: var(--prim-gray-0);
+  border-radius: 4px;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-signature,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-signature,
-.cm-editor .cm-tooltip-hover .info-signature {
+.cm-editor .cm-tooltip .info-signature {
   font-family: var(--font-family-monospace);
   color: var(--color-autocomplete-item-selected);
   font-size: 12px;
   font-weight: 500;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-desc,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-desc,
-.cm-editor .cm-tooltip-hover .info-desc {
+.cm-editor .cm-tooltip .info-desc {
   color: var(--color-text-base);
   margin-top: 4px;
   font-size: 11px;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-section-title,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-section-title,
-.cm-editor .cm-tooltip-hover .info-section-title {
+.cm-editor .cm-tooltip .info-section-title {
   font-size: 11px;
   font-weight: 500;
   color: var(--color-text-base);
   margin-bottom: 6px;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-args,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-args,
-.cm-editor .cm-tooltip-hover .info-args {
+.cm-editor .cm-tooltip .info-args {
   margin-top: 6px;
   padding-top: 4px;
   border-top: 1px solid var(--prim-gray-100);
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-arg-line,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-arg-line,
-.cm-editor .cm-tooltip-hover .info-arg-line {
+.cm-editor .cm-tooltip .info-arg-line {
   font-size: 11px;
   color: var(--color-text-base);
   line-height: 1.5;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-examples,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-examples,
-.cm-editor .cm-tooltip-hover .info-examples {
+.cm-editor .cm-tooltip .info-examples {
   margin-top: 6px;
   padding-top: 4px;
   border-top: 1px solid var(--prim-gray-100);
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-example-item,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-example-item,
-.cm-editor .cm-tooltip-hover .info-example-item {
+.cm-editor .cm-tooltip .info-example-item {
   border: 1px solid #dcdada9e;
   border-radius: 4px;
   padding: 6px 8px;
 }
 
-.cm-editor
-  .cm-tooltip.cm-completionInfo
-  .info-example-item
-  + .info-example-item,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-example-item + .info-example-item,
-.cm-editor .cm-tooltip-hover .info-example-item + .info-example-item {
+.cm-editor .cm-tooltip .info-example-item + .info-example-item {
   margin-top: 4px;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-example-code,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-example-code,
-.cm-editor .cm-tooltip-hover .info-example-code {
+.cm-editor .cm-tooltip .info-example-code {
   font-family: var(--font-family-monospace);
   font-size: 11px;
   color: var(--color-text-dark);
@@ -530,9 +509,7 @@
   word-wrap: break-word;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-example-result,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-example-result,
-.cm-editor .cm-tooltip-hover .info-example-result {
+.cm-editor .cm-tooltip .info-example-result {
   font-family: var(--font-family-monospace);
   font-size: 11px;
   color: var(--prim-gray-420);
@@ -540,17 +517,27 @@
   margin-top: 2px;
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-doc-link,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-doc-link,
-.cm-editor .cm-tooltip-hover .info-doc-link {
+.cm-editor .cm-tooltip .info-doc-link {
   display: inline-block;
   margin-top: 6px;
   font-size: 11px;
   color: var(--prim-color-secondary);
 }
 
-.cm-editor .cm-tooltip.cm-completionInfo .info-doc-link:hover,
-.cm-editor .cm-tooltip.cm-cursorInfo .info-doc-link:hover,
-.cm-editor .cm-tooltip-hover .info-doc-link:hover {
+.cm-editor .cm-tooltip .info-doc-link:hover {
   text-decoration: underline;
+}
+
+/* ============ 参数提示高亮样式 ============ */
+.autocomplete-info-box .info-arg-active {
+  color: var(--color-autocomplete-item-selected);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.autocomplete-info-box .info-arg-line-active {
+  background: var(--prim-gray-50);
+  border-radius: 2px;
+  padding: 2px 4px;
+  margin: -2px -4px;
 }
