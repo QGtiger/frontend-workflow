@@ -20,6 +20,9 @@ import {
 
 function SideBarPanel() {
   const { selectedId, setSelectedId } = NodeSelectModel.useModel();
+  const {
+    workflowData: { id, name },
+  } = WorkflowDetailModel.useModel();
   const { document } = useClientContext();
 
   const node = selectedId ? document.getNode(selectedId) : undefined;
@@ -59,8 +62,14 @@ function SideBarPanel() {
   if (!node || !registry) return null;
 
   return (
-    <WorkflowStoreProvider flowDocument={document}>
-      <UpdateWorkflowStoreProvider updateProps={{ currentNodeId: node.id }}>
+    <WorkflowStoreProvider id={id} name={name} flowDocument={document}>
+      <UpdateWorkflowStoreProvider
+        updateProps={{
+          currentNodeId: node.id,
+          id,
+          name,
+        }}
+      >
         <CustomNodeRenderModel.Provider
           value={{
             node,

@@ -3,9 +3,9 @@ import { ConnectorSelectorModel, WorkflowDetailModel } from "./models";
 import { Spin } from "antd";
 
 function WorkflowDetailContent() {
-  const { loading } = WorkflowDetailModel.useModel();
+  const { loading, workflowData } = WorkflowDetailModel.useModel();
   const outlet = useOutlet();
-  if (loading)
+  if (loading || !workflowData)
     return (
       <div className="h-full flex items-center justify-center">
         <Spin />

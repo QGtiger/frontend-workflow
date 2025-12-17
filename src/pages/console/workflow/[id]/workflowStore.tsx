@@ -8,24 +8,71 @@ import {
   type PropsWithChildren,
 } from "react";
 import { createStore, useStore } from "zustand";
-import { getAllPreviousNodesByDocument } from "./workflowStoreUtils";
+import {
+  generateMockDataByOutputStruct,
+  getAllPreviousNodesByDocument,
+} from "./workflowStoreUtils";
+import { executeSandboxSync } from "@/common/sandbox";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
   currentNodeId?: string;
+  name: string;
+  id: string;
 }
 
 interface WorkflowStoreAction {
   getAllPreviousNodes(): CustomNodeData[];
   setStoreState(state: Partial<WorkflowStoreState>): void;
+  evaluateExpression(expression: string): any;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
 
 export function createWorkflowStore(config: WorkflowStoreState) {
   const store = createStore<WorkflowStoreApi>((set, get) => {
+    function $(nodeName: string) {
+      if (!nodeName) {
+        throw new Error("当使用 $ 符号时，必须传入节点名称");
+      }
+      const { flowDocument } = get();
+      // 通过 nodeName 找到节点
+      let nodeJson: CustomNodeData | undefined;
+      flowDocument.traverse((it) => {
+        const itJson = it.toJSON();
+        if (itJson.data?.name === nodeName) {
+          nodeJson = itJson.data as CustomNodeData;
+          return true;
+        }
+      });
+      if (!nodeJson) {
+        throw new Error(`节点 ${nodeName} 不存在`);
+      }
+      const { outputStruct, sampleData } = nodeJson;
+      if (!outputStruct && !sampleData) {
+        throw new Error(`节点 ${nodeName} 没有输出结构或样本数据`);
+      }
+      return {
+        isExecuted: !!sampleData,
+        outputs:
+          sampleData || generateMockDataByOutputStruct(outputStruct || []),
+      };
+    }
+
     return {
       ...config,
+      evaluateExpression(expression) {
+        return executeSandboxSync(expression, {
+          $,
+          globals: {
+            $workflow: {
+              name: config.name,
+              id: config.id,
+            },
+            $now: new Date(),
+          },
+        });
+      },
       getAllPreviousNodes() {
         const { currentNodeId, flowDocument } = get();
         if (!currentNodeId) {

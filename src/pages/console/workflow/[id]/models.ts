@@ -14,6 +14,7 @@ export type WorkflowDetailData = {
   updatedAt: string;
   // 状态，draft: 草稿，published: 已发布，unpublished: 未发布
   status: "draft" | "published" | "unpublished";
+  id: string;
 };
 
 export const WorkflowDetailModel = createCustomModel(() => {
@@ -31,6 +32,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       // TODO 查询接口
       return {
+        id: id!,
         nodes: [
           {
             id: "start_0",
@@ -184,7 +186,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
   return {
     workflowId: id,
     loading,
-    workflowData: data,
+    workflowData: data!,
   };
 });
 
