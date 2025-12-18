@@ -5,8 +5,8 @@ import "./index.less";
 import "./theme.css";
 import { useWorkflowStoreApi } from "../../../../models/workflowStore";
 import { highlightExtension } from "./highlightExtension";
-import { tooltipExtension } from "./tooltipExtension";
-import { createAutocompleteExtension } from "./langParse";
+import { createTooltipExtension } from "./tooltipExtension";
+import { createCompletionSources } from "./langParse";
 import classNames from "classnames";
 import { useMemo } from "react";
 
@@ -49,9 +49,13 @@ export function CMEditor({
 }) {
   const workflowStoreApi = useWorkflowStoreApi();
 
-  const autocompleteExtension = useMemo(() => {
-    return createAutocompleteExtension(workflowStoreApi);
+  const completionSources = useMemo(() => {
+    return createCompletionSources(workflowStoreApi);
   }, [workflowStoreApi]);
+
+  const tooltipExt = useMemo(() => {
+    return createTooltipExtension(completionSources);
+  }, [completionSources]);
 
   return (
     <div className={classNames("cm-editor-wrapper", className)}>
@@ -73,10 +77,10 @@ export function CMEditor({
             closeOnBlur: false,
           }),
           autocompletion({
-            override: autocompleteExtension,
+            override: completionSources,
           }),
           highlightExtension(workflowStoreApi),
-          tooltipExtension,
+          tooltipExt,
         ]}
         basicSetup={{
           lineNumbers: false,

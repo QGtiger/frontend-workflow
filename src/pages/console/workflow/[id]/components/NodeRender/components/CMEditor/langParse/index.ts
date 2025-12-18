@@ -67,9 +67,8 @@ export function createExpressionLanguageSupport(
   );
 }
 
-export function createAutocompleteExtension(
-  workflowStoreApi: WorkflowStoreApi
-) {
+// 导出补全源创建函数（别名，为了语义更清晰）
+export function createCompletionSources(workflowStoreApi: WorkflowStoreApi) {
   return [
     dollarCompletions(workflowStoreApi),
     blankCompletions(workflowStoreApi),

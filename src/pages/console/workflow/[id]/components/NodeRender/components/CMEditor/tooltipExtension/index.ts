@@ -71,27 +71,6 @@ const createStringReader = (str: string) => (node?: SyntaxNode | null) => {
   return node ? str.slice(node.from, node.to) : "";
 };
 
-// ========== 5. 从 autocomplete 源获取补全信息 ==========
-function getCompletion(
-  state: EditorState,
-  pos: number,
-  filter: (completion: Completion) => boolean
-): Completion | null {
-  const context = new CompletionContext(state, pos, true);
-  const sources = state.languageDataAt<
-    (context: CompletionContext) => CompletionResult | null
-  >("autocomplete", pos);
-
-  for (const source of sources) {
-    const result = source(context);
-    const options = result?.options.filter(filter);
-    if (options && options.length > 0) {
-      return options[0];
-    }
-  }
-  return null;
-}
-
 // ========== 6. 根据 callee 类型解析函数信息 ==========
 function resolveCalleeInfo(
   callee: SyntaxNode,
@@ -114,133 +93,157 @@ function resolveCalleeInfo(
   }
 }
 
-// ========== 8. 获取参数提示 Tooltip ==========
-function getParamHintTooltip(state: EditorState): Tooltip | null {
-  const pos = state.selection.main.head;
-
-  // 获取表达式内容
-  const exprInfo = getExpressionInfo(state, pos);
-  if (!exprInfo) return null;
-
-  const { content, offset } = exprInfo;
-  const localPos = pos - offset;
-  const readNode = createStringReader(content);
-
-  // 解析表达式
-  const tree = jsParser.parse(content);
-  const node = tree.resolveInner(localPos, -1);
-
-  // 查找 ArgList
-  const argList = findNearestParent(node, "ArgList");
-  if (!argList) return null;
-
-  // 确保光标在括号内部
-  if (localPos <= argList.from || localPos >= argList.to) return null;
-
-  // 查找 CallExpression
-  const callExpr = findNearestParent(argList, "CallExpression");
-  if (!callExpr) return null;
-
-  // 解析 callee
-  const callee = callExpr.firstChild;
-  if (!callee) return null;
-
-  const calleeInfo = resolveCalleeInfo(callee, readNode);
-  if (!calleeInfo) return null;
-
-  const { objectName, methodName } = calleeInfo;
-
-  // 从 autocomplete 源获取补全信息
-  // 计算方法调用的全局位置（在 "." 之后）
-  const methodPos =
-    callee.name === "MemberExpression"
-      ? offset + (callee.lastChild?.to ?? callee.to)
-      : offset + callee.to;
-
-  const completion = getCompletion(
-    state,
-    methodPos,
-    (c) => c.label === `${methodName}()`
-  );
-
-  if (!completion) return null;
-
-  // const doc = completion ? getDocFromCompletion(completion) : null;
-  // if (!doc) return null;
-
-  // // 如果是 MemberExpression，更新 doc.name 加上对象名前缀
-  // const displayDoc =
-  //   objectName && doc.name && !doc.name.includes(".")
-  //     ? { ...doc, name: `${objectName}.${doc.name}` }
-  //     : doc;
-
-  const argIndex = getArgIndex(argList, localPos);
-
-  return {
-    pos: offset + argList.from,
-    above: true,
-    create: () => {
-      const element = document.createElement("div");
-      element.classList.add("cm-cursorInfo");
-      const info = completion.info;
-      if (typeof info === "string") {
-        element.textContent = info;
-      } else if (isInfoBoxRenderer(info)) {
-        const infoBox = info(completion, argIndex);
-        if (infoBox instanceof HTMLElement) {
-          element.appendChild(infoBox);
-        }
-      }
-      return {
-        dom: element,
-      };
-    },
-  };
-}
-
 // ========== 4.5. 定义清除 tooltip 的 Effect ==========
 const clearTooltipEffect = StateEffect.define<null>();
 
-// ========== 5. 定义 StateField ==========
-const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
-  create(state) {
-    return { tooltip: getParamHintTooltip(state) };
-  },
+// ============ 7. 工厂函数：创建 tooltip 扩展 ============
+export function createTooltipExtension(
+  completionSources: ((context: CompletionContext) => CompletionResult | null)[]
+) {
+  // ========== 5. 从 autocomplete 源获取补全信息 ==========
+  function getCompletion(
+    state: EditorState,
+    pos: number,
+    filter: (completion: Completion) => boolean
+  ): Completion | null {
+    const context = new CompletionContext(state, pos, true);
 
-  update(value, tr) {
-    // 检查是否有清除 tooltip 的 effect
-    for (const effect of tr.effects) {
-      if (effect.is(clearTooltipEffect)) {
-        return { tooltip: null };
+    // 直接使用传入的补全源
+    for (const source of completionSources) {
+      const result = source(context);
+      const options = result?.options.filter(filter);
+      if (options && options.length > 0) {
+        return options[0];
       }
     }
+    return null;
+  }
 
-    if (tr.docChanged || tr.selection) {
-      return { tooltip: getParamHintTooltip(tr.state) };
-    }
-    return value;
-  },
+  // ========== 8. 获取参数提示 Tooltip ==========
+  function getParamHintTooltip(state: EditorState): Tooltip | null {
+    const pos = state.selection.main.head;
 
-  provide: (field) =>
-    showTooltip.compute([field], (state) => {
-      const tooltip = state.field(field).tooltip;
-      return tooltip;
-    }),
-});
+    // 获取表达式内容
+    const exprInfo = getExpressionInfo(state, pos);
+    if (!exprInfo) return null;
 
-// ============ 6. 焦点插件 - 失焦时强制隐藏 tooltip ============
-const hideTooltipOnBlur = EditorView.domEventHandlers({
-  blur(_event, view) {
-    // 失焦时，发送清除 tooltip 的 effect
-    const currentTooltip = view.state.field(paramHintField).tooltip;
-    if (currentTooltip) {
-      view.dispatch({
-        effects: clearTooltipEffect.of(null),
-      });
-    }
-    return false;
-  },
-});
+    const { content, offset } = exprInfo;
+    const localPos = pos - offset;
+    const readNode = createStringReader(content);
 
-// ============ 7. 导出扩展（不包含 javascriptLanguage，避免默认样式） ============
-export const tooltipExtension = [hideTooltipOnBlur, paramHintField];
+    // 解析表达式
+    const tree = jsParser.parse(content);
+    const node = tree.resolveInner(localPos, -1);
+
+    // 查找 ArgList
+    const argList = findNearestParent(node, "ArgList");
+    if (!argList) return null;
+
+    // 确保光标在括号内部
+    if (localPos <= argList.from || localPos >= argList.to) return null;
+
+    // 查找 CallExpression
+    const callExpr = findNearestParent(argList, "CallExpression");
+    if (!callExpr) return null;
+
+    // 解析 callee
+    const callee = callExpr.firstChild;
+    if (!callee) return null;
+
+    const calleeInfo = resolveCalleeInfo(callee, readNode);
+    if (!calleeInfo) return null;
+
+    const { objectName, methodName } = calleeInfo;
+
+    // 从 autocomplete 源获取补全信息
+    // 计算方法调用的全局位置（在 "." 之后）
+    const methodPos =
+      callee.name === "MemberExpression"
+        ? offset + (callee.lastChild?.to ?? callee.to)
+        : offset + callee.to;
+
+    const completion = getCompletion(
+      state,
+      methodPos,
+      (c) => c.label === `${methodName}()`
+    );
+
+    if (!completion) return null;
+
+    // const doc = completion ? getDocFromCompletion(completion) : null;
+    // if (!doc) return null;
+
+    // // 如果是 MemberExpression，更新 doc.name 加上对象名前缀
+    // const displayDoc =
+    //   objectName && doc.name && !doc.name.includes(".")
+    //     ? { ...doc, name: `${objectName}.${doc.name}` }
+    //     : doc;
+
+    const argIndex = getArgIndex(argList, localPos);
+
+    return {
+      pos: offset + argList.from,
+      above: true,
+      create: () => {
+        const element = document.createElement("div");
+        element.classList.add("cm-cursorInfo");
+        const info = completion.info;
+        if (typeof info === "string") {
+          element.textContent = info;
+        } else if (isInfoBoxRenderer(info)) {
+          const infoBox = info(completion, argIndex);
+          if (infoBox instanceof HTMLElement) {
+            element.appendChild(infoBox);
+          }
+        }
+        return {
+          dom: element,
+        };
+      },
+    };
+  }
+
+  // ========== 5. 定义 StateField ==========
+  const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
+    create(state) {
+      return { tooltip: getParamHintTooltip(state) };
+    },
+
+    update(value, tr) {
+      // 检查是否有清除 tooltip 的 effect
+      for (const effect of tr.effects) {
+        if (effect.is(clearTooltipEffect)) {
+          return { tooltip: null };
+        }
+      }
+
+      if (tr.docChanged || tr.selection) {
+        return { tooltip: getParamHintTooltip(tr.state) };
+      }
+      return value;
+    },
+
+    provide: (field) =>
+      showTooltip.compute([field], (state) => {
+        const tooltip = state.field(field).tooltip;
+        return tooltip;
+      }),
+  });
+
+  // ============ 6. 焦点插件 - 失焦时强制隐藏 tooltip ============
+  const hideTooltipOnBlur = EditorView.domEventHandlers({
+    blur(_event, view) {
+      // 失焦时，发送清除 tooltip 的 effect
+      const currentTooltip = view.state.field(paramHintField).tooltip;
+      if (currentTooltip) {
+        view.dispatch({
+          effects: clearTooltipEffect.of(null),
+        });
+      }
+      return false;
+    },
+  });
+
+  // 返回扩展数组
+  return [hideTooltipOnBlur, paramHintField];
+}
