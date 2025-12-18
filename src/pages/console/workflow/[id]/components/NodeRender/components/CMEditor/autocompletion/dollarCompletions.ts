@@ -72,7 +72,7 @@ export function dollarOptions(
 }
 
 export const dollarCompletions = function (workflowStoreApi: WorkflowStoreApi) {
-  return (context: CompletionContext) => {
+  return requiredInExpression((context: CompletionContext) => {
     const word = context.matchBefore(/\$[^$]*/);
 
     if (!word) return null;
@@ -89,5 +89,5 @@ export const dollarCompletions = function (workflowStoreApi: WorkflowStoreApi) {
         return [0, lcp.length];
       },
     };
-  };
+  });
 };
