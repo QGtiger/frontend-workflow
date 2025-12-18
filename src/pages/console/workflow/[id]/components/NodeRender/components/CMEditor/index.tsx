@@ -7,6 +7,7 @@ import { useWorkflowStoreApi } from "../../../../workflowStore";
 import { highlightExtension } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
 import { createExpressionLanguageSupport } from "./langParse";
+import classNames from "classnames";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -35,14 +36,20 @@ const autoInsertDoubleBraces = keymap.of([
 export function CMEditor({
   value,
   onChange,
+  onFocus,
+  onBlur,
+  className,
 }: {
   value?: string;
   onChange?: (value: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  className?: string;
 }) {
   const workflowStoreApi = useWorkflowStoreApi();
 
   return (
-    <div className="cm-editor-wrapper">
+    <div className={classNames("cm-editor-wrapper", className)}>
       <div className="cm-editor-fx-badge">
         <span>fx</span>
       </div>
@@ -74,6 +81,8 @@ export function CMEditor({
           drawSelection: false,
           syntaxHighlighting: false,
         }}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );

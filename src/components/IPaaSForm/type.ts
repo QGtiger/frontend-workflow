@@ -1,11 +1,3 @@
-export type FormItemValueType = {
-  value: any;
-  label: string;
-  type: string;
-  // 是否是表达式
-  isExpression?: boolean;
-};
-
 export type IPaasDynamicFormItem = {
   type: IPaasFormFieldEditorKind;
   payload: IPaasFormSchema;

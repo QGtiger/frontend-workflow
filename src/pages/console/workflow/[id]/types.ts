@@ -2,6 +2,7 @@ export type NodeInputValue = {
   value?: any;
   label?: string;
   type?: string;
+  expression?: string;
   // 是否是表达式
   isExpression?: boolean;
 };

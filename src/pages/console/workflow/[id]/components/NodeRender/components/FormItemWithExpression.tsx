@@ -1,10 +1,11 @@
-import { useBoolean, useClickAway } from "ahooks";
-import { Segmented } from "antd";
+import { useBoolean, useClickAway, useCreation } from "ahooks";
+import { Popover, Segmented } from "antd";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 import { useRef, type ComponentType } from "react";
 import type { NodeInputValue } from "../../../types";
 import { CMEditor } from "./CMEditor";
+import { useWorkflowStoreApi } from "../../../workflowStore";
 
 export function FormItemWithExpression(props: {
   Componet: ComponentType<any>;
@@ -18,30 +19,41 @@ export function FormItemWithExpression(props: {
     onChange,
     ...restProps
   } = props;
-  const { isExpression, value } = valueWithExpression || {};
+  const { isExpression, value, expression } = valueWithExpression || {};
+  const workflowStoreApi = useWorkflowStoreApi();
 
-  const [showExpression, showExpressionAction] = useBoolean(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hover, hoverAction] = useBoolean(false);
+  const [focus, focusAction] = useBoolean(false);
+
+  const isShowExpression = hover || focus;
+
+  const evaluateExpression = useCreation(() => {
+    return expression && workflowStoreApi.evaluateExpression(expression);
+  }, [expression, workflowStoreApi]);
+
+  console.log(evaluateExpression);
 
   // 点击外部时隐藏
   useClickAway(() => {
-    showExpressionAction.setFalse();
+    focusAction.setFalse();
   }, containerRef);
 
   return (
     <div
       ref={containerRef}
       className="relative"
-      // 点击内部时显示
-      onClick={() => showExpressionAction.setTrue()}
+      onMouseOver={hoverAction.setTrue}
+      onMouseLeave={hoverAction.setFalse}
+      onClick={focusAction.setTrue}
     >
       {isExpression ? (
         <CMEditor
-          value={value}
+          value={expression}
           onChange={(v) => {
             onChange?.({
               ...valueWithExpression,
-              value: v,
+              expression: v,
             });
           }}
         />
@@ -63,9 +75,9 @@ export function FormItemWithExpression(props: {
       <motion.div
         initial={{ opacity: 0, y: -18 }}
         animate={{
-          opacity: showExpression ? 1 : 0,
-          y: showExpression ? `-100%` : -18,
-          pointerEvents: showExpression ? "auto" : "none",
+          opacity: isShowExpression ? 1 : 0,
+          y: isShowExpression ? `-100%` : -18,
+          pointerEvents: isShowExpression ? "auto" : "none",
         }}
         transition={{ duration: 0.1 }}
         className={classNames("absolute right-0 top-0 pb-1")}
@@ -91,6 +103,19 @@ export function FormItemWithExpression(props: {
             },
           ]}
         />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: focus ? 1 : 0,
+          pointerEvents: focus ? "auto" : "none",
+          y: focus ? `100%` : "90%",
+        }}
+        transition={{ duration: 0.1 }}
+        className={classNames("absolute right-0 bottom-0 w-full box-border")}
+      >
+        22
       </motion.div>
     </div>
   );

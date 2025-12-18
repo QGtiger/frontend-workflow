@@ -4,7 +4,7 @@ import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import type { NodeOutputStructItem } from "./types";
+import type { NodeOutputStructItem } from "../types";
 
 export type WorkflowDetailData = {
   nodes: FlowNodeJSON[];
