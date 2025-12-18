@@ -7,6 +7,8 @@ import type { NodeInputValue } from "../../../types";
 import { CMEditor } from "./CMEditor";
 import { useWorkflowStoreApi } from "../../../models/workflowStore";
 import type { SandboxResult } from "@/common/sandbox";
+import type { TemplateSegment } from "../../../models/workflowStore/parseTemplateWithExpression";
+import "./FormItemWithExpression.less";
 
 /**
  * 获取值的类型
@@ -14,20 +16,37 @@ import type { SandboxResult } from "@/common/sandbox";
 function getValueType(value: any): string {
   if (Array.isArray(value)) return "Array";
   if (value instanceof Date) return "Date";
-  if (typeof value === "object") return "Object";
+  if (typeof value === "object" && value !== null) return "Object";
   return typeof value;
 }
 
 function formatObjectValue(value: any): string {
-  if (value instanceof Date) return value.toISOString();
-  return value.toString();
+  if (isObject(value)) {
+    if (value instanceof Date) return value.toISOString();
+    return JSON.stringify(value);
+  }
+  return String(value);
 }
 
 function isObject(value: any): value is object {
   return typeof value === "object" && value !== null;
 }
 
-function ResultViewer(props: { segments: (string | SandboxResult<any>)[] }) {
+function getTextBySegment<T = any>(segment: TemplateSegment<T>): string {
+  if (typeof segment === "string") {
+    return segment;
+  }
+  if (segment.error) {
+    return `[${segment.error.name}: ${segment.error?.message}]`;
+  }
+  const v = segment.result;
+  if (isObject(v)) {
+    return `[${getValueType(v)}: ${formatObjectValue(v)}]`;
+  }
+  return String(v);
+}
+
+function ResultViewer(props: { segments: TemplateSegment[] }) {
   const workflowStoreApi = useWorkflowStoreApi();
   const { segments } = props;
 
@@ -40,16 +59,20 @@ function ResultViewer(props: { segments: (string | SandboxResult<any>)[] }) {
     ) as SandboxResult<any> | undefined;
 
     if (errorSegment) {
-      return `[Error: ${errorSegment.error?.message}]`;
+      return `[${errorSegment.error?.name}: ${errorSegment.error?.message}]`;
     }
 
     const v = workflowStoreApi.evaluateTemplateBySegments(segments);
-    if (!v) return String(v);
 
-    if (isObject(v)) {
-      return `[${getValueType(v)}: ${formatObjectValue(v)}]`;
-    }
-    return String(v);
+    return (
+      <span>
+        [{getValueType(v)}:{" "}
+        <span className=" underline underline-offset-2">
+          {formatObjectValue(v)}
+        </span>
+        ]
+      </span>
+    );
   }, [segments, workflowStoreApi]);
 
   return (
@@ -81,8 +104,6 @@ export function FormItemWithExpression(props: {
   const segments = useMemo(() => {
     return workflowStoreApi.parseTemplateForSegments(expression);
   }, [expression, workflowStoreApi]);
-
-  console.log(segments);
 
   const isShowExpression = hover || focus;
 
@@ -120,10 +141,28 @@ export function FormItemWithExpression(props: {
               }}
               transition={{ duration: 0.1 }}
               className={classNames(
-                "absolute right-0 bottom-0 w-full box-border bg-white shadow-sm rounded-b-md p-2"
+                "z-10 cm-viewer-wrapper max-h-[400px] overflow-auto absolute right-0 bottom-0 w-full box-border bg-white shadow-sm rounded-b-md p-2"
               )}
             >
-              22
+              {segments.map((it, index) => {
+                if (isObject(it)) {
+                  return (
+                    <span
+                      key={index}
+                      className={classNames(
+                        "cm-viewer-expression",
+                        it.error
+                          ? "cm-viewer-expr-invalid"
+                          : "cm-viewer-expr-valid"
+                      )}
+                    >
+                      {getTextBySegment(it)}
+                    </span>
+                  );
+                } else {
+                  return <span key={index}>{it}</span>;
+                }
+              })}
             </motion.div>
           </div>
           <ResultViewer segments={segments} />
