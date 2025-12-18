@@ -1,0 +1,41 @@
+@font-mono: var(--font-family-monospace);
+@color-text: var(--color-text-base);
+
+// ============ CMViewer 展示组件样式 ============
+.cm-viewer-wrapper {
+  display: inline-block;
+  padding: 4px 8px;
+  min-height: 30px;
+  line-height: 22px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-family: @font-mono;
+  font-size: 12px;
+  color: @color-text;
+}
+
+.cm-viewer-placeholder {
+  color: #c2c2c2;
+  font-style: italic;
+}
+
+.cm-viewer-expression {
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 500;
+
+  &.cm-viewer-expr-valid {
+    color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+  }
+
+  &.cm-viewer-expr-invalid {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+  }
+
+  &.cm-viewer-expr-pending {
+    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+  }
+}

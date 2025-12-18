@@ -1,8 +1,12 @@
 import { javascriptLanguage } from "@codemirror/lang-javascript";
 import type { SyntaxNode } from "@lezer/common";
 import {
+  EditorView,
   showTooltip,
   StateField,
+  StateEffect,
+  ViewPlugin,
+  type PluginValue,
   type EditorState,
   type Tooltip,
 } from "@uiw/react-codemirror";
@@ -196,6 +200,37 @@ function getParamHintTooltip(state: EditorState): Tooltip | null {
   };
 }
 
+// ========== 4.5. 定义焦点变化 Effect ==========
+const setFocusEffect = StateEffect.define<boolean>();
+
+// ========== 4.6. 监听焦点变化的 ViewPlugin ==========
+const focusPlugin = ViewPlugin.fromClass(
+  class implements PluginValue {
+    constructor(private view: EditorView) {
+      // 初始化时添加焦点监听
+      this.view.dom.addEventListener("focus", this.onFocus);
+      this.view.dom.addEventListener("blur", this.onBlur);
+    }
+
+    onFocus = () => {
+      this.view.dispatch({
+        effects: setFocusEffect.of(true),
+      });
+    };
+
+    onBlur = () => {
+      this.view.dispatch({
+        effects: setFocusEffect.of(false),
+      });
+    };
+
+    destroy() {
+      this.view.dom.removeEventListener("focus", this.onFocus);
+      this.view.dom.removeEventListener("blur", this.onBlur);
+    }
+  }
+);
+
 // ========== 5. 定义 StateField ==========
 const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
   create(state) {
@@ -203,6 +238,16 @@ const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
   },
 
   update(value, tr) {
+    // 监听焦点变化的 effect
+    for (const effect of tr.effects) {
+      if (effect.is(setFocusEffect)) {
+        // 如果失焦，清除 tooltip
+        if (!effect.value) {
+          return { tooltip: null };
+        }
+      }
+    }
+
     if (tr.docChanged || tr.selection) {
       return { tooltip: getParamHintTooltip(tr.state) };
     }
@@ -214,4 +259,4 @@ const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
 });
 
 // ============ 6. 导出扩展（不包含 javascriptLanguage，避免默认样式） ============
-export const tooltipExtension = paramHintField;
+export const tooltipExtension = [focusPlugin, paramHintField];

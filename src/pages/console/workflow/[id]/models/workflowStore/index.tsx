@@ -13,7 +13,11 @@ import {
   getAllPreviousNodesByDocument,
 } from "./utils";
 import { executeSandboxSync, type SandboxResult } from "@/common/sandbox";
-import { parseTemplateWithExpression } from "./parseTemplateWithExpression";
+import {
+  getResultBySegment,
+  getResultValue,
+  parseTemplateForSegments,
+} from "./parseTemplateWithExpression";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
@@ -26,7 +30,8 @@ interface WorkflowStoreAction {
   getAllPreviousNodes(): CustomNodeData[];
   setStoreState(state: Partial<WorkflowStoreState>): void;
   evaluateExpression(expression: string): SandboxResult<any>;
-  evaluateTemplate(template: string): any;
+  parseTemplateForSegments(template?: string): (string | SandboxResult<any>)[];
+  evaluateTemplateBySegments(segments: (string | SandboxResult<any>)[]): any;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
@@ -61,7 +66,7 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       };
     }
 
-    function evaluateExpression(expression: string) {
+    function evaluateExpression(expression: string): SandboxResult<any> {
       return executeSandboxSync(expression, {
         $,
         globals: {
@@ -77,11 +82,22 @@ export function createWorkflowStore(config: WorkflowStoreState) {
     return {
       ...config,
       evaluateExpression,
-      evaluateTemplate(template: string) {
-        return parseTemplateWithExpression(template, (expression) => {
-          const { result } = evaluateExpression(expression);
-          return result;
-        });
+      parseTemplateForSegments(template = "") {
+        return parseTemplateForSegments<SandboxResult<any>>(
+          template,
+          evaluateExpression
+        );
+      },
+      evaluateTemplateBySegments(segments): any {
+        if (segments.length === 0) {
+          return undefined;
+        }
+
+        let result = getResultBySegment(segments[0]);
+        for (let i = 1; i < segments.length; i++) {
+          result = result + getResultBySegment(segments[i]);
+        }
+        return result;
       },
       getAllPreviousNodes() {
         const { currentNodeId, flowDocument } = get();

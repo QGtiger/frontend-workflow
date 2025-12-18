@@ -1,11 +1,63 @@
 import { useBoolean, useClickAway, useCreation } from "ahooks";
-import { Popover, Segmented } from "antd";
+import { Popover, Segmented, Typography } from "antd";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import { useRef, type ComponentType } from "react";
+import { useMemo, useRef, type ComponentType } from "react";
 import type { NodeInputValue } from "../../../types";
 import { CMEditor } from "./CMEditor";
 import { useWorkflowStoreApi } from "../../../models/workflowStore";
+import type { SandboxResult } from "@/common/sandbox";
+
+/**
+ * 获取值的类型
+ */
+function getValueType(value: any): string {
+  if (Array.isArray(value)) return "Array";
+  if (value instanceof Date) return "Date";
+  if (typeof value === "object") return "Object";
+  return typeof value;
+}
+
+function formatObjectValue(value: any): string {
+  if (value instanceof Date) return value.toISOString();
+  return value.toString();
+}
+
+function isObject(value: any): value is object {
+  return typeof value === "object" && value !== null;
+}
+
+function ResultViewer(props: { segments: (string | SandboxResult<any>)[] }) {
+  const workflowStoreApi = useWorkflowStoreApi();
+  const { segments } = props;
+
+  const s = useMemo(() => {
+    if (!segments.length) {
+      return "[empty]";
+    }
+    const errorSegment = segments.find(
+      (it) => typeof it === "object" && it.error
+    ) as SandboxResult<any> | undefined;
+
+    if (errorSegment) {
+      return `[Error: ${errorSegment.error?.message}]`;
+    }
+
+    const v = workflowStoreApi.evaluateTemplateBySegments(segments);
+    if (!v) return String(v);
+
+    if (isObject(v)) {
+      return `[${getValueType(v)}: ${formatObjectValue(v)}]`;
+    }
+    return String(v);
+  }, [segments, workflowStoreApi]);
+
+  return (
+    <div className="font-mono text-xs text-gray-500 line-clamp-1 break-all whitespace-pre-wrap">
+      {s}
+    </div>
+  );
+}
 
 export function FormItemWithExpression(props: {
   Componet: ComponentType<any>;
@@ -26,13 +78,13 @@ export function FormItemWithExpression(props: {
   const [hover, hoverAction] = useBoolean(false);
   const [focus, focusAction] = useBoolean(false);
 
-  const isShowExpression = hover || focus;
-
-  const evaluateExpression = useCreation(() => {
-    return expression && workflowStoreApi.evaluateExpression(expression);
+  const segments = useMemo(() => {
+    return workflowStoreApi.parseTemplateForSegments(expression);
   }, [expression, workflowStoreApi]);
 
-  console.log(evaluateExpression);
+  console.log(segments);
+
+  const isShowExpression = hover || focus;
 
   // 点击外部时隐藏
   useClickAway(() => {
@@ -45,18 +97,37 @@ export function FormItemWithExpression(props: {
       className="relative"
       onMouseOver={hoverAction.setTrue}
       onMouseLeave={hoverAction.setFalse}
-      onClick={focusAction.setTrue}
     >
       {isExpression ? (
-        <CMEditor
-          value={expression}
-          onChange={(v) => {
-            onChange?.({
-              ...valueWithExpression,
-              expression: v,
-            });
-          }}
-        />
+        <div className="flex flex-col gap-1">
+          <div className="relative" onClick={focusAction.setTrue}>
+            <CMEditor
+              value={expression}
+              onChange={(v) => {
+                onChange?.({
+                  ...valueWithExpression,
+                  expression: v,
+                });
+              }}
+            />
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: focus ? 1 : 0,
+                pointerEvents: focus ? "auto" : "none",
+                y: focus ? `100%` : "90%",
+              }}
+              transition={{ duration: 0.1 }}
+              className={classNames(
+                "absolute right-0 bottom-0 w-full box-border bg-white shadow-sm rounded-b-md p-2"
+              )}
+            >
+              22
+            </motion.div>
+          </div>
+          <ResultViewer segments={segments} />
+        </div>
       ) : (
         <Componet
           {...restProps}
@@ -103,19 +174,6 @@ export function FormItemWithExpression(props: {
             },
           ]}
         />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: focus ? 1 : 0,
-          pointerEvents: focus ? "auto" : "none",
-          y: focus ? `100%` : "90%",
-        }}
-        transition={{ duration: 0.1 }}
-        className={classNames("absolute right-0 bottom-0 w-full box-border")}
-      >
-        22
       </motion.div>
     </div>
   );
