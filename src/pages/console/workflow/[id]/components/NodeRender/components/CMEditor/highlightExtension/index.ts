@@ -1,4 +1,4 @@
-import type { WorkflowStoreApi } from "../../../../../workflowStore";
+import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import {
   Decoration,
   EditorView,

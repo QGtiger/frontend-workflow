@@ -5,7 +5,7 @@ import {
   type CompletionContext,
 } from "@codemirror/autocomplete";
 import type { EditorView } from "@uiw/react-codemirror";
-import type { WorkflowStoreApi } from "../../../../../workflowStore";
+import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import {
   longestCommonPrefix,
   prefixMatch,

@@ -11,7 +11,7 @@ import {
   prefixMatch,
   requiredInExpression,
 } from "./utils";
-import type { WorkflowStoreApi } from "../../../../../workflowStore";
+import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
 import { PREVIOUS_NODES_SECTION } from "./utils/SectionHeader";
 

@@ -3,7 +3,7 @@ import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 
 import "./index.less";
 import "./theme.css";
-import { useWorkflowStoreApi } from "../../../../workflowStore";
+import { useWorkflowStoreApi } from "../../../../models/workflowStore";
 import { highlightExtension } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
 import { createExpressionLanguageSupport } from "./langParse";

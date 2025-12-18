@@ -16,7 +16,7 @@ import { Resizable } from "re-resizable";
 import {
   UpdateWorkflowStoreProvider,
   WorkflowStoreProvider,
-} from "./workflowStore";
+} from "./models/workflowStore";
 
 function SideBarPanel() {
   const { selectedId, setSelectedId } = NodeSelectModel.useModel();

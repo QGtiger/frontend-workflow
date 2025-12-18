@@ -1,5 +1,5 @@
 import type { FlowDocument } from "@flowgram.ai/fixed-layout-editor";
-import type { CustomNodeData } from "./types";
+import type { CustomNodeData } from "../../types";
 import {
   createContext,
   useContext,
@@ -11,8 +11,9 @@ import { createStore, useStore } from "zustand";
 import {
   generateMockDataByOutputStruct,
   getAllPreviousNodesByDocument,
-} from "./workflowStoreUtils";
+} from "./utils";
 import { executeSandboxSync, type SandboxResult } from "@/common/sandbox";
+import { parseTemplateWithExpression } from "./parseTemplateWithExpression";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
@@ -25,6 +26,7 @@ interface WorkflowStoreAction {
   getAllPreviousNodes(): CustomNodeData[];
   setStoreState(state: Partial<WorkflowStoreState>): void;
   evaluateExpression(expression: string): SandboxResult<any>;
+  evaluateTemplate(template: string): any;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
@@ -59,18 +61,26 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       };
     }
 
+    function evaluateExpression(expression: string) {
+      return executeSandboxSync(expression, {
+        $,
+        globals: {
+          $workflow: {
+            name: config.name,
+            id: config.id,
+          },
+          $now: new Date(),
+        },
+      });
+    }
+
     return {
       ...config,
-      evaluateExpression(expression) {
-        return executeSandboxSync(expression, {
-          $,
-          globals: {
-            $workflow: {
-              name: config.name,
-              id: config.id,
-            },
-            $now: new Date(),
-          },
+      evaluateExpression,
+      evaluateTemplate(template: string) {
+        return parseTemplateWithExpression(template, (expression) => {
+          const { result } = evaluateExpression(expression);
+          return result;
         });
       },
       getAllPreviousNodes() {

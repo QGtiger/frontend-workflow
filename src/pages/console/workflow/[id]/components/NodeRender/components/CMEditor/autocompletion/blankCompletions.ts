@@ -1,7 +1,7 @@
 import type { CompletionContext } from "@codemirror/autocomplete";
 import { dollarOptions } from "./dollarCompletions";
 import { requiredInExpression } from "./utils";
-import type { WorkflowStoreApi } from "../../../../../workflowStore";
+import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 
 /**
  * Completions offered at the blank position: `{{ | }}`

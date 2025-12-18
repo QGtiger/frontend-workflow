@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useRef, type ComponentType } from "react";
 import type { NodeInputValue } from "../../../types";
 import { CMEditor } from "./CMEditor";
-import { useWorkflowStoreApi } from "../../../workflowStore";
+import { useWorkflowStoreApi } from "../../../models/workflowStore";
 
 export function FormItemWithExpression(props: {
   Componet: ComponentType<any>;

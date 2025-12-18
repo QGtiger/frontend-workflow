@@ -10,7 +10,7 @@ import {
 import { styleTags, tags as t } from "@lezer/highlight";
 import { parseMixed, type SyntaxNodeRef } from "@lezer/common";
 import { javascriptLanguage } from "@codemirror/lang-javascript";
-import type { WorkflowStoreApi } from "../../../../../workflowStore";
+import type { WorkflowStoreApi } from "../../../../../models/workflowStore/index.tsx";
 import { dollarCompletions } from "../autocompletion/dollarCompletions";
 import { blankCompletions } from "../autocompletion/blankCompletions";
 import { nonDollarCompletions } from "../autocompletion/nonDollarCompletions";
