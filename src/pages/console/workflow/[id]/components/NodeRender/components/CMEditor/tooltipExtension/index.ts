@@ -5,8 +5,6 @@ import {
   showTooltip,
   StateField,
   StateEffect,
-  ViewPlugin,
-  type PluginValue,
   type EditorState,
   type Tooltip,
 } from "@uiw/react-codemirror";
@@ -200,36 +198,8 @@ function getParamHintTooltip(state: EditorState): Tooltip | null {
   };
 }
 
-// ========== 4.5. 定义焦点变化 Effect ==========
-const setFocusEffect = StateEffect.define<boolean>();
-
-// ========== 4.6. 监听焦点变化的 ViewPlugin ==========
-const focusPlugin = ViewPlugin.fromClass(
-  class implements PluginValue {
-    constructor(private view: EditorView) {
-      // 初始化时添加焦点监听
-      this.view.dom.addEventListener("focus", this.onFocus);
-      this.view.dom.addEventListener("blur", this.onBlur);
-    }
-
-    onFocus = () => {
-      this.view.dispatch({
-        effects: setFocusEffect.of(true),
-      });
-    };
-
-    onBlur = () => {
-      this.view.dispatch({
-        effects: setFocusEffect.of(false),
-      });
-    };
-
-    destroy() {
-      this.view.dom.removeEventListener("focus", this.onFocus);
-      this.view.dom.removeEventListener("blur", this.onBlur);
-    }
-  }
-);
+// ========== 4.5. 定义清除 tooltip 的 Effect ==========
+const clearTooltipEffect = StateEffect.define<null>();
 
 // ========== 5. 定义 StateField ==========
 const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
@@ -238,13 +208,10 @@ const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
   },
 
   update(value, tr) {
-    // 监听焦点变化的 effect
+    // 检查是否有清除 tooltip 的 effect
     for (const effect of tr.effects) {
-      if (effect.is(setFocusEffect)) {
-        // 如果失焦，清除 tooltip
-        if (!effect.value) {
-          return { tooltip: null };
-        }
+      if (effect.is(clearTooltipEffect)) {
+        return { tooltip: null };
       }
     }
 
@@ -255,8 +222,25 @@ const paramHintField = StateField.define<{ tooltip: Tooltip | null }>({
   },
 
   provide: (field) =>
-    showTooltip.compute([field], (state) => state.field(field).tooltip),
+    showTooltip.compute([field], (state) => {
+      const tooltip = state.field(field).tooltip;
+      return tooltip;
+    }),
 });
 
-// ============ 6. 导出扩展（不包含 javascriptLanguage，避免默认样式） ============
-export const tooltipExtension = [focusPlugin, paramHintField];
+// ============ 6. 焦点插件 - 失焦时强制隐藏 tooltip ============
+const hideTooltipOnBlur = EditorView.domEventHandlers({
+  blur(_event, view) {
+    // 失焦时，发送清除 tooltip 的 effect
+    const currentTooltip = view.state.field(paramHintField).tooltip;
+    if (currentTooltip) {
+      view.dispatch({
+        effects: clearTooltipEffect.of(null),
+      });
+    }
+    return false;
+  },
+});
+
+// ============ 7. 导出扩展（不包含 javascriptLanguage，避免默认样式） ============
+export const tooltipExtension = [hideTooltipOnBlur, paramHintField];
