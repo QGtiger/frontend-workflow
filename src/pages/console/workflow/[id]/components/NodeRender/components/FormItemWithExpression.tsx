@@ -130,6 +130,9 @@ export function FormItemWithExpression(props: {
                   expression: v,
                 });
               }}
+              className={classNames(" hover:border-blue-500!", {
+                "border-blue-500! rounded-t-md! rounded-b-none!": focus,
+              })}
             />
 
             <motion.div
@@ -137,32 +140,90 @@ export function FormItemWithExpression(props: {
               animate={{
                 opacity: focus ? 1 : 0,
                 pointerEvents: focus ? "auto" : "none",
-                y: focus ? `100%` : "90%",
+                y: focus ? `100%` : "100%",
               }}
               transition={{ duration: 0.1 }}
               className={classNames(
-                "z-10 cm-viewer-wrapper max-h-[400px] overflow-auto absolute right-0 bottom-0 w-full box-border bg-white shadow-sm rounded-b-md p-2"
+                "z-10 max-h-[400px] overflow-auto absolute right-0 bottom-0 w-full box-border bg-white shadow-md rounded-b-md border border-t-0 border-gray-200"
               )}
             >
-              {segments.map((it, index) => {
-                if (isObject(it)) {
-                  return (
-                    <span
-                      key={index}
-                      className={classNames(
-                        "cm-viewer-expression",
-                        it.error
-                          ? "cm-viewer-expr-invalid"
-                          : "cm-viewer-expr-valid"
-                      )}
-                    >
-                      {getTextBySegment(it)}
-                    </span>
-                  );
-                } else {
-                  return <span key={index}>{it}</span>;
-                }
-              })}
+              {/* 标题栏 */}
+              <div className="sticky top-0 bg-linear-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-4 h-4 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium text-gray-700">
+                    表达式预览
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">实时计算结果</span>
+              </div>
+
+              {/* 内容区域 */}
+              <div className="cm-viewer-wrapper">
+                {segments.map((it, index) => {
+                  if (isObject(it)) {
+                    return (
+                      <span
+                        key={index}
+                        className={classNames(
+                          "cm-viewer-expression",
+                          it.error
+                            ? "cm-viewer-expr-invalid"
+                            : "cm-viewer-expr-valid"
+                        )}
+                      >
+                        {getTextBySegment(it)}
+                      </span>
+                    );
+                  } else {
+                    return <span key={index}>{it}</span>;
+                  }
+                })}
+              </div>
+
+              {/* 底部提示 */}
+              <div className="sticky bottom-0 bg-gray-50 px-2 py-2 border-t border-gray-200">
+                <div className="flex items-start gap-2 text-xs text-gray-600">
+                  <svg
+                    className="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-xs">
+                    这是表达式的计算结果预览。
+                    <span className="text-green-600 font-medium">
+                      绿色
+                    </span>{" "}
+                    表示计算成功，
+                    <span className="text-red-600 font-medium">红色</span>{" "}
+                    表示有错误。
+                  </span>
+                </div>
+              </div>
             </motion.div>
           </div>
           <ResultViewer segments={segments} />
