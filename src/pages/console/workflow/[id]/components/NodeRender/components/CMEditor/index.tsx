@@ -4,7 +4,7 @@ import CodeMirror, { EditorView, keymap } from "@uiw/react-codemirror";
 import "./index.less";
 import "./theme.css";
 import { useWorkflowStoreApi } from "../../../../workflowStore";
-import { highlightExpressions } from "./highlightExtension";
+import { highlightExtension } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
 import { createExpressionLanguageSupport } from "./langParse";
 
@@ -61,7 +61,7 @@ export function CMEditor({
             closeOnBlur: false,
           }),
           createExpressionLanguageSupport(workflowStoreApi),
-          highlightExpressions,
+          highlightExtension(workflowStoreApi),
           tooltipExtension,
         ]}
         basicSetup={{

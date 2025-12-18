@@ -12,7 +12,7 @@ import {
   generateMockDataByOutputStruct,
   getAllPreviousNodesByDocument,
 } from "./workflowStoreUtils";
-import { executeSandboxSync } from "@/common/sandbox";
+import { executeSandboxSync, type SandboxResult } from "@/common/sandbox";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
@@ -24,7 +24,7 @@ interface WorkflowStoreState {
 interface WorkflowStoreAction {
   getAllPreviousNodes(): CustomNodeData[];
   setStoreState(state: Partial<WorkflowStoreState>): void;
-  evaluateExpression(expression: string): any;
+  evaluateExpression(expression: string): SandboxResult<any>;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
@@ -40,7 +40,7 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       let nodeJson: CustomNodeData | undefined;
       flowDocument.traverse((it) => {
         const itJson = it.toJSON();
-        if (itJson.data?.name === nodeName) {
+        if (itJson?.data?.name === nodeName) {
           nodeJson = itJson.data as CustomNodeData;
           return true;
         }
