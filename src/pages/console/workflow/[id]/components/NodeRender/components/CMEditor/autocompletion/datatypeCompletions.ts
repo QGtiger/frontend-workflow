@@ -1,12 +1,10 @@
 import {
-  insertCompletionText,
-  pickedCompletion,
   type Completion,
   type CompletionContext,
 } from "@codemirror/autocomplete";
-import type { EditorView } from "@uiw/react-codemirror";
 import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import {
+  getOptionsByStaticMethod,
   longestCommonPrefix,
   prefixMatch,
   requiredInExpression,
@@ -14,41 +12,13 @@ import {
 } from "./utils";
 import { javascriptLanguage } from "@codemirror/lang-javascript";
 import { dateTimeExtensions } from "@/common/DateTime";
-import { createInfoBoxRenderer } from "./utils/CreateInfoBox";
-import { RECOMMENDED_SECTION } from "./utils/SectionHeader";
-import type { DocFunction } from "@/common/type";
 import { mathExtensions } from "@/common/Math";
 import { jsonExtensions } from "@/common/JSON";
 import { objectExtensions } from "@/common/Object";
 import { arrayExtensions } from "@/common/Array";
-
-/**
- * 创建补全应用函数
- * @param hasArgs 是否有参数，有参数时光标在括号中间
- */
-const createApplyCompletion = (hasArgs: boolean) => {
-  return (
-    view: EditorView,
-    completion: Completion,
-    from: number,
-    to: number
-  ) => {
-    const label = completion.label;
-
-    view.dispatch({
-      ...insertCompletionText(view.state, label, from, to),
-      annotations: pickedCompletion.of(completion),
-    });
-
-    // 有参数，光标移到括号中间
-    if (hasArgs) {
-      const cursorPos = from + label.length - 1; // 在 ) 前面
-      view.dispatch({
-        selection: { anchor: cursorPos },
-      });
-    }
-  };
-};
+import { NumberPrototypeMethods } from "@/common/NumberPrototype";
+import { ObjectPrototypeMethods } from "@/common/ObjectPrototype";
+import { ArrayPrototypeMethods } from "@/common/ArrayPrototype";
 
 const regexes = {
   generalRef: /\$[^$'"]+\.(.*)/, // $vars. or $workflow. or similar ones
@@ -76,25 +46,22 @@ const DATATYPE_REGEX = new RegExp(
     .join("|")
 );
 
-function getOptionsByStaticMethod(
-  funcMap: Record<string, DocFunction<(...args: any[]) => any>>
-) {
-  return Object.values(funcMap).map((func) => {
-    const _doc = func.doc;
-    const hasArgs = (_doc.args?.length ?? 0) > 0;
-    const label = `${_doc.name}()`;
-    return {
-      label,
-      apply: createApplyCompletion(hasArgs),
-      info: createInfoBoxRenderer(_doc),
-      section: RECOMMENDED_SECTION,
-    };
-  }) as Completion[];
+function datatypeOptions(baseData: any) {
+  if (baseData === null) return [];
+
+  if (Array.isArray(baseData)) {
+    return getOptionsByStaticMethod(ArrayPrototypeMethods);
+  } else if (typeof baseData === "number") {
+    return getOptionsByStaticMethod(NumberPrototypeMethods);
+  } else if (typeof baseData === "object") {
+    return getOptionsByStaticMethod(ObjectPrototypeMethods);
+  }
+
+  return [];
 }
 
 export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
-    console.log("datatypeCompletions context", DATATYPE_REGEX);
     const word = context.matchBefore(DATATYPE_REGEX);
 
     console.log("datatypeCompletions word", word);
@@ -120,6 +87,10 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
       options = getOptionsByStaticMethod(objectExtensions.functions);
     } else if (base === "Array") {
       options = getOptionsByStaticMethod(arrayExtensions.functions);
+    } else {
+      const { error, result } = _workflowStoreApi.evaluateExpression(base);
+      if (error) return null;
+      options = datatypeOptions(result);
     }
 
     const from = word.to - tail.length;

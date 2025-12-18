@@ -3,6 +3,27 @@ import { DateTimeMethods } from "./DateTime";
 import { JSONMethods } from "./JSON";
 import { MathMethods } from "./Math";
 import { ArrayMethods } from "./Array";
+import { ArrayPrototypeMethods } from "./ArrayPrototype";
+import { ObjectPrototypeMethods } from "./ObjectPrototype";
+import { NumberPrototypeMethods } from "./NumberPrototype";
+
+// ============ 初始化：扩展原型方法 ============
+// 在 Web 端直接扩展原型，方便沙盒使用
+
+// Array 和 Number 可以直接扩展
+Object.assign(Array.prototype, ArrayPrototypeMethods);
+Object.assign(Number.prototype, NumberPrototypeMethods);
+
+// Object.prototype 需要特殊处理，使用 defineProperty 设置为不可枚举
+// 这样不会影响 for...in 循环和 Object.keys() 等
+Object.keys(ObjectPrototypeMethods).forEach((key) => {
+  Object.defineProperty(Object.prototype, key, {
+    value: ObjectPrototypeMethods[key as keyof typeof ObjectPrototypeMethods],
+    writable: true,
+    enumerable: false, // 关键：不可枚举
+    configurable: false,
+  });
+});
 
 /**
  * 沙盒执行结果
@@ -122,10 +143,11 @@ function executeSandbox<T = any>(
       ...ArrayMethods,
       from: Array.from,
       of: Array.of,
+      isArray: Array.isArray,
     },
     DateTime: DateTimeMethods,
 
-    // 原生类型和构造函数（只读）
+    // 原生类型和构造函数（直接透传，原型方法已在模块初始化时扩展）
     Number: Number,
     String: String,
     Boolean: Boolean,

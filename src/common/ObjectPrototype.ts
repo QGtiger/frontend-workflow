@@ -2,106 +2,6 @@ import type { DocFunction } from "./type";
 
 // ============ 原型方法实现 ============
 
-const keys: DocFunction<() => string[]> = function (this: Record<string, any>) {
-  return Object.keys(this);
-} as any;
-keys.doc = {
-  name: "keys",
-  description: "获取对象的所有键",
-  returnType: "string[]",
-  isFunction: true,
-  examples: [
-    { example: "({ a: 1, b: 2 }).keys()", evaluated: "['a', 'b']" },
-    { example: "({}).keys()", evaluated: "[]" },
-  ],
-};
-
-const values: DocFunction<() => any[]> = function (this: Record<string, any>) {
-  return Object.values(this);
-} as any;
-values.doc = {
-  name: "values",
-  description: "获取对象的所有值",
-  returnType: "any[]",
-  isFunction: true,
-  examples: [
-    { example: "({ a: 1, b: 2 }).values()", evaluated: "[1, 2]" },
-    { example: "({}).values()", evaluated: "[]" },
-  ],
-};
-
-const entries: DocFunction<() => [string, any][]> = function (
-  this: Record<string, any>
-) {
-  return Object.entries(this);
-} as any;
-entries.doc = {
-  name: "entries",
-  description: "获取对象的所有键值对",
-  returnType: "[string, any][]",
-  isFunction: true,
-  examples: [
-    {
-      example: "({ a: 1, b: 2 }).entries()",
-      evaluated: "[['a', 1], ['b', 2]]",
-    },
-  ],
-};
-
-const get: DocFunction<(path: string, defaultValue?: any) => any> = function (
-  this: Record<string, any>,
-  path: string,
-  defaultValue?: any
-) {
-  const keys = path.replace(/\[(\d+)\]/g, ".$1").split(".");
-  const result = keys.reduce((obj: any, key: string) => {
-    return obj?.[key];
-  }, this);
-  return result === undefined ? defaultValue : result;
-} as any;
-get.doc = {
-  name: "get",
-  description: "安全获取嵌套属性值，支持路径字符串和默认值",
-  returnType: "any",
-  isFunction: true,
-  args: [
-    {
-      name: "path",
-      type: "string",
-      description: "属性路径，如 'a.b.c' 或 'a[0].b'",
-    },
-    {
-      name: "defaultValue",
-      type: "any",
-      optional: true,
-      description: "默认值",
-    },
-  ],
-  examples: [
-    { example: "({ a: { b: 1 } }).get('a.b')", evaluated: "1" },
-    { example: "({ a: [{ b: 2 }] }).get('a[0].b')", evaluated: "2" },
-    { example: "({}).get('a.b', 'default')", evaluated: "'default'" },
-  ],
-};
-
-const has: DocFunction<(key: string) => boolean> = function (
-  this: Record<string, any>,
-  key: string
-) {
-  return Object.prototype.hasOwnProperty.call(this, key);
-} as any;
-has.doc = {
-  name: "has",
-  description: "判断对象是否拥有指定的自有属性",
-  returnType: "boolean",
-  isFunction: true,
-  args: [{ name: "key", type: "string", description: "属性名" }],
-  examples: [
-    { example: "({ a: 1 }).has('a')", evaluated: "true" },
-    { example: "({ a: 1 }).has('b')", evaluated: "false" },
-  ],
-};
-
 const pick: DocFunction<(...keys: string[]) => any> = function (
   this: Record<string, any>,
   ...keys: string[]
@@ -203,33 +103,13 @@ isEmpty.doc = {
   ],
 };
 
-const size: DocFunction<() => number> = function (this: Record<string, any>) {
-  return Object.keys(this).length;
-} as any;
-size.doc = {
-  name: "size",
-  description: "获取对象的属性数量",
-  returnType: "number",
-  isFunction: true,
-  examples: [
-    { example: "({ a: 1, b: 2, c: 3 }).size()", evaluated: "3" },
-    { example: "({}).size()", evaluated: "0" },
-  ],
-};
-
 // ============ 导出 ObjectPrototype 扩展 ============
 
 export const ObjectPrototypeMethods = {
-  keys,
-  values,
-  entries,
-  get,
-  has,
   pick,
   omit,
   merge,
   isEmpty,
-  size,
 } as const;
 
 /**

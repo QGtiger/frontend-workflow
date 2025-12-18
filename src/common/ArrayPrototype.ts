@@ -2,26 +2,6 @@ import type { DocFunction } from "./type";
 
 // ============ 原型方法实现 ============
 
-const at: DocFunction<(index: number) => any> = function (
-  this: any[],
-  index: number
-) {
-  const len = this.length;
-  const i = index < 0 ? len + index : index;
-  return this[i];
-} as any;
-at.doc = {
-  name: "at",
-  description: "获取指定索引的元素，支持负数索引（-1 表示最后一个）",
-  returnType: "any",
-  isFunction: true,
-  args: [{ name: "index", type: "number", description: "索引，支持负数" }],
-  examples: [
-    { example: "[1, 2, 3].at(0)", evaluated: "1" },
-    { example: "[1, 2, 3].at(-1)", evaluated: "3" },
-  ],
-};
-
 const first: DocFunction<() => any> = function (this: any[]) {
   return this[0];
 } as any;
@@ -77,20 +57,6 @@ sum.doc = {
   examples: [
     { example: "[1, 2, 3, 4, 5].sum()", evaluated: "15" },
     { example: "[].sum()", evaluated: "0" },
-  ],
-};
-
-const reverse: DocFunction<() => any[]> = function (this: any[]) {
-  return [...this].reverse();
-} as any;
-reverse.doc = {
-  name: "reverse",
-  description: "反转数组，返回新数组（不修改原数组）",
-  returnType: "any[]",
-  isFunction: true,
-  examples: [
-    { example: "[1, 2, 3].reverse()", evaluated: "[3, 2, 1]" },
-    { example: "['a', 'b', 'c'].reverse()", evaluated: "['c', 'b', 'a']" },
   ],
 };
 
@@ -179,12 +145,10 @@ shuffle.doc = {
 // ============ 导出 ArrayPrototype 扩展 ============
 
 export const ArrayPrototypeMethods = {
-  at,
   first,
   last,
   randomItem,
   sum,
-  reverse,
   append,
   prepend,
   unique,
