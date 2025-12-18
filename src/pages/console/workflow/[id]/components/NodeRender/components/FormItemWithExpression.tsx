@@ -178,25 +178,29 @@ export function FormItemWithExpression(props: {
 
               {/* 内容区域 */}
               <div className="cm-viewer-wrapper">
-                {segments.map((it, index) => {
-                  if (isObject(it)) {
-                    return (
-                      <span
-                        key={index}
-                        className={classNames(
-                          "cm-viewer-expression",
-                          it.error
-                            ? "cm-viewer-expr-invalid"
-                            : "cm-viewer-expr-valid"
-                        )}
-                      >
-                        {getTextBySegment(it)}
-                      </span>
-                    );
-                  } else {
-                    return <span key={index}>{it}</span>;
-                  }
-                })}
+                {segments.length ? (
+                  segments.map((it, index) => {
+                    if (isObject(it)) {
+                      return (
+                        <span
+                          key={index}
+                          className={classNames(
+                            "cm-viewer-expression",
+                            it.error
+                              ? "cm-viewer-expr-invalid"
+                              : "cm-viewer-expr-valid"
+                          )}
+                        >
+                          {getTextBySegment(it)}
+                        </span>
+                      );
+                    } else {
+                      return <span key={index}>{it}</span>;
+                    }
+                  })
+                ) : (
+                  <span className="cm-viewer-placeholder">请输入表达式</span>
+                )}
               </div>
 
               {/* 底部提示 */}
