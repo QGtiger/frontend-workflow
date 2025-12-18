@@ -66,3 +66,14 @@ export function createExpressionLanguageSupport(
     )
   );
 }
+
+export function createAutocompleteExtension(
+  workflowStoreApi: WorkflowStoreApi
+) {
+  return [
+    dollarCompletions(workflowStoreApi),
+    blankCompletions(workflowStoreApi),
+    nonDollarCompletions,
+    datatypeCompletions(workflowStoreApi),
+  ];
+}

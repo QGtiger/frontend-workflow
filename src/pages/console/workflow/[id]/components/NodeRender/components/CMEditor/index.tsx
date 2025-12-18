@@ -6,7 +6,7 @@ import "./theme.css";
 import { useWorkflowStoreApi } from "../../../../models/workflowStore";
 import { highlightExtension } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
-import { createExpressionLanguageSupport } from "./langParse";
+import { createAutocompleteExtension } from "./langParse";
 import classNames from "classnames";
 import { useMemo } from "react";
 
@@ -49,8 +49,8 @@ export function CMEditor({
 }) {
   const workflowStoreApi = useWorkflowStoreApi();
 
-  const expressionLanguageSupport = useMemo(() => {
-    return createExpressionLanguageSupport(workflowStoreApi);
+  const autocompleteExtension = useMemo(() => {
+    return createAutocompleteExtension(workflowStoreApi);
   }, [workflowStoreApi]);
 
   return (
@@ -72,7 +72,9 @@ export function CMEditor({
             aboveCursor: true,
             closeOnBlur: false,
           }),
-          expressionLanguageSupport,
+          autocompletion({
+            override: autocompleteExtension,
+          }),
           highlightExtension(workflowStoreApi),
           tooltipExtension,
         ]}
