@@ -93,7 +93,8 @@ function getOptionsByStaticMethod(
 }
 
 export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
-  return requiredInExpression((context: CompletionContext) => {
+  return (context: CompletionContext) => {
+    console.log("datatypeCompletions context", DATATYPE_REGEX);
     const word = context.matchBefore(DATATYPE_REGEX);
 
     console.log("datatypeCompletions word", word);
@@ -131,5 +132,5 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
         return [0, lcp.length];
       },
     };
-  });
+  };
 }

@@ -51,7 +51,6 @@ export function createExpressionLanguageSupport(
 ) {
   // 创建最小语言，复用 JS parser，只提供 autocomplete
   const expressionLanguage = LRLanguage.define({
-    // @ts-expect-error lezer-lr v1.4.5
     parser: expressionLanguageWithNestedJsParser,
   });
 

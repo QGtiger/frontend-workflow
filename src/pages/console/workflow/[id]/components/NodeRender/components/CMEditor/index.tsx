@@ -8,6 +8,7 @@ import { highlightExtension } from "./highlightExtension";
 import { tooltipExtension } from "./tooltipExtension";
 import { createExpressionLanguageSupport } from "./langParse";
 import classNames from "classnames";
+import { useMemo } from "react";
 
 const autoInsertDoubleBraces = keymap.of([
   {
@@ -48,6 +49,10 @@ export function CMEditor({
 }) {
   const workflowStoreApi = useWorkflowStoreApi();
 
+  const expressionLanguageSupport = useMemo(() => {
+    return createExpressionLanguageSupport(workflowStoreApi);
+  }, [workflowStoreApi]);
+
   return (
     <div className={classNames("cm-editor-wrapper", className)}>
       <div className="cm-editor-fx-badge">
@@ -67,7 +72,7 @@ export function CMEditor({
             aboveCursor: true,
             closeOnBlur: false,
           }),
-          createExpressionLanguageSupport(workflowStoreApi),
+          expressionLanguageSupport,
           highlightExtension(workflowStoreApi),
           tooltipExtension,
         ]}

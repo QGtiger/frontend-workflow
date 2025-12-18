@@ -165,7 +165,7 @@ export function useEditorProps(
         onApply: debounce((ctx, opt) => {
           if (ctx.document.disposed) return;
           // Listen change to trigger auto save
-          console.log("auto save: ", ctx.document.toJSON());
+          // console.log("auto save: ", ctx.document.toJSON());
         }, 100),
       },
       /**
