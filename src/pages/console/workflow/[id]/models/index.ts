@@ -66,6 +66,12 @@ export const WorkflowDetailModel = createCustomModel(() => {
                   ],
                 },
               ],
+
+              sampleData: {
+                result: {
+                  data: "123",
+                },
+              },
             },
             blocks: [],
           },

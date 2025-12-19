@@ -18,6 +18,7 @@ import {
   getResultValue,
   parseTemplateForSegments,
 } from "./parseTemplateWithExpression";
+import type { EvaluateExpressionResult, TemplateSegment } from "./types";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
@@ -29,16 +30,23 @@ interface WorkflowStoreState {
 interface WorkflowStoreAction {
   getAllPreviousNodes(): CustomNodeData[];
   setStoreState(state: Partial<WorkflowStoreState>): void;
-  evaluateExpression(expression: string): SandboxResult<any>;
-  parseTemplateForSegments(template?: string): (string | SandboxResult<any>)[];
-  evaluateTemplateBySegments(segments: (string | SandboxResult<any>)[]): any;
+  evaluateExpression(expression: string): EvaluateExpressionResult<any>;
+  parseTemplateForSegments(
+    template?: string
+  ): (string | EvaluateExpressionResult<any>)[];
+  evaluateTemplateBySegments(segments: TemplateSegment[]): any;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
 
 export function createWorkflowStore(config: WorkflowStoreState) {
   const store = createStore<WorkflowStoreApi>((set, get) => {
-    function $(nodeName: string) {
+    type DollarFunction<T extends (...args: any[]) => any> = T & {
+      __isMock__?: boolean;
+    };
+    const $: DollarFunction<
+      (nodeName: string) => { isExecuted: boolean; outputs: any }
+    > = function (nodeName) {
       if (!nodeName) {
         throw new Error("当使用 $ 符号时，必须传入节点名称");
       }
@@ -59,15 +67,18 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       if (!outputStruct && !sampleData) {
         throw new Error(`节点 ${nodeName} 没有输出结构或样本数据`);
       }
+      $.__isMock__ = !sampleData;
       return {
         isExecuted: !!sampleData,
         outputs:
           sampleData || generateMockDataByOutputStruct(outputStruct || []),
       };
-    }
+    };
 
-    function evaluateExpression(expression: string): SandboxResult<any> {
-      return executeSandboxSync(expression, {
+    function evaluateExpression(
+      expression: string
+    ): EvaluateExpressionResult<any> {
+      const r = executeSandboxSync(expression, {
         $,
         globals: {
           $workflow: {
@@ -77,16 +88,30 @@ export function createWorkflowStore(config: WorkflowStoreState) {
           $now: new Date(),
         },
       });
+
+      if (typeof r.result === "function") {
+        return {
+          error: new Error(
+            `未将 “${expression}” 作为函数调用时，无法访问该符号`
+          ),
+        };
+      }
+
+      // 我可太聪明了
+      const isMock = $.__isMock__;
+      delete $.__isMock__;
+
+      return {
+        ...r,
+        isMock,
+      };
     }
 
     return {
       ...config,
       evaluateExpression,
       parseTemplateForSegments(template = "") {
-        return parseTemplateForSegments<SandboxResult<any>>(
-          template,
-          evaluateExpression
-        );
+        return parseTemplateForSegments(template, evaluateExpression);
       },
       evaluateTemplateBySegments(segments): any {
         if (segments.length === 0) {

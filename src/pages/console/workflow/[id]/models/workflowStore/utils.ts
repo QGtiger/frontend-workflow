@@ -1,7 +1,6 @@
 import type { FlowDocument } from "@flowgram.ai/fixed-layout-editor";
 import type { CustomNodeData, NodeOutputStructItem } from "../../types";
 import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
-import type { SandboxResult } from "@/common/sandbox";
 
 export function getAllPreviousNodesByDocument(
   nodeId: string,

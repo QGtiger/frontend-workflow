@@ -1,6 +1,4 @@
-import type { SandboxResult } from "@/common/sandbox";
-
-export type TemplateSegment<T = any> = string | SandboxResult<T>;
+import type { TemplateSegment } from "./types";
 
 export function getResultBySegment<T = any>(segment: TemplateSegment<T>): any {
   if (typeof segment === "string") {

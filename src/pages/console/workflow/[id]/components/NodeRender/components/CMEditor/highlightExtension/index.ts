@@ -38,14 +38,14 @@ const stateToDecoration: Record<ExpressionState, Decoration> = {
 };
 
 // ============ 5. 状态判定函数 ============
-function getExpressionState(error?: Error): ExpressionState {
-  if (!error) return "valid";
+function getExpressionState(error?: Error, isMock?: boolean): ExpressionState {
+  if (error) return "invalid";
 
-  if (error.message.includes("is not defined")) {
+  if (isMock) {
     return "pending";
   }
 
-  return "invalid";
+  return "valid";
 }
 
 export function highlightExtension(workflowStoreApi: WorkflowStoreApi) {
@@ -64,8 +64,9 @@ export function highlightExtension(workflowStoreApi: WorkflowStoreApi) {
       const to = from + match[0].length;
       const exprContent = match[1].trim();
 
-      const { error } = workflowStoreApi.evaluateExpression(exprContent);
-      const exprState = getExpressionState(error);
+      const { error, isMock } =
+        workflowStoreApi.evaluateExpression(exprContent);
+      const exprState = getExpressionState(error, isMock);
       const decoration = stateToDecoration[exprState];
 
       matches.push({ from, to, decoration });

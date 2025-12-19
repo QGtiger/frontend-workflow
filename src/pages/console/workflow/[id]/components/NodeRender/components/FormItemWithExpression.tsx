@@ -7,8 +7,8 @@ import type { NodeInputValue } from "../../../types";
 import { CMEditor } from "./CMEditor";
 import { useWorkflowStoreApi } from "../../../models/workflowStore";
 import type { SandboxResult } from "@/common/sandbox";
-import type { TemplateSegment } from "../../../models/workflowStore/parseTemplateWithExpression";
 import "./FormItemWithExpression.less";
+import type { TemplateSegment } from "../../../models/workflowStore/types";
 
 /**
  * 获取值的类型
@@ -181,12 +181,15 @@ export function FormItemWithExpression(props: {
                 {segments.length ? (
                   segments.map((it, index) => {
                     if (isObject(it)) {
+                      const { error, isMock } = it;
                       return (
                         <span
                           key={index}
                           className={classNames(
                             "cm-viewer-expression",
-                            it.error
+                            isMock
+                              ? "cm-viewer-expr-pending"
+                              : error
                               ? "cm-viewer-expr-invalid"
                               : "cm-viewer-expr-valid"
                           )}
