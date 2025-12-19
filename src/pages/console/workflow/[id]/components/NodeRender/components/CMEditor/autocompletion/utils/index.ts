@@ -87,9 +87,17 @@ const createApplyCompletion = (hasArgs: boolean) => {
     to: number
   ) => {
     const label = completion.label;
+    const doc = view.state.doc.toString();
+    const afterCursor = doc.slice(to);
+
+    // 跳过已存在的尾部括号，避免重复
+    let skipChars = 0;
+    if (label.endsWith("()") && afterCursor.startsWith(")")) {
+      skipChars = 1; // 跳过一个右括号
+    }
 
     view.dispatch({
-      ...insertCompletionText(view.state, label, from, to),
+      ...insertCompletionText(view.state, label, from, to + skipChars),
       annotations: pickedCompletion.of(completion),
     });
 
