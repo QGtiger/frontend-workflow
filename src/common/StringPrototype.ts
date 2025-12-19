@@ -614,4 +614,5 @@ export const StringPrototypeMethodsDoc: DocMetadata[] = Object.values(
   StringPrototypeMethods
 )
   .map((func) => func.doc)
-  .concat(StringPrototypeNativeMethodsDocs);
+  .concat(StringPrototypeNativeMethodsDocs)
+  .sort((a, b) => a.name.localeCompare(b.name));

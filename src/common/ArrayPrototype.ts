@@ -258,4 +258,5 @@ export const ArrayPrototypeMethodsDoc: DocMetadata[] = Object.values(
   ArrayPrototypeMethods
 )
   .map((func) => func.doc)
-  .concat(ArrayPrototypeNativeMethodsDocs);
+  .concat(ArrayPrototypeNativeMethodsDocs)
+  .sort((a, b) => a.name.localeCompare(b.name));

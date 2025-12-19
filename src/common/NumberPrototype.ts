@@ -1,4 +1,4 @@
-import type { DocFunction } from "./type";
+import type { DocFunction, DocMetadata } from "./type";
 
 // ============ 原型方法实现 ============
 
@@ -80,21 +80,6 @@ ceil.doc = {
     { example: "(3.1).ceil()", evaluated: "4" },
     { example: "(3.14159).ceil(2)", evaluated: "3.15" },
     { example: "(-2.5).ceil()", evaluated: "-2" },
-  ],
-};
-
-const abs: DocFunction<() => number> = function (this: number) {
-  return Math.abs(this);
-} as any;
-abs.doc = {
-  name: "abs",
-  description: "返回数字的绝对值",
-  returnType: "number",
-  isFunction: true,
-  examples: [
-    { example: "(-5).abs()", evaluated: "5" },
-    { example: "(5).abs()", evaluated: "5" },
-    { example: "(0).abs()", evaluated: "0" },
   ],
 };
 
@@ -256,21 +241,6 @@ isNegative.doc = {
   ],
 };
 
-const toInt: DocFunction<() => number> = function (this: number) {
-  return Math.trunc(this);
-} as any;
-toInt.doc = {
-  name: "toInt",
-  description: "将数字转换为整数（去除小数部分）",
-  returnType: "number",
-  isFunction: true,
-  examples: [
-    { example: "(3.14).toInt()", evaluated: "3" },
-    { example: "(-3.14).toInt()", evaluated: "-3" },
-    { example: "(5).toInt()", evaluated: "5" },
-  ],
-};
-
 const format: DocFunction<(options?: Intl.NumberFormatOptions) => string> =
   function (this: number, options?: Intl.NumberFormatOptions) {
     return new Intl.NumberFormat("zh-CN", options).format(this);
@@ -303,7 +273,6 @@ export const NumberPrototypeMethods = {
   round,
   floor,
   ceil,
-  abs,
   clamp,
   between,
   toPercent,
@@ -312,9 +281,55 @@ export const NumberPrototypeMethods = {
   isOdd,
   isPositive,
   isNegative,
-  toInt,
   format,
 } as const;
+
+// ============ 原生方法的文档定义 ============
+
+export const NumberPrototypeNativeMethodsDocs: DocMetadata[] = [
+  {
+    name: "toFixed",
+    description: "格式化数字为指定小数位数的字符串",
+    returnType: "string",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed",
+    args: [
+      {
+        name: "digits",
+        type: "number",
+        optional: true,
+        description: "小数位数，默认为 0",
+      },
+    ],
+    examples: [
+      { example: "(3.14159).toFixed(2)", evaluated: "'3.14'" },
+      { example: "(5).toFixed(2)", evaluated: "'5.00'" },
+      { example: "(2.34).toFixed(1)", evaluated: "'2.3'" },
+    ],
+  },
+  {
+    name: "toString",
+    description: "将数字转换为字符串，可指定进制（2-36）",
+    returnType: "string",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/toString",
+    args: [
+      {
+        name: "radix",
+        type: "number",
+        optional: true,
+        description: "进制（2-36），默认为 10",
+      },
+    ],
+    examples: [
+      { example: "(255).toString()", evaluated: "'255'" },
+      { example: "(255).toString(16)", evaluated: "'ff'" },
+      { example: "(10).toString(2)", evaluated: "'1010'" },
+    ],
+  },
+];
 
 /**
  * NumberPrototype 扩展映射（用于代码补全）
@@ -322,4 +337,12 @@ export const NumberPrototypeMethods = {
 export const numberPrototypeExtensions = {
   typeName: "NumberPrototype",
   functions: NumberPrototypeMethods,
+  nativeDocs: NumberPrototypeNativeMethodsDocs,
 };
+
+export const NumberPrototypeMethodsDoc: DocMetadata[] = Object.values(
+  NumberPrototypeMethods
+)
+  .map((func) => func.doc)
+  .concat(NumberPrototypeNativeMethodsDocs)
+  .sort((a, b) => a.name.localeCompare(b.name));

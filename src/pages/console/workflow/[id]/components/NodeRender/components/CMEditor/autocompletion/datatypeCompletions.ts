@@ -16,9 +16,9 @@ import { dateTimeExtensions } from "@/common/DateTime";
 import { mathExtensions } from "@/common/Math";
 import { jsonExtensions } from "@/common/JSON";
 import { objectExtensions } from "@/common/Object";
-import { NumberPrototypeMethods } from "@/common/NumberPrototype";
-import { ObjectPrototypeMethods } from "@/common/ObjectPrototype";
-import { ArrayPrototypeMethods } from "@/common/ArrayPrototype";
+import { NumberPrototypeMethodsDoc } from "@/common/NumberPrototype";
+import { ObjectPrototypeMethodsDoc } from "@/common/ObjectPrototype";
+import { ArrayPrototypeMethodsDoc } from "@/common/ArrayPrototype";
 import { ArrayStaticMethodsDoc } from "@/common/ArrayStatic";
 import { StringPrototypeMethodsDoc } from "@/common/StringPrototype";
 
@@ -52,13 +52,13 @@ function datatypeOptions(baseData: any) {
   if (baseData === null) return [];
 
   if (Array.isArray(baseData)) {
-    return getOptionsByStaticMethod(ArrayPrototypeMethods);
+    return getOptionsByStaticMethodDoc(ArrayPrototypeMethodsDoc);
   } else if (typeof baseData === "number") {
-    return getOptionsByStaticMethod(NumberPrototypeMethods);
+    return getOptionsByStaticMethodDoc(NumberPrototypeMethodsDoc);
   } else if (typeof baseData === "string") {
     return getOptionsByStaticMethodDoc(StringPrototypeMethodsDoc);
   } else if (typeof baseData === "object") {
-    return getOptionsByStaticMethod(ObjectPrototypeMethods);
+    return getOptionsByStaticMethodDoc(ObjectPrototypeMethodsDoc);
   }
 
   return [];

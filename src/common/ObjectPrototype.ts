@@ -1,4 +1,4 @@
-import type { DocFunction } from "./type";
+import type { DocFunction, DocMetadata } from "./type";
 
 // ============ 原型方法实现 ============
 
@@ -112,10 +112,49 @@ export const ObjectPrototypeMethods = {
   isEmpty,
 } as const;
 
+// ============ 原生方法的文档定义 ============
+
+export const ObjectPrototypeNativeMethodsDocs: DocMetadata[] = [
+  {
+    name: "hasOwnProperty",
+    description: "判断对象自身是否拥有指定的属性（不包括原型链）",
+    returnType: "boolean",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty",
+    args: [{ name: "prop", type: "string", description: "属性名" }],
+    examples: [
+      { example: "({ a: 1 }).hasOwnProperty('a')", evaluated: "true" },
+      { example: "({ a: 1 }).hasOwnProperty('b')", evaluated: "false" },
+      { example: "({ a: 1 }).hasOwnProperty('toString')", evaluated: "false" },
+    ],
+  },
+  {
+    name: "toString",
+    description: "返回对象的字符串表示",
+    returnType: "string",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/toString",
+    examples: [
+      { example: "({ a: 1 }).toString()", evaluated: "'[object Object]'" },
+      { example: "[1, 2, 3].toString()", evaluated: "'1,2,3'" },
+    ],
+  },
+];
+
 /**
  * ObjectPrototype 扩展映射（用于代码补全）
  */
 export const objectPrototypeExtensions = {
   typeName: "ObjectPrototype",
   functions: ObjectPrototypeMethods,
+  nativeDocs: ObjectPrototypeNativeMethodsDocs,
 };
+
+export const ObjectPrototypeMethodsDoc: DocMetadata[] = Object.values(
+  ObjectPrototypeMethods
+)
+  .map((func) => func.doc)
+  .concat(ObjectPrototypeNativeMethodsDocs)
+  .sort((a, b) => a.name.localeCompare(b.name));

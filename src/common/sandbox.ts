@@ -114,14 +114,6 @@ function executeSandbox<T = any>(
   // 创建安全的全局对象，只暴露必要的方法
   const safeGlobals = {
     // 原生对象的安全方法
-    Object: {
-      ...ObjectMethods,
-      // 保留一些原生的安全方法
-      freeze: Object.freeze,
-      seal: Object.seal,
-      create: Object.create,
-      is: Object.is,
-    },
     JSON: {
       ...JSONMethods,
     },
