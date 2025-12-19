@@ -51,11 +51,10 @@ function NewCard(props: React.PropsWithChildren) {
 
 const ConditionEditor = (props: any) => {
   const eleRef = useRef<HTMLDivElement>(null);
-  const eleSize = useSize(() => eleRef.current);
   const form = Form.useFormInstance();
   const { normalize } = useIpaasSchemaStore();
 
-  const large = eleSize?.width === undefined ? false : eleSize?.width > 540;
+  const large = false;
 
   return (
     <Form.List name={props.name}>
