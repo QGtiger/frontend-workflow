@@ -54,7 +54,13 @@ export function WorkflowLayoutEditor(
   /**
    * Editor Config
    */
-  const editorProps = useEditorProps({ nodes }, NodeRegistries);
+  const editorProps = useEditorProps({
+    initialData: { nodes },
+    nodeRegistries: NodeRegistries,
+    onHistoryChange: (ctx) => {
+      onNodesChange(ctx.document.toJSON().nodes);
+    },
+  });
 
   return (
     <WorkflowLayoutEditorModel.Provider value={props}>

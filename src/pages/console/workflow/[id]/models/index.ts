@@ -2,9 +2,10 @@ import { createCustomModel } from "@/common/createModel";
 import type { IPaasFormSchema } from "@/components/IPaaSForm";
 import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
 import { useRequest } from "ahooks";
-import { useCallback, useLayoutEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import type { NodeOutputStructItem } from "../types";
+import { Modal } from "antd";
 
 export type WorkflowDetailData = {
   nodes: FlowNodeJSON[];
@@ -19,6 +20,9 @@ export type WorkflowDetailData = {
 
 export const WorkflowDetailModel = createCustomModel(() => {
   const { id } = useParams();
+  const nav = useNavigate();
+  const latestNodesRef = useRef<WorkflowDetailData["nodes"] | null>(null);
+  const isRouterBlockPassRef = useRef(false);
 
   useLayoutEffect(() => {
     document.documentElement.style.overflow = "hidden";
@@ -189,10 +193,72 @@ export const WorkflowDetailModel = createCustomModel(() => {
     }
   );
 
+  const { runAsync: updateWorkflowNodes } = useRequest(
+    async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return data;
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const checkChange = useCallback(() => {
+    const latestNodes = latestNodesRef.current;
+    if (!latestNodes || !data) {
+      return;
+    }
+    if (JSON.stringify(latestNodes) !== JSON.stringify(data?.nodes)) {
+      return true;
+    }
+  }, [data]);
+
+  useBlocker(({ nextLocation }) => {
+    if (isRouterBlockPassRef.current) return false;
+    if (checkChange()) {
+      const go = () => {
+        isRouterBlockPassRef.current = true;
+        nav(nextLocation);
+      };
+      Modal.confirm({
+        icon: null,
+        title: "当前改动未保存",
+        content: "切换页面未保存内容较会丢失, 是否保存已编辑内容",
+        okText: "保存并跳转",
+        cancelText: "不保存跳转",
+        async onOk() {
+          return updateWorkflowNodes().then(go);
+        },
+        onCancel: go,
+      });
+      return true;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (checkChange()) {
+        e.preventDefault();
+        e.returnValue = "您有未保存的节点配置错误，确定要离开吗？";
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [checkChange]);
+
   return {
     workflowId: id,
     loading,
     workflowData: data!,
+    updateNodes: (latestNodes: WorkflowDetailData["nodes"]) => {
+      latestNodesRef.current = latestNodes;
+    },
   };
 });
 

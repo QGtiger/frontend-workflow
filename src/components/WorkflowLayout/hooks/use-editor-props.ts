@@ -15,6 +15,7 @@ import {
   FlowRendererKey,
   ShortcutsRegistry,
   ConstantKeys,
+  FixedLayoutPluginContext,
 } from "@flowgram.ai/fixed-layout-editor";
 
 import { type FlowNodeRegistry } from "../typings";
@@ -32,10 +33,15 @@ import { BaseNode } from "../components/base-node";
 
 // import { DragNode, AgentAdder } from "../components";
 
-export function useEditorProps(
-  initialData: FlowDocumentJSON,
-  nodeRegistries: FlowNodeRegistry[]
-): FixedLayoutProps {
+export function useEditorProps({
+  initialData,
+  nodeRegistries,
+  onHistoryChange,
+}: {
+  initialData: FlowDocumentJSON;
+  nodeRegistries: FlowNodeRegistry[];
+  onHistoryChange: (ctx: FixedLayoutPluginContext) => void;
+}): FixedLayoutProps {
   return useMemo<FixedLayoutProps>(
     () => ({
       /**
@@ -165,7 +171,8 @@ export function useEditorProps(
         onApply: debounce((ctx, opt) => {
           if (ctx.document.disposed) return;
           // Listen change to trigger auto save
-          // console.log("auto save: ", ctx.document.toJSON());
+          console.log("auto save: ", ctx.document.toJSON());
+          onHistoryChange?.(ctx);
         }, 100),
       },
       /**
@@ -290,6 +297,6 @@ export function useEditorProps(
         // createVariablePanelPlugin({}),
       ],
     }),
-    [initialData, nodeRegistries]
+    [initialData, nodeRegistries, onHistoryChange]
   );
 }

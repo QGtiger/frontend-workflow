@@ -117,7 +117,7 @@ function SideBarPanel() {
 }
 
 function WorkflowDetail() {
-  const { workflowData } = WorkflowDetailModel.useModel();
+  const { workflowData, updateNodes } = WorkflowDetailModel.useModel();
   const { selectedId, setSelectedId } = NodeSelectModel.useModel();
   const {
     showConnectorSelectorModal,
@@ -130,7 +130,9 @@ function WorkflowDetail() {
       <div className="flex-1 relative overflow-hidden">
         <WorkflowLayoutEditor
           nodes={workflowData?.nodes ?? []}
-          onNodesChange={() => {}}
+          onNodesChange={(nodes) => {
+            updateNodes(nodes);
+          }}
           onAddNode={({ builtInNodes, from, addBlock }) => {
             showConnectorSelectorModal({
               builtInNodes: builtInNodes,
