@@ -183,7 +183,6 @@ export function createTooltipExtension(
 
     return {
       pos: offset + argList.from,
-      above: true,
       create: () => {
         const element = document.createElement("div");
         element.classList.add("cm-cursorInfo");
