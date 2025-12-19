@@ -4,6 +4,8 @@ import {
 } from "@codemirror/autocomplete";
 import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import {
+  createCompletion,
+  getDisplayType,
   getOptionsByStaticMethod,
   getOptionsByStaticMethodDoc,
   longestCommonPrefix,
@@ -22,6 +24,7 @@ import { ArrayStaticMethodsDoc } from "@/common/ArrayStatic";
 import { ObjectStaticMethodsDoc } from "@/common/ObjectStatic";
 import { StringPrototypeMethodsDoc } from "@/common/StringPrototype";
 import { DatePrototypeMethodsDoc } from "@/common/DatePrototype";
+import { METHODS_SECTION, PROPERTIES_SECTION } from "./utils/SectionHeader";
 
 const regexes = {
   generalRef: /\$[^$'"]+\.(.*)/, // $vars. or $workflow. or similar ones
@@ -61,7 +64,56 @@ function datatypeOptions(baseData: any) {
   } else if (Array.isArray(baseData)) {
     return getOptionsByStaticMethodDoc(ArrayPrototypeMethodsDoc);
   } else if (typeof baseData === "object") {
-    return getOptionsByStaticMethodDoc(ObjectPrototypeMethodsDoc);
+    const descriptors = Object.getOwnPropertyDescriptors(baseData);
+    const rawKeys = Object.keys(descriptors).sort((a, b) => a.localeCompare(b));
+
+    const prototypeOptions =
+      baseData === Math
+        ? getOptionsByStaticMethodDoc(MathMethodsDoc)
+        : getOptionsByStaticMethodDoc(ObjectPrototypeMethodsDoc);
+
+    return rawKeys.reduce(
+      (acc, key) => {
+        const resolvedProp = baseData[key];
+        const isFunction = typeof resolvedProp === "function";
+
+        // 方法的 label 是 key() ，属性是 key
+        const label = isFunction ? `${key}()` : key;
+        // it.label 可能是 属性 或者 方法，避免重复
+        if (acc.some((it) => it.label === label)) {
+          return acc;
+        }
+
+        const completion = createCompletion(
+          {
+            name: key,
+            isFunction,
+            returnType: isFunction ? "unknown" : getDisplayType(resolvedProp),
+            description: "",
+            args: isFunction
+              ? Array.from(
+                  {
+                    length: resolvedProp.length,
+                  },
+                  (_, i) => {
+                    return {
+                      name: `arg${i}`,
+                      type: "any",
+                      description: "",
+                    };
+                  }
+                )
+              : [],
+          },
+          {
+            section: isFunction ? METHODS_SECTION : PROPERTIES_SECTION,
+          }
+        );
+        acc.push(completion);
+        return acc;
+      },
+      [...prototypeOptions]
+    );
   }
 
   return [];
@@ -84,8 +136,6 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     // 静态方法的提示
     if (base === "DateTime") {
       options = getOptionsByStaticMethod(dateTimeExtensions.functions);
-    } else if (base === "Math") {
-      options = getOptionsByStaticMethodDoc(MathMethodsDoc);
     } else if (base === "JSON") {
       options = getOptionsByStaticMethod(jsonExtensions.functions);
     } else if (base === "Object") {

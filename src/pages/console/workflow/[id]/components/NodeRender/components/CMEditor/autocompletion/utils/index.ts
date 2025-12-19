@@ -5,6 +5,7 @@ import {
   type Completion,
   type CompletionContext,
   type CompletionResult,
+  type CompletionSection,
 } from "@codemirror/autocomplete";
 
 import type { SyntaxNode, Tree } from "@lezer/common";
@@ -111,6 +112,18 @@ const createApplyCompletion = (hasArgs: boolean) => {
   };
 };
 
+export const getDisplayType = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    if (value.length > 0) {
+      return `${getDisplayType(value[0])}[]`;
+    }
+    return "Array";
+  }
+  if (value === null) return "null";
+  if (typeof value === "object") return "Object";
+  return (typeof value).toLocaleLowerCase();
+};
+
 export function getOptionsByStaticMethod(
   funcMap: Record<string, DocFunction<(...args: any[]) => any>>,
   option?: {
@@ -131,22 +144,26 @@ export function getOptionsByStaticMethod(
   }) as Completion[];
 }
 
-export function getOptionsByStaticMethodDoc(
-  docList: DocMetadata[],
-
-  option?: {
-    commonOpt: Partial<Completion>;
+export function createCompletion(
+  doc: DocMetadata,
+  options?: {
+    section: CompletionSection;
   }
-) {
+): Completion {
+  const hasArgs = (doc.args?.length ?? 0) > 0;
+  const label = doc.isFunction ? `${doc.name}()` : doc.name;
+  return {
+    label,
+    apply: createApplyCompletion(hasArgs),
+    info: createInfoBoxRenderer(doc),
+    ...options,
+  };
+}
+
+export function getOptionsByStaticMethodDoc(docList: DocMetadata[]) {
   return docList.map((doc) => {
-    const hasArgs = (doc.args?.length ?? 0) > 0;
-    const label = `${doc.name}()`;
-    return {
-      label,
-      apply: createApplyCompletion(hasArgs),
-      info: createInfoBoxRenderer(doc),
+    return createCompletion(doc, {
       section: RECOMMENDED_SECTION,
-      ...option?.commonOpt,
-    };
+    });
   }) as Completion[];
 }
