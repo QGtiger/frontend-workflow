@@ -52,7 +52,50 @@ const DATATYPE_REGEX = new RegExp(
     .join("|")
 );
 
-function datatypeOptions(baseData: any) {
+type AutoCompletionInput = {
+  base: string;
+  baseData: any;
+};
+
+function getCustomOptions(autoCompletionInput: AutoCompletionInput) {
+  const { base } = autoCompletionInput;
+
+  // 去掉括号，规范化 base
+  const normalizedBase = base.replaceAll(/^(\()|(\))$/g, "");
+
+  // 自定义补全： $workflow 或者 ($workflow)
+  if (normalizedBase === "$workflow") {
+    return [
+      createCompletion(
+        {
+          name: "name",
+          isFunction: false,
+          returnType: "string",
+          description: "工作流名称",
+        },
+        {
+          section: PROPERTIES_SECTION,
+        }
+      ),
+      createCompletion(
+        {
+          name: "id",
+          isFunction: false,
+          returnType: "string",
+          description: "工作流 ID",
+        },
+        {
+          section: PROPERTIES_SECTION,
+        }
+      ),
+    ];
+  }
+
+  return [];
+}
+
+function datatypeOptions(autoCompletionInput: AutoCompletionInput) {
+  const { baseData } = autoCompletionInput;
   if (baseData === null) return [];
 
   if (typeof baseData === "number") {
@@ -133,8 +176,13 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
 
     let options: Completion[] = [];
 
-    // 静态方法的提示
-    if (base === "DateTime") {
+    // 先检查自定义补全
+    const customOptions = getCustomOptions({ base, baseData: undefined });
+
+    if (customOptions.length > 0) {
+      options = customOptions;
+    } else if (base === "DateTime") {
+      // 静态方法的提示
       options = getOptionsByStaticMethod(dateTimeExtensions.functions);
     } else if (base === "JSON") {
       options = getOptionsByStaticMethod(jsonExtensions.functions);
@@ -145,7 +193,10 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     } else {
       const { error, result } = _workflowStoreApi.evaluateExpression(base);
       if (error) return null;
-      options = datatypeOptions(result);
+      options = datatypeOptions({
+        base,
+        baseData: result,
+      });
     }
 
     const from = word.to - tail.length;
