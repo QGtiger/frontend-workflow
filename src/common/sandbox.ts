@@ -2,7 +2,6 @@ import { ObjectMethods } from "./Object";
 import { DateTimeMethods } from "./DateTime";
 import { JSONMethods } from "./JSON";
 import { MathMethods } from "./Math";
-import { ArrayMethods } from "./Array";
 import { ArrayPrototypeMethods } from "./ArrayPrototype";
 import { ObjectPrototypeMethods } from "./ObjectPrototype";
 import { NumberPrototypeMethods } from "./NumberPrototype";
@@ -138,12 +137,6 @@ function executeSandbox<T = any>(
       tan: Math.tan,
       log: Math.log,
       exp: Math.exp,
-    },
-    Array: {
-      ...ArrayMethods,
-      from: Array.from,
-      of: Array.of,
-      isArray: Array.isArray,
     },
     DateTime: DateTimeMethods,
 

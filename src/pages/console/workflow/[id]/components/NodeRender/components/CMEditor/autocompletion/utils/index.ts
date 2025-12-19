@@ -1,4 +1,4 @@
-import type { DocFunction } from "@/common/type";
+import type { DocFunction, DocMetadata } from "@/common/type";
 import {
   insertCompletionText,
   pickedCompletion,
@@ -117,6 +117,26 @@ export function getOptionsByStaticMethod(
       label,
       apply: createApplyCompletion(hasArgs),
       info: createInfoBoxRenderer(_doc),
+      section: RECOMMENDED_SECTION,
+      ...option?.commonOpt,
+    };
+  }) as Completion[];
+}
+
+export function getOptionsByStaticMethodDoc(
+  docList: DocMetadata[],
+
+  option?: {
+    commonOpt: Partial<Completion>;
+  }
+) {
+  return docList.map((doc) => {
+    const hasArgs = (doc.args?.length ?? 0) > 0;
+    const label = `${doc.name}()`;
+    return {
+      label,
+      apply: createApplyCompletion(hasArgs),
+      info: createInfoBoxRenderer(doc),
       section: RECOMMENDED_SECTION,
       ...option?.commonOpt,
     };

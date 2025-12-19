@@ -5,6 +5,7 @@ import {
 import type { WorkflowStoreApi } from "../../../../../models/workflowStore";
 import {
   getOptionsByStaticMethod,
+  getOptionsByStaticMethodDoc,
   longestCommonPrefix,
   prefixMatch,
   requiredInExpression,
@@ -15,10 +16,10 @@ import { dateTimeExtensions } from "@/common/DateTime";
 import { mathExtensions } from "@/common/Math";
 import { jsonExtensions } from "@/common/JSON";
 import { objectExtensions } from "@/common/Object";
-import { arrayExtensions } from "@/common/Array";
 import { NumberPrototypeMethods } from "@/common/NumberPrototype";
 import { ObjectPrototypeMethods } from "@/common/ObjectPrototype";
 import { ArrayPrototypeMethods } from "@/common/ArrayPrototype";
+import { ArrayStaticMethodsDoc } from "@/common/ArrayStatic";
 
 const regexes = {
   generalRef: /\$[^$'"]+\.(.*)/, // $vars. or $workflow. or similar ones
@@ -64,8 +65,6 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
   return requiredInExpression((context: CompletionContext) => {
     const word = context.matchBefore(DATATYPE_REGEX);
 
-    console.log("datatypeCompletions word", word);
-
     if (!word) return null;
 
     const syntaxTree = javascriptLanguage.parser.parse(word.text);
@@ -86,7 +85,7 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     } else if (base === "Object") {
       options = getOptionsByStaticMethod(objectExtensions.functions);
     } else if (base === "Array") {
-      options = getOptionsByStaticMethod(arrayExtensions.functions);
+      options = getOptionsByStaticMethodDoc(ArrayStaticMethodsDoc);
     } else {
       const { error, result } = _workflowStoreApi.evaluateExpression(base);
       if (error) return null;
