@@ -5,6 +5,7 @@ import { MathMethods } from "./Math";
 import { ArrayPrototypeMethods } from "./ArrayPrototype";
 import { ObjectPrototypeMethods } from "./ObjectPrototype";
 import { NumberPrototypeMethods } from "./NumberPrototype";
+import { StringPrototypeMethods } from "./StringPrototype";
 
 // ============ 初始化：扩展原型方法 ============
 // 在 Web 端直接扩展原型，方便沙盒使用
@@ -12,6 +13,7 @@ import { NumberPrototypeMethods } from "./NumberPrototype";
 // Array 和 Number 可以直接扩展
 Object.assign(Array.prototype, ArrayPrototypeMethods);
 Object.assign(Number.prototype, NumberPrototypeMethods);
+Object.assign(String.prototype, StringPrototypeMethods);
 
 // Object.prototype 需要特殊处理，使用 defineProperty 设置为不可枚举
 // 这样不会影响 for...in 循环和 Object.keys() 等

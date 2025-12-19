@@ -20,6 +20,7 @@ import { NumberPrototypeMethods } from "@/common/NumberPrototype";
 import { ObjectPrototypeMethods } from "@/common/ObjectPrototype";
 import { ArrayPrototypeMethods } from "@/common/ArrayPrototype";
 import { ArrayStaticMethodsDoc } from "@/common/ArrayStatic";
+import { StringPrototypeMethodsDoc } from "@/common/StringPrototype";
 
 const regexes = {
   generalRef: /\$[^$'"]+\.(.*)/, // $vars. or $workflow. or similar ones
@@ -54,6 +55,8 @@ function datatypeOptions(baseData: any) {
     return getOptionsByStaticMethod(ArrayPrototypeMethods);
   } else if (typeof baseData === "number") {
     return getOptionsByStaticMethod(NumberPrototypeMethods);
+  } else if (typeof baseData === "string") {
+    return getOptionsByStaticMethodDoc(StringPrototypeMethodsDoc);
   } else if (typeof baseData === "object") {
     return getOptionsByStaticMethod(ObjectPrototypeMethods);
   }
