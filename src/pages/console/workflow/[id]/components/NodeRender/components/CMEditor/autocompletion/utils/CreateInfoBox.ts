@@ -67,12 +67,25 @@ export function createInfoBox(
   //   return container;
   // }
 
+  let desc: HTMLElement | undefined;
+
   // 描述
   if (doc.description) {
-    const desc = document.createElement("div");
+    desc = document.createElement("div");
     desc.className = "info-desc";
-    desc.textContent = doc.description;
+    desc.textContent = doc.description + "  ";
     container.appendChild(desc);
+  }
+
+  // 文档链接
+  if (doc.docURL) {
+    const link = document.createElement("a");
+    link.className = "info-doc-link";
+    link.href = doc.docURL;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "文档 ↗";
+    (desc ?? container).appendChild(link);
   }
 
   // 参数
@@ -130,17 +143,6 @@ export function createInfoBox(
       exBox.appendChild(item);
     }
     container.appendChild(exBox);
-  }
-
-  // 文档链接
-  if (doc.docURL) {
-    const link = document.createElement("a");
-    link.className = "info-doc-link";
-    link.href = doc.docURL;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = "文档 ↗";
-    container.appendChild(link);
   }
 
   return container;

@@ -209,20 +209,6 @@ mask.doc = {
   ],
 };
 
-const removeSpaces: DocFunction<() => string> = function (this: string) {
-  return this.replace(/\s+/g, "");
-} as any;
-removeSpaces.doc = {
-  name: "removeSpaces",
-  description: "移除所有空白字符",
-  returnType: "string",
-  isFunction: true,
-  examples: [
-    { example: "'hello world'.removeSpaces()", evaluated: "'helloworld'" },
-    { example: "'a b  c   d'.removeSpaces()", evaluated: "'abcd'" },
-  ],
-};
-
 const words: DocFunction<() => string[]> = function (this: string) {
   return this.match(/[a-zA-Z0-9]+/g) || [];
 } as any;
@@ -279,7 +265,6 @@ export const StringPrototypeMethods = {
   toNumber,
   isEmpty,
   mask,
-  removeSpaces,
   words,
   count,
 } as const;
@@ -292,6 +277,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "返回指定索引位置的字符",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/charAt",
     args: [{ name: "index", type: "number", description: "字符索引" }],
     examples: [
       { example: "'hello'.charAt(0)", evaluated: "'h'" },
@@ -303,6 +290,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "连接两个或多个字符串",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/concat",
     args: [
       {
         name: "strings",
@@ -321,6 +310,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "判断字符串是否包含指定的子字符串",
     returnType: "boolean",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/includes",
     args: [
       { name: "searchString", type: "string", description: "要搜索的字符串" },
       {
@@ -340,6 +331,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "返回子字符串首次出现的索引，未找到返回 -1",
     returnType: "number",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf",
     args: [
       { name: "searchString", type: "string", description: "要搜索的字符串" },
       {
@@ -359,6 +352,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "提取字符串的一部分并返回新字符串",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/slice",
     args: [
       { name: "start", type: "number", description: "开始索引" },
       { name: "end", type: "number", optional: true, description: "结束索引" },
@@ -374,6 +369,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "将字符串分割为数组",
     returnType: "string[]",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/split",
     args: [
       {
         name: "separator",
@@ -397,6 +394,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "转换为小写",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase",
     examples: [{ example: "'HELLO'.toLowerCase()", evaluated: "'hello'" }],
   },
   {
@@ -404,6 +403,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "转换为大写",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase",
     examples: [{ example: "'hello'.toUpperCase()", evaluated: "'HELLO'" }],
   },
   {
@@ -411,6 +412,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "移除字符串两端的空白字符",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/trim",
     examples: [{ example: "'  hello  '.trim()", evaluated: "'hello'" }],
   },
   {
@@ -418,6 +421,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "移除字符串开头的空白字符",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/trimStart",
     examples: [{ example: "'  hello'.trimStart()", evaluated: "'hello'" }],
   },
   {
@@ -425,6 +430,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "移除字符串末尾的空白字符",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/trimEnd",
     examples: [{ example: "'hello  '.trimEnd()", evaluated: "'hello'" }],
   },
   {
@@ -432,6 +439,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "用指定字符填充字符串开头到指定长度",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/padStart",
     args: [
       { name: "targetLength", type: "number", description: "目标长度" },
       {
@@ -451,6 +460,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "用指定字符填充字符串末尾到指定长度",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/padEnd",
     args: [
       { name: "targetLength", type: "number", description: "目标长度" },
       {
@@ -470,6 +481,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "重复字符串指定次数",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/repeat",
     args: [{ name: "count", type: "number", description: "重复次数" }],
     examples: [
       { example: "'ha'.repeat(3)", evaluated: "'hahaha'" },
@@ -481,6 +494,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "替换匹配的子字符串",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace",
     args: [
       {
         name: "searchValue",
@@ -503,6 +518,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "替换所有匹配的子字符串",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll",
     args: [
       { name: "searchValue", type: "string", description: "要搜索的值" },
       { name: "replaceValue", type: "string", description: "替换值" },
@@ -516,6 +533,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "判断字符串是否以指定子字符串开头",
     returnType: "boolean",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith",
     args: [
       { name: "searchString", type: "string", description: "要搜索的字符串" },
       {
@@ -535,6 +554,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "判断字符串是否以指定子字符串结尾",
     returnType: "boolean",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith",
     args: [
       { name: "searchString", type: "string", description: "要搜索的字符串" },
       {
@@ -554,6 +575,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "返回两个索引之间的子字符串",
     returnType: "string",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/substring",
     args: [
       { name: "start", type: "number", description: "开始索引" },
       { name: "end", type: "number", optional: true, description: "结束索引" },
@@ -568,6 +591,8 @@ export const StringPrototypeNativeMethodsDocs: DocMetadata[] = [
     description: "使用正则表达式匹配字符串",
     returnType: "RegExpMatchArray | null",
     isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/match",
     args: [{ name: "regexp", type: "RegExp", description: "正则表达式" }],
     examples: [
       { example: "'hello'.match(/l+/)", evaluated: "['ll']" },

@@ -1,4 +1,4 @@
-import type { DocFunction } from "./type";
+import type { DocFunction, DocMetadata } from "./type";
 
 // ============ 原型方法实现 ============
 
@@ -155,10 +155,107 @@ export const ArrayPrototypeMethods = {
   shuffle,
 } as const;
 
+// ============ 原生方法的文档定义 ============
+
+export const ArrayPrototypeNativeMethodsDocs: DocMetadata[] = [
+  {
+    name: "at",
+    description: "获取指定索引的元素，支持负数索引（-1 表示最后一个）",
+    returnType: "any",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/at",
+    args: [{ name: "index", type: "number", description: "索引，支持负数" }],
+    examples: [
+      { example: "[1, 2, 3].at(0)", evaluated: "1" },
+      { example: "[1, 2, 3].at(-1)", evaluated: "3" },
+      { example: "[1, 2, 3].at(-2)", evaluated: "2" },
+    ],
+  },
+  {
+    name: "map",
+    description:
+      "创建一个新数组，其结果是该数组中的每个元素都调用一次提供的函数后的返回值",
+    returnType: "any[]",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map",
+    args: [
+      {
+        name: "callback",
+        type: "(value: any, index: number, array: any[]) => any",
+        description: "回调函数",
+      },
+    ],
+    examples: [
+      { example: "[1, 2, 3].map(x => x * 2)", evaluated: "[2, 4, 6]" },
+      { example: "['a', 'b'].map((x, i) => x + i)", evaluated: "['a0', 'b1']" },
+    ],
+  },
+  {
+    name: "filter",
+    description: "创建一个新数组，包含所有通过测试的元素",
+    returnType: "any[]",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/filter",
+    args: [
+      {
+        name: "callback",
+        type: "(value: any, index: number, array: any[]) => boolean",
+        description: "测试函数",
+      },
+    ],
+    examples: [
+      { example: "[1, 2, 3, 4].filter(x => x > 2)", evaluated: "[3, 4]" },
+      {
+        example: "['a', 'b', 'c'].filter((_, i) => i % 2 === 0)",
+        evaluated: "['a', 'c']",
+      },
+    ],
+  },
+  {
+    name: "reduce",
+    description:
+      "对数组中的每个元素执行一个 reducer 函数，将其结果汇总为单个返回值",
+    returnType: "any",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce",
+    args: [
+      {
+        name: "callback",
+        type: "(accumulator: any, current: any, index: number, array: any[]) => any",
+        description: "reducer 函数",
+      },
+      {
+        name: "initialValue",
+        type: "any",
+        optional: true,
+        description: "初始值",
+      },
+    ],
+    examples: [
+      { example: "[1, 2, 3].reduce((acc, x) => acc + x, 0)", evaluated: "6" },
+      {
+        example: "['a', 'b', 'c'].reduce((acc, x) => acc + x)",
+        evaluated: "'abc'",
+      },
+    ],
+  },
+];
+
 /**
  * ArrayPrototype 扩展映射（用于代码补全）
  */
 export const arrayPrototypeExtensions = {
   typeName: "ArrayPrototype",
   functions: ArrayPrototypeMethods,
+  nativeDocs: ArrayPrototypeNativeMethodsDocs,
 };
+
+export const ArrayPrototypeMethodsDoc: DocMetadata[] = Object.values(
+  ArrayPrototypeMethods
+)
+  .map((func) => func.doc)
+  .concat(ArrayPrototypeNativeMethodsDocs);
