@@ -17,7 +17,7 @@ import {
 import classNames from "classnames";
 import { ScrollArea } from "@/components/ScrollArea";
 import { generateCustomNodeData } from "./utils";
-import { ConnectorSelectorModel } from "./models";
+import { ConnectorSelectorModel, WorkflowDetailModel } from "./models";
 import {
   FlowNodeEntity,
   useClientContext,
@@ -419,6 +419,7 @@ function ConnectorSelectorContent({
 
 export function useConnectorSelectorModal() {
   const [modal, modalContextHolder] = Modal.useModal();
+  const { getUniqueName } = WorkflowDetailModel.useModel();
 
   const showConnectorSelectorModal = (config: {
     builtInNodes: FlowNodeRegistry[];
@@ -441,6 +442,8 @@ export function useConnectorSelectorModal() {
         <ConnectorSelectorContent
           builtInLogicNodes={config.builtInNodes}
           onSelect={(dataJson) => {
+            dataJson.data.name = getUniqueName(dataJson.data?.name ?? "");
+            console.log(dataJson, dataJson.data?.name);
             config.addBlock(dataJson);
             ins.destroy();
           }}

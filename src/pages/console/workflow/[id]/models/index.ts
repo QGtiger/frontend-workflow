@@ -1,27 +1,49 @@
 import { createCustomModel } from "@/common/createModel";
 import type { IPaasFormSchema } from "@/components/IPaaSForm";
-import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
+
 import { useRequest } from "ahooks";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import type { NodeOutputStructItem } from "../types";
 import { Modal } from "antd";
+import type { WorkflowDetailData, WorkflowNode, WorkflowNoes } from "./types";
 
-export type WorkflowDetailData = {
-  nodes: FlowNodeJSON[];
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  // 状态，draft: 草稿，published: 已发布，unpublished: 未发布
-  status: "draft" | "published" | "unpublished";
-  id: string;
-};
+function trarverseNodes(
+  nodes: WorkflowNoes,
+  check: (node: WorkflowNode) => boolean | undefined
+) {
+  for (const node of nodes) {
+    let isOver = false;
+    node.blocks &&
+      trarverseNodes(node.blocks, (n) => {
+        if (check(n)) {
+          isOver = true;
+          return true;
+        }
+        return false;
+      });
+    if (isOver || check(node)) {
+      return;
+    }
+  }
+}
+
+function checkNameIsExist(s: string, nodes: WorkflowNoes) {
+  let isNameExist = false;
+  trarverseNodes(nodes, (n) => {
+    if (n.data?.name === s) {
+      isNameExist = true;
+      return true;
+    }
+  });
+
+  return isNameExist;
+}
 
 export const WorkflowDetailModel = createCustomModel(() => {
   const { id } = useParams();
   const nav = useNavigate();
-  const latestNodesRef = useRef<WorkflowDetailData["nodes"] | null>(null);
+  const latestNodesRef = useRef<WorkflowNoes | null>(null);
   const isRouterBlockPassRef = useRef(false);
 
   useLayoutEffect(() => {
@@ -35,7 +57,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
     async (): Promise<WorkflowDetailData> => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       // TODO 查询接口
-      return {
+      const wfData: WorkflowDetailData = {
         id: id!,
         nodes: [
           {
@@ -187,6 +209,8 @@ export const WorkflowDetailModel = createCustomModel(() => {
         updatedAt: new Date().toISOString(),
         status: "unpublished",
       };
+      latestNodesRef.current = wfData.nodes;
+      return wfData;
     },
     {
       refreshDeps: [id],
@@ -236,6 +260,27 @@ export const WorkflowDetailModel = createCustomModel(() => {
     return false;
   });
 
+  const getUniqueName = (name: string) => {
+    const latestNodes = latestNodesRef.current;
+    if (!latestNodes) {
+      return name;
+    }
+
+    let baseName = name.trim();
+    if (!baseName) throw new Error("name is empty");
+    while (true) {
+      if (!checkNameIsExist(baseName, latestNodes)) {
+        return baseName;
+      }
+      const lastChar = baseName.at(-1);
+      if (lastChar && !Number.isNaN(Number(lastChar))) {
+        baseName = baseName.slice(0, -1);
+      }
+      const n = lastChar ? (Number.parseInt(lastChar) || 0) + 1 : "";
+      baseName = `${baseName}${n}`;
+    }
+  };
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (checkChange()) {
@@ -256,9 +301,10 @@ export const WorkflowDetailModel = createCustomModel(() => {
     workflowId: id,
     loading,
     workflowData: data!,
-    updateNodes: (latestNodes: WorkflowDetailData["nodes"]) => {
+    updateNodes: (latestNodes: WorkflowNoes) => {
       latestNodesRef.current = latestNodes;
     },
+    getUniqueName,
   };
 });
 

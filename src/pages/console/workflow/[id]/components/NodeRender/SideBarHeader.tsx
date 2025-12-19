@@ -3,6 +3,7 @@ import { Input, Typography, type InputProps } from "antd";
 import { NodeDropdown } from "./NodeDropdown";
 import { CustomNodeRenderModel, useCustomNodeData } from "./model";
 import { useState } from "react";
+import { WorkflowDetailModel } from "../../models";
 
 function InputWithOutlined(
   props: InputProps & {
@@ -14,6 +15,7 @@ function InputWithOutlined(
   const finalValue = data[updateKey];
   const [value, setValue] = useState(finalValue);
   const { updateData } = CustomNodeRenderModel.useModel();
+  const { getUniqueName } = WorkflowDetailModel.useModel();
   return (
     <Input
       {...inputProps}
@@ -22,11 +24,12 @@ function InputWithOutlined(
         setValue(e.target.value);
       }}
       onBlur={() => {
-        if (value !== finalValue && value) {
-          console.log("updateData", updateKey, value);
+        if (value !== finalValue && value.trim()) {
+          const uniqueName = getUniqueName(value);
           updateData({
-            [updateKey]: value,
+            [updateKey]: uniqueName,
           });
+          setValue(uniqueName);
         } else {
           setValue(finalValue);
         }

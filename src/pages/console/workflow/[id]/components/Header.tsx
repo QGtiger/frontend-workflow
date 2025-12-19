@@ -6,7 +6,8 @@ import {
   EditOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import { WorkflowDetailModel, type WorkflowDetailData } from "../models";
+import { WorkflowDetailModel } from "../models";
+import type { WorkflowDetailData } from "../models/types";
 
 const statusConfig: Record<
   WorkflowDetailData["status"],
