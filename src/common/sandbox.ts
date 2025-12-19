@@ -1,4 +1,3 @@
-import { ObjectMethods } from "./Object";
 import { DateTimeMethods } from "./DateTime";
 import { JSONMethods } from "./JSON";
 import { MathMethods } from "./Math";
@@ -6,6 +5,7 @@ import { ArrayPrototypeMethods } from "./ArrayPrototype";
 import { ObjectPrototypeMethods } from "./ObjectPrototype";
 import { NumberPrototypeMethods } from "./NumberPrototype";
 import { StringPrototypeMethods } from "./StringPrototype";
+import { DatePrototypeMethods } from "./DatePrototype";
 
 // ============ 初始化：扩展原型方法 ============
 // 在 Web 端直接扩展原型，方便沙盒使用
@@ -14,6 +14,7 @@ import { StringPrototypeMethods } from "./StringPrototype";
 Object.assign(Array.prototype, ArrayPrototypeMethods);
 Object.assign(Number.prototype, NumberPrototypeMethods);
 Object.assign(String.prototype, StringPrototypeMethods);
+Object.assign(Date.prototype, DatePrototypeMethods);
 
 // Object.prototype 需要特殊处理，使用 defineProperty 设置为不可枚举
 // 这样不会影响 for...in 循环和 Object.keys() 等
@@ -22,6 +23,15 @@ Object.keys(ObjectPrototypeMethods).forEach((key) => {
     value: ObjectPrototypeMethods[key as keyof typeof ObjectPrototypeMethods],
     writable: true,
     enumerable: false, // 关键：不可枚举
+    configurable: false,
+  });
+});
+
+Object.keys(MathMethods).forEach((key) => {
+  Object.defineProperty(Math, key, {
+    value: MathMethods[key as keyof typeof MathMethods],
+    writable: true,
+    enumerable: false,
     configurable: false,
   });
 });
@@ -116,21 +126,6 @@ function executeSandbox<T = any>(
     // 原生对象的安全方法
     JSON: {
       ...JSONMethods,
-    },
-    Math: {
-      ...MathMethods,
-      // 保留 Math 的原生常量和方法
-      PI: Math.PI,
-      E: Math.E,
-      max: Math.max,
-      min: Math.min,
-      pow: Math.pow,
-      sqrt: Math.sqrt,
-      sin: Math.sin,
-      cos: Math.cos,
-      tan: Math.tan,
-      log: Math.log,
-      exp: Math.exp,
     },
     DateTime: DateTimeMethods,
 

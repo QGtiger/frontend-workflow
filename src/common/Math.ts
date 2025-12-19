@@ -1,101 +1,6 @@
-import type { DocFunction } from "./type";
+import type { DocFunction, DocMetadata } from "./type";
 
-// ============ 静态方法实现 ============
-
-const abs: DocFunction<(n: number) => number> = (n) => Math.abs(n);
-abs.doc = {
-  name: "abs",
-  description: "返回数字的绝对值",
-  returnType: "number",
-  isFunction: true,
-  args: [{ name: "n", type: "number", description: "数字" }],
-  examples: [
-    { example: "Math.abs(-5)", evaluated: "5" },
-    { example: "Math.abs(3)", evaluated: "3" },
-  ],
-};
-
-const round: DocFunction<(n: number, precision?: number) => number> = (
-  n,
-  precision = 0
-) => {
-  const factor = Math.pow(10, precision);
-  return Math.round(n * factor) / factor;
-};
-round.doc = {
-  name: "round",
-  description: "四舍五入，可指定小数位数",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    { name: "n", type: "number", description: "数字" },
-    {
-      name: "precision",
-      type: "number",
-      optional: true,
-      description: "小数位数，默认 0",
-    },
-  ],
-  examples: [
-    { example: "Math.round(3.456)", evaluated: "3" },
-    { example: "Math.round(3.456, 2)", evaluated: "3.46" },
-    { example: "Math.round(3.456, 1)", evaluated: "3.5" },
-  ],
-};
-
-const floor: DocFunction<(n: number, precision?: number) => number> = (
-  n,
-  precision = 0
-) => {
-  const factor = Math.pow(10, precision);
-  return Math.floor(n * factor) / factor;
-};
-floor.doc = {
-  name: "floor",
-  description: "向下取整，可指定小数位数",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    { name: "n", type: "number", description: "数字" },
-    {
-      name: "precision",
-      type: "number",
-      optional: true,
-      description: "小数位数，默认 0",
-    },
-  ],
-  examples: [
-    { example: "Math.floor(3.9)", evaluated: "3" },
-    { example: "Math.floor(3.456, 2)", evaluated: "3.45" },
-  ],
-};
-
-const ceil: DocFunction<(n: number, precision?: number) => number> = (
-  n,
-  precision = 0
-) => {
-  const factor = Math.pow(10, precision);
-  return Math.ceil(n * factor) / factor;
-};
-ceil.doc = {
-  name: "ceil",
-  description: "向上取整，可指定小数位数",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    { name: "n", type: "number", description: "数字" },
-    {
-      name: "precision",
-      type: "number",
-      optional: true,
-      description: "小数位数，默认 0",
-    },
-  ],
-  examples: [
-    { example: "Math.ceil(3.1)", evaluated: "4" },
-    { example: "Math.ceil(3.441, 2)", evaluated: "3.45" },
-  ],
-};
+// ============ 自定义静态方法实现 ============
 
 const clamp: DocFunction<(n: number, min: number, max: number) => number> = (
   n,
@@ -116,35 +21,6 @@ clamp.doc = {
     { example: "Math.clamp(10, 0, 5)", evaluated: "5" },
     { example: "Math.clamp(-5, 0, 10)", evaluated: "0" },
     { example: "Math.clamp(3, 0, 10)", evaluated: "3" },
-  ],
-};
-
-const random: DocFunction<(min?: number, max?: number) => number> = (
-  min = 0,
-  max = 1
-) => Math.random() * (max - min) + min;
-random.doc = {
-  name: "random",
-  description: "生成指定范围内的随机浮点数",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    {
-      name: "min",
-      type: "number",
-      optional: true,
-      description: "最小值，默认 0",
-    },
-    {
-      name: "max",
-      type: "number",
-      optional: true,
-      description: "最大值，默认 1",
-    },
-  ],
-  examples: [
-    { example: "Math.random()", evaluated: "0.7234" },
-    { example: "Math.random(1, 10)", evaluated: "5.382" },
   ],
 };
 
@@ -183,71 +59,137 @@ average.doc = {
   ],
 };
 
-const percentage: DocFunction<
-  (value: number, total: number, precision?: number) => number
-> = (value, total, precision = 2) => {
-  if (total === 0) return 0;
-  const factor = Math.pow(10, precision);
-  return Math.round((value / total) * 100 * factor) / factor;
-};
-percentage.doc = {
-  name: "percentage",
-  description: "计算百分比",
-  returnType: "number",
-  isFunction: true,
-  args: [
-    { name: "value", type: "number", description: "当前值" },
-    { name: "total", type: "number", description: "总值" },
-    {
-      name: "precision",
-      type: "number",
-      optional: true,
-      description: "小数位数，默认 2",
-    },
-  ],
-  examples: [
-    { example: "Math.percentage(25, 100)", evaluated: "25" },
-    { example: "Math.percentage(1, 3)", evaluated: "33.33" },
-    { example: "Math.percentage(1, 3, 0)", evaluated: "33" },
-  ],
-};
-
-const inRange: DocFunction<(n: number, min: number, max: number) => boolean> = (
-  n,
-  min,
-  max
-) => n >= min && n <= max;
-inRange.doc = {
-  name: "inRange",
-  description: "判断数字是否在指定范围内（包含边界）",
-  returnType: "boolean",
-  isFunction: true,
-  args: [
-    { name: "n", type: "number", description: "数字" },
-    { name: "min", type: "number", description: "最小值" },
-    { name: "max", type: "number", description: "最大值" },
-  ],
-  examples: [
-    { example: "Math.inRange(5, 0, 10)", evaluated: "true" },
-    { example: "Math.inRange(15, 0, 10)", evaluated: "false" },
-    { example: "Math.inRange(0, 0, 10)", evaluated: "true" },
-  ],
-};
-
-// ============ 导出 Math 扩展 ============
+// ============ 导出自定义方法 ============
 
 export const MathMethods = {
-  abs,
-  round,
-  floor,
-  ceil,
   clamp,
-  random,
   randomInt,
   average,
-  percentage,
-  inRange,
 } as const;
+
+// ============ 原生方法的文档定义 ============
+
+export const MathNativeMethodsDocs: DocMetadata[] = [
+  {
+    name: "abs",
+    description: "返回数字的绝对值",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/abs",
+    args: [{ name: "x", type: "number", description: "数字" }],
+    examples: [
+      { example: "Math.abs(-5)", evaluated: "5" },
+      { example: "Math.abs(3)", evaluated: "3" },
+    ],
+  },
+  {
+    name: "round",
+    description: "四舍五入到最接近的整数",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/round",
+    args: [{ name: "x", type: "number", description: "数字" }],
+    examples: [
+      { example: "Math.round(3.456)", evaluated: "3" },
+      { example: "Math.round(3.6)", evaluated: "4" },
+    ],
+  },
+  {
+    name: "floor",
+    description: "向下取整到最接近的整数",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/floor",
+    args: [{ name: "x", type: "number", description: "数字" }],
+    examples: [
+      { example: "Math.floor(3.9)", evaluated: "3" },
+      { example: "Math.floor(-2.5)", evaluated: "-3" },
+    ],
+  },
+  {
+    name: "ceil",
+    description: "向上取整到最接近的整数",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil",
+    args: [{ name: "x", type: "number", description: "数字" }],
+    examples: [
+      { example: "Math.ceil(3.1)", evaluated: "4" },
+      { example: "Math.ceil(-2.5)", evaluated: "-2" },
+    ],
+  },
+  {
+    name: "random",
+    description: "返回 0 到 1 之间的随机浮点数",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/random",
+    examples: [
+      { example: "Math.random()", evaluated: "0.7234" },
+      { example: "Math.random()", evaluated: "0.3821" },
+    ],
+  },
+  {
+    name: "max",
+    description: "返回一组数中的最大值",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/max",
+    args: [{ name: "...values", type: "number[]", description: "数字列表" }],
+    examples: [
+      { example: "Math.max(1, 3, 2)", evaluated: "3" },
+      { example: "Math.max(-1, -3, -2)", evaluated: "-1" },
+    ],
+  },
+  {
+    name: "min",
+    description: "返回一组数中的最小值",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/min",
+    args: [{ name: "...values", type: "number[]", description: "数字列表" }],
+    examples: [
+      { example: "Math.min(1, 3, 2)", evaluated: "1" },
+      { example: "Math.min(-1, -3, -2)", evaluated: "-3" },
+    ],
+  },
+  {
+    name: "pow",
+    description: "返回基数的指数次幂",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/pow",
+    args: [
+      { name: "base", type: "number", description: "基数" },
+      { name: "exponent", type: "number", description: "指数" },
+    ],
+    examples: [
+      { example: "Math.pow(2, 3)", evaluated: "8" },
+      { example: "Math.pow(10, 2)", evaluated: "100" },
+    ],
+  },
+  {
+    name: "sqrt",
+    description: "返回数字的平方根",
+    returnType: "number",
+    isFunction: true,
+    docURL:
+      "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/sqrt",
+    args: [{ name: "x", type: "number", description: "数字" }],
+    examples: [
+      { example: "Math.sqrt(9)", evaluated: "3" },
+      { example: "Math.sqrt(2)", evaluated: "1.414" },
+    ],
+  },
+];
 
 /**
  * Math 扩展映射（用于代码补全）
@@ -255,4 +197,10 @@ export const MathMethods = {
 export const mathExtensions = {
   typeName: "Math",
   functions: MathMethods,
+  nativeDocs: MathNativeMethodsDocs,
 };
+
+export const MathMethodsDoc: DocMetadata[] = Object.values(MathMethods)
+  .map((func) => func.doc)
+  .concat(MathNativeMethodsDocs)
+  .sort((a, b) => a.name.localeCompare(b.name));

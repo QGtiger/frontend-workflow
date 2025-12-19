@@ -13,14 +13,15 @@ import {
 } from "./utils";
 import { javascriptLanguage } from "@codemirror/lang-javascript";
 import { dateTimeExtensions } from "@/common/DateTime";
-import { mathExtensions } from "@/common/Math";
+import { MathMethodsDoc } from "@/common/Math";
 import { jsonExtensions } from "@/common/JSON";
-import { objectExtensions } from "@/common/Object";
 import { NumberPrototypeMethodsDoc } from "@/common/NumberPrototype";
 import { ObjectPrototypeMethodsDoc } from "@/common/ObjectPrototype";
 import { ArrayPrototypeMethodsDoc } from "@/common/ArrayPrototype";
 import { ArrayStaticMethodsDoc } from "@/common/ArrayStatic";
+import { ObjectStaticMethodsDoc } from "@/common/ObjectStatic";
 import { StringPrototypeMethodsDoc } from "@/common/StringPrototype";
+import { DatePrototypeMethodsDoc } from "@/common/DatePrototype";
 
 const regexes = {
   generalRef: /\$[^$'"]+\.(.*)/, // $vars. or $workflow. or similar ones
@@ -51,12 +52,14 @@ const DATATYPE_REGEX = new RegExp(
 function datatypeOptions(baseData: any) {
   if (baseData === null) return [];
 
-  if (Array.isArray(baseData)) {
-    return getOptionsByStaticMethodDoc(ArrayPrototypeMethodsDoc);
-  } else if (typeof baseData === "number") {
+  if (typeof baseData === "number") {
     return getOptionsByStaticMethodDoc(NumberPrototypeMethodsDoc);
   } else if (typeof baseData === "string") {
     return getOptionsByStaticMethodDoc(StringPrototypeMethodsDoc);
+  } else if (baseData instanceof Date) {
+    return getOptionsByStaticMethodDoc(DatePrototypeMethodsDoc);
+  } else if (Array.isArray(baseData)) {
+    return getOptionsByStaticMethodDoc(ArrayPrototypeMethodsDoc);
   } else if (typeof baseData === "object") {
     return getOptionsByStaticMethodDoc(ObjectPrototypeMethodsDoc);
   }
@@ -82,11 +85,11 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     if (base === "DateTime") {
       options = getOptionsByStaticMethod(dateTimeExtensions.functions);
     } else if (base === "Math") {
-      options = getOptionsByStaticMethod(mathExtensions.functions);
+      options = getOptionsByStaticMethodDoc(MathMethodsDoc);
     } else if (base === "JSON") {
       options = getOptionsByStaticMethod(jsonExtensions.functions);
     } else if (base === "Object") {
-      options = getOptionsByStaticMethod(objectExtensions.functions);
+      options = getOptionsByStaticMethodDoc(ObjectStaticMethodsDoc);
     } else if (base === "Array") {
       options = getOptionsByStaticMethodDoc(ArrayStaticMethodsDoc);
     } else {
