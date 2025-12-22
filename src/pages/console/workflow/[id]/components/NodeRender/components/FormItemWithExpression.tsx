@@ -118,10 +118,11 @@ export function FormItemWithExpression(props: {
       className="relative"
       onMouseOver={hoverAction.setTrue}
       onMouseLeave={hoverAction.setFalse}
+      onClick={focusAction.setTrue}
     >
       {isExpression ? (
         <div className="flex flex-col gap-1">
-          <div className="relative" onClick={focusAction.setTrue}>
+          <div className="relative">
             <CMEditor
               value={expression}
               onChange={(v) => {
