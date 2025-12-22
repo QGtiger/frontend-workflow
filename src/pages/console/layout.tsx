@@ -1,5 +1,6 @@
 import {
   ApartmentOutlined,
+  ControlOutlined,
   FolderOpenOutlined,
   RollbackOutlined,
   SearchOutlined,
@@ -25,7 +26,7 @@ function ConsoleMenu() {
       className=" border-none!"
       items={[
         {
-          key: "/overview",
+          key: "/console/workflow",
           icon: <SearchOutlined />,
           label: "Flow 管理",
         },
@@ -36,9 +37,9 @@ function ConsoleMenu() {
         },
         {
           // 流程还原
-          key: "/rollback",
-          icon: <RollbackOutlined />,
-          label: "流程还原",
+          key: "/console/ipaas",
+          icon: <ControlOutlined />,
+          label: "iPaaS 管理",
         },
       ]}
     />
