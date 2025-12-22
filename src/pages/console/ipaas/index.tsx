@@ -14,6 +14,7 @@ import {
   Space,
   Tooltip,
   Typography,
+  message,
 } from "antd";
 import {
   PlusOutlined,
@@ -27,8 +28,9 @@ import {
 import { useState, useMemo } from "react";
 import { request } from "@/api";
 import { useRequest } from "ahooks";
-import { useCreateConnectorModal } from "./hooks";
 import type { ConnectorItem } from "./types";
+import { createConnectorModal } from "./baseConnectorModal";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -44,6 +46,7 @@ function ConnectorItemCard({
   const daysSinceCreated = useMemo(() => {
     return (now - connector.createTime) / (1000 * 60 * 60 * 24);
   }, [connector.createTime]);
+  const nav = useNavigate();
 
   // 处理删除连接器
   const handleDeleteConnector = () => {
@@ -67,6 +70,9 @@ function ConnectorItemCard({
     <Card
       hoverable
       className="h-full shadow-sm hover:shadow-lg transition-shadow"
+      onClick={() => {
+        nav(`/console/ipaas/${connector.id}`);
+      }}
       cover={
         <img
           src={connector.logo}
@@ -135,6 +141,7 @@ function IPaaSContent() {
     data: connectors = [],
     loading,
     refreshAsync,
+    refresh,
   } = useRequest(async () => {
     return request<ConnectorItem[]>({
       url: "/ipaas/connector/list",
@@ -142,9 +149,21 @@ function IPaaSContent() {
     });
   });
 
-  const showCreateConnectorModal = useCreateConnectorModal({
-    onSuc: refreshAsync,
-  });
+  const showCreateConnectorModal = () => {
+    createConnectorModal({
+      async onConfirm(data) {
+        return request<ConnectorItem>({
+          url: "/ipaas/connector/create",
+          method: "POST",
+          data,
+        })
+          .then(refresh)
+          .then(() => {
+            message.success("连接器创建成功");
+          });
+      },
+    });
+  };
 
   // 过滤连接器
   const filteredConnectors = useMemo(() => {

@@ -2,23 +2,28 @@ import { request } from "@/api";
 import { createCustomModel } from "@/common/createModel";
 import { useRequest } from "ahooks";
 import { Spin } from "antd";
-import type { PropsWithChildren } from "react";
+import { useRef, type PropsWithChildren } from "react";
 import { useParams } from "react-router-dom";
 
 export const IpaasDetailModel = createCustomModel(() => {
   const { id: connectorId } = useParams();
-  const { loading, data } = useRequest(() => {
+  const firstRef = useRef(false);
+  const { loading, data, refreshAsync } = useRequest(() => {
     return request({
       url: `/ipaas/connector/detail`,
       method: "POST",
       data: {
         connectorId,
       },
+    }).then((r) => {
+      firstRef.current = true;
+      return r;
     });
   });
   return {
-    loading,
+    loading: loading && !firstRef.current,
     connector: data!,
+    refreshAsync,
   };
 });
 

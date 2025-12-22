@@ -1,5 +1,3 @@
-import { request } from "@/api";
-import { useRequest } from "ahooks";
 import {
   Form,
   Input,
@@ -11,10 +9,16 @@ import {
   type UploadProps,
 } from "antd";
 import { createRef, useState } from "react";
-import type { ConnectorItem } from "./types";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
 import { uploadFile } from "@/utils/url";
+
+interface CreateConnectorDto {
+  name: string;
+  description: string;
+  logo: string;
+  documentLink?: string;
+}
 
 function UploadImageWithCrop(props: {
   value?: string;
@@ -106,7 +110,8 @@ function UploadImageWithCrop(props: {
   );
 }
 
-function createConnectorModal(config: {
+export function createConnectorModal(config: {
+  initialValues?: CreateConnectorDto;
   onConfirm: (values: CreateConnectorDto) => Promise<any>;
 }) {
   const formRef = createRef<FormInstance>();
@@ -120,10 +125,11 @@ function createConnectorModal(config: {
         layout="vertical"
         className="mt-4"
         requiredMark="optional"
+        initialValues={config.initialValues}
       >
         <Form.Item
           label="Logo 图片"
-          name="logoImage"
+          name="logo"
           rules={[
             { type: "url", message: "请输入有效的URL地址" },
             {
@@ -173,45 +179,8 @@ function createConnectorModal(config: {
     width: 600,
     async onOk() {
       return formRef.current?.validateFields().then((values) => {
-        // 如果上传了图片，使用图片URL；否则使用手动输入的URL
-        const logo = values.logoImage || values.logo;
-        const finalValues = {
-          ...values,
-          logo,
-        };
-        delete finalValues.logoImage; // 删除临时字段
-        return config.onConfirm(finalValues);
+        return config.onConfirm(values);
       });
     },
   });
-}
-
-interface CreateConnectorDto {
-  name: string;
-  description: string;
-  logo: string;
-  documentLink?: string;
-}
-
-export function useCreateConnectorModal(props?: { onSuc?(): Promise<any> }) {
-  const { runAsync } = useRequest(
-    async (data: CreateConnectorDto) => {
-      await request<ConnectorItem>({
-        url: "/ipaas/connector/create",
-        method: "POST",
-        data,
-      });
-      message.success("连接器创建成功");
-      await props?.onSuc?.();
-    },
-    {
-      manual: true,
-    }
-  );
-
-  return () => {
-    createConnectorModal({
-      onConfirm: runAsync,
-    });
-  };
 }
