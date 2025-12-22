@@ -97,7 +97,7 @@ export function SideBarRender() {
       }
     },
     {
-      loadingDelay: 1000,
+      loadingDelay: 500,
     }
   );
 
@@ -110,7 +110,9 @@ export function SideBarRender() {
     <div className="flex flex-col h-full">
       <SideBarHeader />
       <div className="px-4 h-1 flex-1 overflow-auto">
-        {inputsSchemaLoading ? null : inputsSchema?.length ? (
+        {inputsSchemaLoading ? (
+          <Skeleton active />
+        ) : inputsSchema?.length ? (
           <IpaasSchemaForm
             formProps={{
               requiredMark: "optional",
