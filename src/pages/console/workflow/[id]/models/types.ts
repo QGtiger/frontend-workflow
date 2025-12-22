@@ -1,6 +1,16 @@
 import type { FlowNodeJSON } from "@flowgram.ai/fixed-layout-editor";
+import type { CustomNodeData } from "../types";
 
-export type WorkflowNode = FlowNodeJSON;
+export interface WorkflowNode extends FlowNodeJSON {
+  data:
+    | {
+        // 节点名称
+        name: string;
+        [x: string]: any;
+      }
+    | CustomNodeData;
+  blocks?: WorkflowNode[];
+}
 
 export type WorkflowDetailData = {
   nodes: WorkflowNode[];

@@ -4,6 +4,8 @@ import { NodeDropdown } from "./NodeDropdown";
 import { CustomNodeRenderModel, useCustomNodeData } from "./model";
 import { useState } from "react";
 import { WorkflowDetailModel } from "../../models";
+import { trarverseNodes } from "../../models/utils";
+import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
 
 function InputWithOutlined(
   props: InputProps & {
@@ -14,8 +16,11 @@ function InputWithOutlined(
   const data = useCustomNodeData();
   const finalValue = data[updateKey];
   const [value, setValue] = useState(finalValue);
-  const { updateData } = CustomNodeRenderModel.useModel();
+  const { updateData, node } = CustomNodeRenderModel.useModel();
   const { getUniqueName } = WorkflowDetailModel.useModel();
+
+  const { operation } = useClientContext();
+
   return (
     <Input
       {...inputProps}
@@ -24,11 +29,28 @@ function InputWithOutlined(
         setValue(e.target.value);
       }}
       onBlur={() => {
-        if (value !== finalValue && value.trim()) {
-          const uniqueName = getUniqueName(value);
+        const fv = value.trim();
+        if (fv !== finalValue && fv) {
+          const uniqueName = getUniqueName(fv);
           updateData({
             [updateKey]: uniqueName,
           });
+
+          trarverseNodes(node.document.toJSON().nodes, (n) => {
+            const _inputs = n.data.inputs;
+            if (_inputs) {
+              const updatedInputs = JSON.parse(
+                JSON.stringify(_inputs)
+                  .replaceAll(`$("${finalValue}")`, `$("${uniqueName}")`)
+                  .replaceAll(`$('${finalValue}')`, `$('${uniqueName}')`)
+              );
+
+              // 通过 operation 服务更新
+              operation.setFormValue(n.id, "inputs", updatedInputs);
+            }
+            return false;
+          });
+
           setValue(uniqueName);
         } else {
           setValue(finalValue);

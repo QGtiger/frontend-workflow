@@ -228,6 +228,8 @@ export function FormItemWithExpression(props: {
                     表示计算成功，
                     <span className="text-red-600 font-medium">红色</span>{" "}
                     表示有错误。
+                    <span className=" text-blue-600 font-medium ">淡蓝色</span>
+                    表示对应节点并未执行过
                   </span>
                 </div>
               </div>
