@@ -188,7 +188,7 @@ function IPaaSContent() {
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <Spin size="large" tip="加载中..." />
+        <Spin tip="加载中..." />
       </div>
     );
   }

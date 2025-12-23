@@ -1,7 +1,100 @@
-import { Card, Empty } from "antd";
-import { KeyOutlined } from "@ant-design/icons";
+import {
+  Card,
+  Tabs,
+  Form,
+  Select,
+  Input,
+  Button,
+  Space,
+  message,
+  Empty,
+  type TabsProps,
+} from "antd";
+import {
+  KeyOutlined,
+  SaveOutlined,
+  FileTextOutlined,
+  FormOutlined,
+  ThunderboltOutlined,
+} from "@ant-design/icons";
+import { IpaasDetailModel } from "../models";
+import { useState, useEffect } from "react";
+import { request } from "@/api";
+import type { IpaasConnectorDetail } from "../type";
+import { BaseConfig } from "./BaseConfig";
+import { InputsEditor } from "./InputsEditor";
+import { ExecuteEditor } from "./ExecuteEditor";
+import { useRequest } from "ahooks";
+import { ScrollArea } from "@/components/ScrollArea";
+// import IPaaSForm from "@/components/IPaaSForm";
+
+const { TextArea } = Input;
+const { TabPane } = Tabs;
+
+type AuthProtocolType = "session_auth" | "api_key" | "none";
 
 export default function IpaasAuthConfig() {
+  // const { connector, refreshAsync } = IpaasDetailModel.useModel();
+  const [form] = Form.useForm();
+
+  const authType = Form.useWatch("type", form);
+
+  const { runAsync, loading } = useRequest(
+    async () => {
+      return form.validateFields().then(console.log);
+    },
+    {
+      manual: true,
+    }
+  );
+
+  // 保存授权配置
+  // const handleSave = async () => {
+  //   try {
+  //     const values = await form.validateFields();
+  //     setLoading(true);
+
+  //     await request({
+  //       url: "/ipaas/connector/auth/update",
+  //       method: "POST",
+  //       data: {
+  //         connectorId: connector.id,
+  //         authProtocol: values,
+  //       },
+  //     });
+
+  //     message.success("授权配置保存成功");
+  //     await refreshAsync();
+  //   } catch (error) {
+  //     console.error("保存失败:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "基本配置",
+      children: <BaseConfig />,
+      icon: <FileTextOutlined />,
+    },
+    {
+      key: "2",
+      label: "输入配置",
+      children: <InputsEditor />,
+      icon: <FormOutlined />,
+      disabled: authType === "none" || !authType,
+    },
+    {
+      key: "3",
+      label: "执行协议",
+      children: <ExecuteEditor />,
+      icon: <ThunderboltOutlined />,
+      disabled: authType !== "session_auth",
+    },
+  ];
+
   return (
     <Card
       title={
@@ -10,12 +103,24 @@ export default function IpaasAuthConfig() {
           <span>授权配置</span>
         </div>
       }
-      className="h-full"
+      extra={
+        <Button
+          type="primary"
+          icon={<SaveOutlined />}
+          onClick={runAsync}
+          loading={loading}
+        >
+          保存配置
+        </Button>
+      }
+      className="h-full flex flex-col"
+      bodyStyle={{
+        overflow: "auto",
+      }}
     >
-      <Empty
-        description="授权配置功能开发中..."
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-      />
+      <Form form={form} layout="vertical" className="">
+        <Tabs defaultActiveKey="1" items={items}></Tabs>
+      </Form>
     </Card>
   );
 }
