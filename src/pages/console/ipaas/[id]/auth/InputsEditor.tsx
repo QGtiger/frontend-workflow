@@ -1,4 +1,5 @@
 import { Empty, Form } from "antd";
+// import IPaasSchemaEditor from "./IPaasSchemaEditor";
 
 export function InputsEditor() {
   const form = Form.useFormInstance();
@@ -26,6 +27,7 @@ export function InputsEditor() {
             name="inputs"
             tooltip="定义用户在授权时需要填写的表单字段"
           >
+            {/* <IPaasSchemaEditor placeholder="点击添加输入字段..." /> */}
             22
           </Form.Item>
 

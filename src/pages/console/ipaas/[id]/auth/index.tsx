@@ -1,15 +1,4 @@
-import {
-  Card,
-  Tabs,
-  Form,
-  Select,
-  Input,
-  Button,
-  Space,
-  message,
-  Empty,
-  type TabsProps,
-} from "antd";
+import { Card, Tabs, Form, Button, type TabsProps } from "antd";
 import {
   KeyOutlined,
   SaveOutlined,
@@ -17,24 +6,12 @@ import {
   FormOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import { IpaasDetailModel } from "../models";
-import { useState, useEffect } from "react";
-import { request } from "@/api";
-import type { IpaasConnectorDetail } from "../type";
 import { BaseConfig } from "./BaseConfig";
 import { InputsEditor } from "./InputsEditor";
 import { ExecuteEditor } from "./ExecuteEditor";
 import { useRequest } from "ahooks";
-import { ScrollArea } from "@/components/ScrollArea";
-// import IPaaSForm from "@/components/IPaaSForm";
-
-const { TextArea } = Input;
-const { TabPane } = Tabs;
-
-type AuthProtocolType = "session_auth" | "api_key" | "none";
 
 export default function IpaasAuthConfig() {
-  // const { connector, refreshAsync } = IpaasDetailModel.useModel();
   const [form] = Form.useForm();
 
   const authType = Form.useWatch("type", form);
