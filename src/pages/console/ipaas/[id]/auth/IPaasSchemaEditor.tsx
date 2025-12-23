@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { HolderOutlined, PlusOutlined } from "@ant-design/icons";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext } from "@dnd-kit/core";
@@ -11,22 +11,14 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Popconfirm, Table, Typography, Tag } from "antd";
+import { Button, Popconfirm, Table, Typography, Tag, Input } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { IPaasFormSchema } from "@/components/IPaaSForm/type";
+import { EditorKindEnum } from "./constant";
+import { SchemaConfigDrawer } from "./SchemaConfigDrawer";
+import { useBoolean } from "ahooks";
 
-// 编辑器类型映射
-const EditorKindEnum: Record<string, string> = {
-  Input: "单行输入",
-  Textarea: "多行输入",
-  InputNumber: "数字输入",
-  DatetimePicker: "日期时间",
-  Select: "下拉选择",
-  MultiSelect: "多选下拉",
-  InputWithCopy: "带复制",
-  Upload: "文件上传",
-  DynamicActionForm: "动态表单",
-};
+const { TextArea } = Input;
 
 interface RowContextProps {
   setActivatorNodeRef?: (element: HTMLElement | null) => void;
@@ -70,7 +62,7 @@ const Row: React.FC<RowProps> = (props) => {
     ...props.style,
     transform: CSS.Translate.toString(transform),
     transition,
-    ...(isDragging ? { position: "relative", zIndex: 9999 } : {}),
+    ...(isDragging ? { position: "relative", zIndex: 0 } : {}),
   };
 
   const contextValue = useMemo<RowContextProps>(
@@ -88,17 +80,18 @@ const Row: React.FC<RowProps> = (props) => {
 interface IPaasSchemaEditorProps {
   value?: IPaasFormSchema[];
   onChange?: (value: IPaasFormSchema[]) => void;
-  onEdit?: (record: IPaasFormSchema, index: number) => void;
   placeholder?: string;
 }
 
 export default function IPaasSchemaEditor({
   value = [],
   onChange,
-  onEdit,
-  placeholder = "暂无字段，点击添加",
 }: IPaasSchemaEditorProps) {
   const dataSource = value;
+  const [editingRecord, setEditingRecord] = useState<
+    IPaasFormSchema | undefined
+  >();
+  const [showDrawer, showDrawerAction] = useBoolean(false);
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
@@ -116,10 +109,6 @@ export default function IPaasSchemaEditor({
   const handleDelete = (code: string | string[]) => {
     const newData = dataSource.filter((item) => item.code !== code);
     onChange?.(newData);
-  };
-
-  const handleAdd = () => {
-    // TODO
   };
 
   const columns: ColumnsType<IPaasFormSchema> = [
@@ -169,11 +158,14 @@ export default function IPaasSchemaEditor({
     {
       title: "操作",
       width: 120,
-      render: (record: IPaasFormSchema, _, index) => (
+      render: (record: IPaasFormSchema) => (
         <span>
           <Typography.Link
             style={{ marginRight: 8 }}
-            onClick={() => onEdit?.(record, index)}
+            onClick={() => {
+              setEditingRecord(record);
+              showDrawerAction.setTrue();
+            }}
           >
             编辑
           </Typography.Link>
@@ -188,21 +180,17 @@ export default function IPaasSchemaEditor({
     },
   ];
 
-  if (dataSource.length === 0) {
-    return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <p className="text-gray-400 mb-4">{placeholder}</p>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          添加字段
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="mb-3 flex justify-end">
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setEditingRecord(undefined);
+            showDrawerAction.setTrue();
+          }}
+        >
           添加字段
         </Button>
       </div>
@@ -221,6 +209,24 @@ export default function IPaasSchemaEditor({
           />
         </SortableContext>
       </DndContext>
+
+      {showDrawer && (
+        <SchemaConfigDrawer
+          initialValues={editingRecord}
+          isEdit={!!editingRecord}
+          onClose={showDrawerAction.setFalse}
+          onSave={(v) => {
+            if (editingRecord) {
+              const newData = dataSource.map((item) =>
+                item.code === editingRecord.code ? v : item
+              );
+              onChange?.(newData);
+            } else {
+              onChange?.([...dataSource, v]);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

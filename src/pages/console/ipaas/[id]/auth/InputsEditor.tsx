@@ -23,11 +23,7 @@ export function InputsEditor() {
             </p>
           </div>
 
-          <Form.Item
-            label="输入字段配置"
-            name="inputs"
-            tooltip="定义用户在授权时需要填写的表单字段"
-          >
+          <Form.Item name="inputs" tooltip="定义用户在授权时需要填写的表单字段">
             <IPaasSchemaEditor placeholder="点击添加输入字段..." />
           </Form.Item>
 
