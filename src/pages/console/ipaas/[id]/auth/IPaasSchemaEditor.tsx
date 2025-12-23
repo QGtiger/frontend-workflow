@@ -11,7 +11,15 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Popconfirm, Table, Typography, Tag, Input } from "antd";
+import {
+  Button,
+  Popconfirm,
+  Table,
+  Typography,
+  Tag,
+  Input,
+  message,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { IPaasFormSchema } from "@/components/IPaaSForm/type";
 import { EditorKindEnum } from "./constant";
@@ -215,13 +223,16 @@ export default function IPaasSchemaEditor({
           initialValues={editingRecord}
           isEdit={!!editingRecord}
           onClose={showDrawerAction.setFalse}
-          onSave={(v) => {
+          onSave={async (v) => {
             if (editingRecord) {
               const newData = dataSource.map((item) =>
                 item.code === editingRecord.code ? v : item
               );
               onChange?.(newData);
             } else {
+              if (dataSource.some((item) => item.code === v.code)) {
+                throw new Error("字段代码已存在");
+              }
               onChange?.([...dataSource, v]);
             }
           }}

@@ -1,4 +1,4 @@
-import { Card, Tabs, Form, Button, type TabsProps } from "antd";
+import { Card, Tabs, Form, Button, type TabsProps, message } from "antd";
 import {
   KeyOutlined,
   SaveOutlined,
@@ -10,44 +10,35 @@ import { BaseConfig } from "./BaseConfig";
 import { InputsEditor } from "./InputsEditor";
 import { ExecuteEditor } from "./ExecuteEditor";
 import { useRequest } from "ahooks";
+import { request } from "@/api";
+import { IpaasDetailModel } from "../models";
 
 export default function IpaasAuthConfig() {
+  const { connector, refreshAsync } = IpaasDetailModel.useModel();
   const [form] = Form.useForm();
 
   const authType = Form.useWatch("type", form);
 
   const { runAsync, loading } = useRequest(
     async () => {
-      return form.validateFields().then(console.log);
+      return form.validateFields().then((data) => {
+        return request({
+          url: "/ipaas/connector/update",
+          method: "POST",
+          data: {
+            authProtocol: data,
+            connectorId: connector.id,
+          },
+        }).then(() => {
+          message.success("授权配置保存成功");
+          refreshAsync();
+        });
+      });
     },
     {
       manual: true,
     }
   );
-
-  // 保存授权配置
-  // const handleSave = async () => {
-  //   try {
-  //     const values = await form.validateFields();
-  //     setLoading(true);
-
-  //     await request({
-  //       url: "/ipaas/connector/auth/update",
-  //       method: "POST",
-  //       data: {
-  //         connectorId: connector.id,
-  //         authProtocol: values,
-  //       },
-  //     });
-
-  //     message.success("授权配置保存成功");
-  //     await refreshAsync();
-  //   } catch (error) {
-  //     console.error("保存失败:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const items: TabsProps["items"] = [
     {
@@ -95,7 +86,12 @@ export default function IpaasAuthConfig() {
         overflow: "auto",
       }}
     >
-      <Form form={form} layout="vertical" className="">
+      <Form
+        form={form}
+        initialValues={connector.authProtocol}
+        layout="vertical"
+        className=""
+      >
         <Tabs defaultActiveKey="1" items={items}></Tabs>
       </Form>
     </Card>

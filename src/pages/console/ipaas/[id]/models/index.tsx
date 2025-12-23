@@ -4,12 +4,13 @@ import { useRequest } from "ahooks";
 import { Spin } from "antd";
 import { useRef, type PropsWithChildren } from "react";
 import { useParams } from "react-router-dom";
+import type { IpaasConnectorDetail } from "../type";
 
 export const IpaasDetailModel = createCustomModel(() => {
   const { id: connectorId } = useParams();
   const firstRef = useRef(false);
   const { loading, data, refreshAsync } = useRequest(() => {
-    return request({
+    return request<IpaasConnectorDetail>({
       url: `/ipaas/connector/detail`,
       method: "POST",
       data: {

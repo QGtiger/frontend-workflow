@@ -18,7 +18,7 @@ function ConsoleMenu() {
       style={{ width: "100%" }}
       mode="inline"
       inlineCollapsed
-      selectedKeys={[location.pathname]}
+      selectedKeys={[location.pathname.split("/").slice(0, 3).join("/")]}
       // 点击路由跳转
       onSelect={(item) => {
         navigate(item.key);

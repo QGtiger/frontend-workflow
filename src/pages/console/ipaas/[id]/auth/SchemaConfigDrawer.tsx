@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   InputNumber,
+  message,
   Select,
   Space,
   Switch,
@@ -62,7 +63,7 @@ function EditorConfigForm({ kind }: { kind: IPaasFormFieldEditorKind }) {
       return (
         <>
           <Form.Item label="默认值" name={["editor", "config", "defaultValue"]}>
-            <InputNumber placeholder="请输入默认值" className="w-full" />
+            <InputNumber placeholder="请输入默认值" className="w-full!" />
           </Form.Item>
           <Form.Item label="占位符" name={["editor", "config", "placeholder"]}>
             <Input placeholder="请输入占位符" />
@@ -80,7 +81,10 @@ function EditorConfigForm({ kind }: { kind: IPaasFormFieldEditorKind }) {
             label="日期格式"
             name={["editor", "config", "valueFormat"]}
           >
-            <Select options={DATETIME_FORMAT_OPTIONS} />
+            <Select
+              options={DATETIME_FORMAT_OPTIONS}
+              placeholder="请选择日期格式"
+            />
           </Form.Item>
         </>
       );
@@ -219,7 +223,7 @@ export function SchemaConfigDrawer({
 }: {
   isEdit?: boolean;
   onClose: () => void;
-  onSave: (values: IPaasFormSchema) => void;
+  onSave: (values: IPaasFormSchema) => Promise<any>;
   initialValues?: IPaasFormSchema;
 }) {
   const [form] = Form.useForm();
@@ -228,10 +232,11 @@ export function SchemaConfigDrawer({
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      onSave(values);
+      await onSave(values);
       onClose();
     } catch (error) {
       console.error("表单验证失败:", error);
+      message.error((error as Error).message);
     }
   };
 
@@ -242,6 +247,7 @@ export function SchemaConfigDrawer({
       open
       closable={false}
       onClose={onClose}
+      maskClosable={false}
       extra={
         <Space>
           <Button onClick={onClose}>取消</Button>
@@ -255,13 +261,21 @@ export function SchemaConfigDrawer({
         form={form}
         initialValues={initialValues}
         layout="vertical"
+        requiredMark="optional"
       >
         {/* 基本信息 */}
         <div className="mb-2 font-medium text-gray-700">基本信息</div>
         <Form.Item
           label="字段代码"
           name="code"
-          rules={[{ required: true, message: "请输入字段代码" }]}
+          rules={[
+            { required: true, message: "请输入字段代码" },
+            // 字段 代码只能是字母、数字、下划线，并且不能以数字开头
+            {
+              pattern: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+              message: "字段代码只能是字母、数字、下划线，并且不能以数字开头",
+            },
+          ]}
         >
           <Input placeholder="例如: apiKey" disabled={isEdit} />
         </Form.Item>
@@ -279,7 +293,7 @@ export function SchemaConfigDrawer({
           name="type"
           rules={[{ required: true, message: "请选择数据类型" }]}
         >
-          <Select options={DATA_TYPE_OPTIONS} />
+          <Select options={DATA_TYPE_OPTIONS} placeholder="请选择数据类型" />
         </Form.Item>
 
         <Form.Item label="字段描述" name="description">
@@ -346,6 +360,7 @@ export function SchemaConfigDrawer({
               // 切换时重置配置
               form.setFieldValue(["editor", "config"], {});
             }}
+            placeholder="请选择控件类型"
           />
         </Form.Item>
 

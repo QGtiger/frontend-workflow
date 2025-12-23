@@ -5,7 +5,7 @@ export const EditorKindEnum: Record<string, string> = {
   DatetimePicker: "日期时间",
   Select: "下拉选择",
   MultiSelect: "多选下拉",
-  InputWithCopy: "带复制",
+  InputWithCopy: "可复制文本",
   Upload: "文件上传",
   DynamicActionForm: "动态表单",
 };
