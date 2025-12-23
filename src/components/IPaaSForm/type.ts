@@ -16,7 +16,7 @@ export type IPaasCommonFormFieldProps<T = string> = {
 };
 
 export type IPaasFormSchema = {
-  code: string | string[];
+  code: string;
   name: string;
   type: "string" | "number" | "boolean" | "object" | "array";
   description?: string;
