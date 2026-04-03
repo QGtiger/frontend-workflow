@@ -49,7 +49,7 @@ type IpaasAuthProtocol = {
   outputs: OutputStrcut[];
 };
 
-type IpaasAction = {
+export type IpaasAction = {
   code: string;
   name: string;
   description: string;

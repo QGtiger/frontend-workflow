@@ -20,11 +20,11 @@ if (token) {
 export default function GlobalLayout() {
   return (
     <ConfigProvider locale={zhCN}>
-      <UserModel.Provider>
-        <AuthLoginLayout>
-          <Outlet />
-        </AuthLoginLayout>
-      </UserModel.Provider>
+      {/* <UserModel.Provider>
+        <AuthLoginLayout> */}
+      <Outlet />
+      {/* </AuthLoginLayout>
+      </UserModel.Provider> */}
     </ConfigProvider>
   );
 }
