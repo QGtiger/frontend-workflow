@@ -8,10 +8,19 @@ const distDir = path.resolve(__dirname, "../dist");
 
 const client = new OSS({
   region: process.env.OSS_REGION,
-  accessKeyId: process.env.OSS_ACCESS_KEY_ID,
-  accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
+  accessKeyId: process.env.OSS_ACCESS_KEYID,
+  accessKeySecret: process.env.OSS_ACCESS_KEYSECRECT,
   bucket: process.env.OSS_BUCKET,
 });
+
+const objectPrefix = (process.env.OSS_OBJECT_PREFIX || "")
+  .replace(/^\/+/, "")
+  .replace(/\/+$/, "");
+
+function withPrefix(key) {
+  if (!objectPrefix) return key;
+  return `${objectPrefix}/${key}`;
+}
 
 function walkDir(dir, base = "") {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -33,9 +42,12 @@ async function deploy() {
   console.log(`Found ${files.length} files to upload`);
 
   const results = await Promise.all(
-    files.map(({ localPath, key }) =>
-      client.put(key, localPath).then((res) => ({ key, ok: res.res.status === 200 }))
-    )
+    files.map(({ localPath, key }) => {
+      const objectKey = withPrefix(key);
+      return client
+        .put(objectKey, localPath)
+        .then((res) => ({ key: objectKey, ok: res.res.status === 200 }));
+    })
   );
 
   const ok = results.filter((r) => r.ok).length;
