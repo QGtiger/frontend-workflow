@@ -36,17 +36,23 @@ jobs:
         run: |
           echo "version=${{ github.run_number }}" >> $GITHUB_OUTPUT
 
-      # 👇 拼接最终 base：/APP_NAME/version/
-      - name: Set base URL
-        id: base
-        run: |
-          echo "base=${{ vars.BASE_URL }}/${{ env.APP_NAME }}/${{ steps.version.outputs.version }}/" >> $GITHUB_OUTPUT
-
-      # 👇 构建时注入正确的 base
+      # 在同一 shell 里 export VITE_BASE_URL 再执行 vite，确保 Node 进程能读到；
+      # 仅用 job env 传 steps 输出时，长 URL 或空 BASE_URL 也容易踩坑。
       - name: Build
         env:
-          VITE_BASE_URL: ${{ steps.base.outputs.base }}
-        run: pnpm build
+          BASE_ROOT: ${{ vars.BASE_URL }}
+          APP_NAME: ${{ env.APP_NAME }}
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -e
+          ROOT="${BASE_ROOT%/}"
+          if [ -n "$ROOT" ]; then
+            export VITE_BASE_URL="${ROOT}/${APP_NAME}/${BUILD_VERSION}/"
+          else
+            export VITE_BASE_URL="/${APP_NAME}/${BUILD_VERSION}/"
+          fi
+          echo "VITE_BASE_URL=$VITE_BASE_URL"
+          pnpm build
 
       - name: Deploy to OSS
         env:
