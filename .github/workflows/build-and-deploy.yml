@@ -65,7 +65,7 @@ jobs:
 
           # 开始上传
           ./ossutil cp -rf dist/ $REMOTE_PATH \
-            --access-key-id ${{ secrets.OSS_ACCESS_KEY_ID }} \
-            --access-key-secret ${{ secrets.OSS_ACCESS_KEY_SECRET }} \
+            --access-key-id ${{ secrets.OSS_ACCESS_KEYID }} \
+            --access-key-secret ${{ secrets.OSS_ACCESS_KEYSECRECT }} \
             --endpoint $ENDPOINT \
             --cache-control "public,max-age=31536000,immutable"
