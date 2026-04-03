@@ -48,14 +48,24 @@ jobs:
           VITE_BASE_URL: ${{ steps.base.outputs.base }}
         run: pnpm build
 
-      # 👇 阿里云官方 OSS 上传（最安全、最稳定）
+      # ==============================
+      # 正确可用：阿里云官方 ossutil 上传
+      # ==============================
       - name: Deploy to Aliyun OSS
-        uses: aliyun/action-oss-upload@v1
-        with:
-          access-key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
-          access-key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-          region: ${{ secrets.OSS_REGION }}
-          bucket: ${{ secrets.OSS_BUCKET }}
-          local-path: ./dist
-          # 👇 上传到：bucket/应用名/版本号/
-          remote-path: ${{ env.APP_NAME }}/${{ steps.version.outputs.version }}/
+        run: |
+          # 下载官方工具
+          curl -o ossutil https://gosspublic.alicdn.com/ossutil/1.7.18/ossutil64
+          chmod +x ossutil
+
+          # 配置 OSS 端点
+          ENDPOINT=${{ secrets.OSS_REGION }}.aliyuncs.com
+
+          # 上传路径：bucket/应用名/版本号/
+          REMOTE_PATH="oss://${{ secrets.OSS_BUCKET }}/${{ env.APP_NAME }}/${{ steps.version.outputs.version }}/"
+
+          # 开始上传
+          ./ossutil cp -rf dist/ $REMOTE_PATH \
+            --access-key-id ${{ secrets.OSS_ACCESS_KEY_ID }} \
+            --access-key-secret ${{ secrets.OSS_ACCESS_KEY_SECRET }} \
+            --endpoint $ENDPOINT \
+            --cache-control "public,max-age=31536000,immutable"
