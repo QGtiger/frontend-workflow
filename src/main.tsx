@@ -8,7 +8,6 @@ import { useMount } from "ahooks";
 import "./main.css";
 
 const routes = initRoutes();
-console.log(routes);
 const router = createBrowserRouter(routes, {
   basename: "/workflow",
 });
