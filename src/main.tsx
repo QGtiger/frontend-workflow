@@ -9,7 +9,9 @@ import "./main.css";
 
 const routes = initRoutes();
 console.log(routes);
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes, {
+  basename: "/workflow",
+});
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   useMount(() => {
