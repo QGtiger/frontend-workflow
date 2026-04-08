@@ -96,7 +96,11 @@ jobs:
             '{id:$id,version:$version,ossIndexUrl:$ossIndexUrl} + (if ($note|length)>0 then {note:$note} else {} end) + (if ($domain|length)>0 then {domain:$domain} else {} end)')
           echo "POST ${DEPLOY_API_URL}"
           echo "body: ${BODY}"
-          curl -sS -f -X POST "${DEPLOY_API_URL}" \
+          RESP=$(curl -sS -f -X POST "${DEPLOY_API_URL}" \
             -H "Content-Type: application/json" \
-            -d "${BODY}"
-          echo ""
+            -d "${BODY}") || { echo "Error: HTTP 请求失败"; exit 1; }
+          echo "response: ${RESP}"
+          if ! printf '%s\n' "${RESP}" | jq -e '.success == true' >/dev/null; then
+            echo "Error: 接口未返回 success=true（或响应非合法 JSON）"
+            exit 1
+          fi
