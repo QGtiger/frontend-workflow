@@ -8,9 +8,7 @@ import { useMount } from "ahooks";
 import "./main.css";
 
 const routes = initRoutes();
-const router = createBrowserRouter(routes, {
-  basename: "/workflow",
-});
+const router = createBrowserRouter(routes);
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   useMount(() => {
