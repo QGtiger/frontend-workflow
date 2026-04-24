@@ -1,5 +1,7 @@
 // import OSS from "ali-oss";
 
+import { getAppConfig } from ".";
+
 // const client = new OSS({
 //   region: "oss-cn-beijing",
 //   bucket: "lf-ipaas",
@@ -27,7 +29,7 @@
 // }
 
 export function jumpToLogin() {
-  location.href = `${process.env.LOGIN_URL}?redirect=${encodeURIComponent(
+  location.href = `${getAppConfig().LOGIN_URL}?redirect=${encodeURIComponent(
     location.href
   )}`;
 }

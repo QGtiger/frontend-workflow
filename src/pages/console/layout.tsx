@@ -1,3 +1,5 @@
+import { AuthLoginLayout } from "@/Layouts/AuthLogin";
+import { UserModel } from "@/models/UserModel";
 import {
   ApartmentOutlined,
   ControlOutlined,
@@ -49,25 +51,29 @@ function ConsoleMenu() {
 export default function ConsoleLayout() {
   const outlet = useOutlet();
   return (
-    <Layout className="h-screen">
-      <Sider
-        width={68}
-        className=" bg-white! border-0 border-r! border-gray-200! border-solid!"
-      >
-        <div className="flex h-full flex-col">
-          <div className="p-4 flex justify-between items-center border-0 border-b border-gray-200 border-solid">
-            <div className="flex gap-2 items-center">
-              <div className="bg-[#4878f3] rounded-md w-8 h-8 flex items-center justify-center">
-                <ApartmentOutlined className=" text-white!" />
+    <UserModel.Provider>
+      <AuthLoginLayout>
+        <Layout className="h-screen">
+          <Sider
+            width={68}
+            className=" bg-white! border-0 border-r! border-gray-200! border-solid!"
+          >
+            <div className="flex h-full flex-col">
+              <div className="p-4 flex justify-between items-center border-0 border-b border-gray-200 border-solid">
+                <div className="flex gap-2 items-center">
+                  <div className="bg-[#4878f3] rounded-md w-8 h-8 flex items-center justify-center">
+                    <ApartmentOutlined className=" text-white!" />
+                  </div>
+                </div>
               </div>
+              <ConsoleMenu />
             </div>
-          </div>
-          <ConsoleMenu />
-        </div>
-      </Sider>
-      <Layout className=" bg-[#f8f9fa82]!">
-        <Content className="">{outlet}</Content>
-      </Layout>
-    </Layout>
+          </Sider>
+          <Layout className=" bg-[#f8f9fa82]!">
+            <Content className="">{outlet}</Content>
+          </Layout>
+        </Layout>
+      </AuthLoginLayout>
+    </UserModel.Provider>
   );
 }

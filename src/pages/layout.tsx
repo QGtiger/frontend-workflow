@@ -6,14 +6,14 @@ import { UserModel } from "@/models/UserModel";
 import { AuthLoginLayout } from "@/Layouts/AuthLogin";
 
 const searchParams = new URLSearchParams(location.search);
-const token = searchParams.get("access_token");
+const token = searchParams.get("token");
 if (token) {
   setAccessToken(token);
   // 清除链接上的token
   history.replaceState(
     null,
     "",
-    location.pathname + location.search.replace(`access_token=${token}`, "")
+    location.pathname + location.search.replace(`token=${token}`, "")
   );
 }
 
