@@ -9,8 +9,8 @@ export default async function hello(c: ContextWithDb) {
   }
 
   // 示例查询（需要导入对应的 schema）
-  // import { usersTable } from '../schema/users.js';
-  // const allUsers = await db.select().from(usersTable);
+  // import { workflowDirectoryTable } from '../schema/index.js';
+  // const allDirectories = await db.select().from(workflowDirectoryTable);
 
   return {
     message: "Hello from lightfish-server!",

@@ -136,8 +136,8 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@lightfish/server':
-        specifier: ^0.0.4
-        version: 0.0.4(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(pg@8.20.0)
+        specifier: ^0.0.10
+        version: 0.0.10(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(pg@8.20.0)
       '@types/ali-oss':
         specifier: ^6.16.13
         version: 6.16.13
@@ -1471,8 +1471,8 @@ packages:
   '@lezer/python@1.1.18':
     resolution: {integrity: sha512-31FiUrU7z9+d/ElGQLJFXl+dKOdx0jALlP3KEOsGTex8mvj+SoE1FgItcHWK/axkxCHGUSpqIHt6JAWfWu9Rhg==}
 
-  '@lightfish/server@0.0.4':
-    resolution: {integrity: sha512-X4JIGRh2pQHprs5p9MrDjjme8aC9rAAQwT/VZMLbUo1Ne7nWzOKZMGJgqvxwsiet0akzlZJ0fnr0yVT6ogtDyg==}
+  '@lightfish/server@0.0.10':
+    resolution: {integrity: sha512-cX1knJP64IOCRgF832W1uNBrsDwMTLE7TBwZO7QKIQgNzHjnkAMw54iPzCHuucIPjEGy7aOruABYns+xENszqw==}
     hasBin: true
     peerDependencies:
       drizzle-orm: ^0.45.2
@@ -6152,7 +6152,7 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.5
 
-  '@lightfish/server@0.0.4(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(pg@8.20.0)':
+  '@lightfish/server@0.0.10(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(pg@8.20.0)':
     dependencies:
       '@hono/node-server': 1.19.14(hono@4.12.14)
       '@types/pg': 8.20.0

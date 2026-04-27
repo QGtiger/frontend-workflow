@@ -25,7 +25,7 @@ export const UserModel = createCustomModel(() => {
           headers: {
             "X-User-Id": token,
             "X-App-Name": "frontend-account",
-            "X-Version": "9",
+            "X-Version": "10",
           },
         });
 
