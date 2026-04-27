@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { workflowDirectoryTable } from "../../../schema/index.js";
 import { withCommonParams } from "../../../utils/withCommonParams.js";
 
@@ -39,7 +39,8 @@ export default withCommonParams(async ({ userId, db }) => {
       type: workflowDirectoryTable.type,
     })
     .from(workflowDirectoryTable)
-    .where(eq(workflowDirectoryTable.userId, userId));
+    .where(eq(workflowDirectoryTable.userId, userId))
+    .orderBy(asc(workflowDirectoryTable.createdAt));
 
   return buildTree(allNodes);
 });

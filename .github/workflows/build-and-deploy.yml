@@ -43,8 +43,14 @@ jobs:
           BASE_ROOT: ${{ vars.BASE_URL }}
           APP_NAME: ${{ env.APP_NAME }}
           BUILD_VERSION: ${{ steps.version.outputs.version }}
+          # apiServerPlugin 在 vite build/configureServer 阶段会读库，需与 lightfish-server 一致
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -e
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "Error: 请配置仓库 Secrets：DATABASE_URL（供构建时连接数据库）"
+            exit 1
+          fi
           ROOT="${BASE_ROOT%/}"
           if [ -n "$ROOT" ]; then
             export VITE_BASE_URL="${ROOT}/${APP_NAME}/${BUILD_VERSION}/"
@@ -52,7 +58,7 @@ jobs:
             export VITE_BASE_URL="/${APP_NAME}/${BUILD_VERSION}/"
           fi
           echo "VITE_BASE_URL=$VITE_BASE_URL"
-          pnpm build
+          pnpm build:online
 
       - name: Deploy to OSS
         env:

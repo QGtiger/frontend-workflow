@@ -6,6 +6,13 @@ import { Button, Result } from "antd";
 import { useMount } from "ahooks";
 
 import "./main.css";
+import { lightfishApiClient } from "@lightfish/server/api";
+import { getAccessToken } from "./api/common.ts";
+
+lightfishApiClient.interceptors.request.use((config: any) => {
+  config.headers["X-User-Id"] = getAccessToken();
+  return config;
+});
 
 const routes = initRoutes();
 const router = createBrowserRouter(routes);

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:online": "vite build && lightfish-server build && lightfish-server db push",
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-grammar": "lezer-generator ./syntax.grammar"
@@ -28,6 +29,7 @@
     "@lezer/common": "^1.4.0",
     "@lezer/highlight": "^1.2.3",
     "@lezer/lr": "^1.4.5",
+    "@lightfish/server": "0.0.13",
     "@tailwindcss/vite": "^4.1.17",
     "@uiw/react-codemirror": "^4.25.4",
     "ahooks": "^3.9.6",
@@ -54,7 +56,6 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@lezer/generator": "^1.8.0",
-    "@lightfish/server": "^0.0.10",
     "@types/ali-oss": "^6.16.13",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.10.1",
