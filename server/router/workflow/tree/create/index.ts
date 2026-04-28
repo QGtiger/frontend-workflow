@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
-import { workflowDirectoryTable } from "../../../schema/index.js";
-import { withCommonParams } from "../../../utils/withCommonParams.js";
+import { workflowDirectoryTable } from "../../../../schema/index.js";
+import { withCommonParams } from "../../../../utils/withCommonParams.js";
 
 // 纯数字随机 key，浏览器友好
 const generateKey = customAlphabet("0123456789", 16);

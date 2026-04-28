@@ -1,6 +1,6 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { workflowDirectoryTable } from "../../../schema/index.js";
-import { withCommonParams } from "../../../utils/withCommonParams.js";
+import { workflowDirectoryTable } from "../../../../schema/index.js";
+import { withCommonParams } from "../../../../utils/withCommonParams.js";
 
 /**
  * 递归获取所有子节点的 key

@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { workflowDirectoryTable } from "../../../schema/index.js";
-import { withCommonParams } from "../../../utils/withCommonParams.js";
+import { workflowDirectoryTable } from "../../../../schema/index.js";
+import { withCommonParams } from "../../../../utils/withCommonParams.js";
 
 export default withCommonParams(async ({ userId, db }, c) => {
   const body = await c.req.json();

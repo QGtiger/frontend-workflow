@@ -20,12 +20,10 @@ export const UserModel = createCustomModel(() => {
       const token = getAccessToken();
       if (token) {
         const data = await request<UserInfo>({
-          url: "http://api.lightfish.top/api/account/info",
+          url: "http://api.lightfish.top/api/frontend-account/11/account/info",
           method: "get",
           headers: {
             "X-User-Id": token,
-            "X-App-Name": "frontend-account",
-            "X-Version": "10",
           },
         });
 
@@ -35,7 +33,7 @@ export const UserModel = createCustomModel(() => {
     },
     {
       onError: (error) => {
-        jumpToLogin();
+        // jumpToLogin();
       },
     }
   );
