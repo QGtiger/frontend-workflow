@@ -27,8 +27,8 @@ function injectRouterAppConfigDev(): Plugin {
       return html.replace(
         /<head(\s[^>]*)?>/i,
         `<head$1><script>window.__ROUTER_APP_CONFIG__=${JSON.stringify(
-          defineAppConfig()
-        )}</script>`
+          defineAppConfig(),
+        )}</script>`,
       );
     },
   };
@@ -49,6 +49,8 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+
+        "@server": path.resolve(__dirname, "./server"),
       },
     },
     define: {
