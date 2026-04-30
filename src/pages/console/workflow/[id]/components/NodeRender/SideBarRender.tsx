@@ -11,6 +11,7 @@ import { useRequest } from "ahooks";
 import { FormItemWithExpression } from "./components/FormItemWithExpression";
 import ConditionEditor from "./components/ConditionEditor";
 import { ConnectorSelectorModel } from "../../../ConnectorSelectorModel";
+import SchemaForm from "@/components/SchemaForm";
 
 const extraEditorMap: Record<string, ComponentType<any>> = {
   ConditionEditor,
@@ -18,13 +19,14 @@ const extraEditorMap: Record<string, ComponentType<any>> = {
 
 export function SideBarRender() {
   const [form] = Form.useForm();
-  const data = useCustomNodeData<CustomNodeData>();
+  const data = useCustomNodeData<WorkflowNodeBlock["data"]>();
   const { registry, updateData } = CustomNodeRenderModel.useModel();
   const { queryIPaaSConnectorAction } = ConnectorSelectorModel.useModel();
 
   const { data: inputsSchema, loading: inputsSchemaLoading } = useRequest(
     async () => {
-      if (registry.type === "custom") {
+      // TODO 后续修改
+      if (["custom", "start"].includes(registry.type as string)) {
         const action = await queryIPaaSConnectorAction({
           code: data.connectorCode,
           version: data.version,
@@ -32,7 +34,8 @@ export function SideBarRender() {
         });
         return action.inputsSchema;
       } else {
-        return getBuiltInRegistryInputsSchema(registry.type);
+        // TODO
+        return []; // getBuiltInRegistryInputsSchema(registry.type);
       }
     },
     {
@@ -52,22 +55,24 @@ export function SideBarRender() {
         {inputsSchemaLoading ? (
           <Skeleton active />
         ) : inputsSchema?.length ? (
-          <IpaasSchemaForm
-            formProps={{
-              requiredMark: "optional",
-              onValuesChange: () => {
-                updateData({
-                  inputs: form.getFieldsValue(),
-                });
-              },
-              form,
-              initialValues: data.inputs,
+          <SchemaForm
+            form={form}
+            initialValues={data.inputs}
+            schema={inputsSchema}
+            onValuesChange={() => {
+              console.log(
+                "inputsSchema change",
+                inputsSchema,
+                form.getFieldsValue(),
+              );
+              updateData({
+                inputs: form.getFieldsValue(),
+              });
             }}
-            dynamicScriptExcuteWithFormSchema={handleDynamicScript}
             renderEditor={({ schema, Fc, props }) => {
-              if (extraEditorMap[schema.editor?.kind]) {
-                return <Fc {...props} />;
-              }
+              // if (extraEditorMap[schema.editor?.kind]) {
+              //   return <Fc {...props} />;
+              // }
               return (
                 <FormItemWithExpression
                   Componet={Fc}
@@ -84,8 +89,6 @@ export function SideBarRender() {
                 </div>
               );
             }}
-            schema={inputsSchema}
-            editorMap={extraEditorMap}
           />
         ) : null}
       </div>

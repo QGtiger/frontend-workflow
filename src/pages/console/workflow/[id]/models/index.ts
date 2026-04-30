@@ -22,7 +22,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
     };
   }, []);
 
-  const { data, loading } = useRequest(
+  const { data, loading, error } = useRequest(
     async (): Promise<WorkflowDetailData> => {
       const wfData = await lightfishRequest<WorkflowDetailData>(
         `/workflow/meta/${id}`,
@@ -123,5 +123,6 @@ export const WorkflowDetailModel = createCustomModel(() => {
       latestNodesRef.current = latestNodes;
     },
     getUniqueName,
+    error,
   };
 });

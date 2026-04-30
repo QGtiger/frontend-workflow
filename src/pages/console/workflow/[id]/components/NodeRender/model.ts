@@ -19,16 +19,18 @@ export const CustomNodeRenderModel = createCustomModel(
         });
       },
     };
-  }
+  },
 );
 
 export function useCustomNodeData<
-  T extends { name: string; description: string; icon: string }
+  T extends { name: string; description?: string; icon: string },
 >(): T {
   const {
     registry,
     nodeRender: { data },
   } = CustomNodeRenderModel.useModel();
+
+  // console.log(data);
 
   return {
     ...data,

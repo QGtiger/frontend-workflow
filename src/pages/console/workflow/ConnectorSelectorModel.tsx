@@ -19,7 +19,10 @@ export const ConnectorSelectorModel = createCustomModel(() => {
   const { data: connectorList } = useRequest(() => {
     return lightfishRequest<Connector[]>("/connector/list").then((d) => {
       d.forEach((it) => {
-        actionsCache.current.set(`${it.code}@${it.version}`, it.actions ?? []);
+        actionsCache.current.set(
+          `${it.code}@${it.version}`,
+          Array.prototype.concat.call([], it.actions ?? [], it.triggers ?? []),
+        );
       });
       return d;
     });
@@ -40,6 +43,8 @@ export const ConnectorSelectorModel = createCustomModel(() => {
   const queryIPaaSConnectorActions = useCallback(
     async (opts: { code: string; version: string }) => {
       const cacheKey = `${opts.code}@${opts.version}`;
+
+      console.log("queryIPaaSConnectorActions", opts, actionsCache.current);
 
       // 命中缓存，直接返回
       if (actionsCache.current.has(cacheKey)) {
@@ -85,6 +90,52 @@ export const ConnectorSelectorModel = createCustomModel(() => {
     clearActionsCache,
   };
 });
+
+function generateInitWorkflow({
+  triggerCode,
+  triggerList,
+}: {
+  triggerCode: string;
+  triggerList: ConnectorTrigger[];
+}): WorkflowNodeBlock[] {
+  const triggerConnector = triggerList.find((it) =>
+    it.triggers.some((t) => t.code === triggerCode),
+  );
+  const triggerItem = triggerConnector?.triggers.find(
+    (t) => t.code === triggerCode,
+  );
+  if (!triggerItem || !triggerConnector)
+    throw new Error(`trigger ${triggerCode} not found`);
+  return [
+    {
+      id: "start_0",
+      type: "start",
+      data: {
+        name: triggerItem.name,
+        description: triggerItem.description,
+        icon: triggerConnector.icon,
+        connectorCode: triggerConnector.code,
+        actionCode: triggerItem.code,
+        version: triggerConnector.version,
+      },
+      blocks: [],
+    },
+    {
+      id: "end_0",
+      type: "end",
+      data: {
+        // TODO 结果节点
+        name: "结束",
+        description: "结束节点描述",
+        icon: "https://api.iconify.design/mdi:responsive.svg",
+        version: "1.0.0",
+        connectorCode: "end",
+        actionCode: "end",
+      },
+      blocks: [],
+    },
+  ];
+}
 
 export function useCreateWorkflow() {
   const { triggerConnectorList } = ConnectorSelectorModel.useModel();
@@ -144,20 +195,10 @@ export function useCreateWorkflow() {
                 name: values.name,
                 description: values.description,
                 // TODO: 根据选中的 triggerCode 构建初始节点（包含 start + trigger 节点）
-                meta: [
-                  {
-                    id: "start_0",
-                    type: "start",
-                    data: { name: "Start" },
-                    blocks: [],
-                  },
-                  {
-                    id: "end_0",
-                    type: "end",
-                    data: { name: "End233" },
-                    blocks: [],
-                  },
-                ],
+                meta: generateInitWorkflow({
+                  triggerCode: values.triggerCode,
+                  triggerList: triggerConnectorList,
+                }),
               },
             });
           })

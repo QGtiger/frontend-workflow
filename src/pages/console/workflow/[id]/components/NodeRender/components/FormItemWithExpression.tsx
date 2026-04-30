@@ -55,7 +55,7 @@ function ResultViewer(props: { segments: TemplateSegment[] }) {
       return "[empty]";
     }
     const errorSegment = segments.find(
-      (it) => typeof it === "object" && it.error
+      (it) => typeof it === "object" && it.error,
     ) as SandboxResult<any> | undefined;
 
     if (errorSegment) {
@@ -82,19 +82,29 @@ function ResultViewer(props: { segments: TemplateSegment[] }) {
   );
 }
 
+/**
+ * 将传入的值规范化为 NodeInputValue 格式
+ * - 如果已经是 { value, isExpression, expression } 结构，直接使用
+ * - 如果是原始值（string/number/boolean/object），包装为 { value: rawValue, isExpression: false }
+ */
+function normalizeToNodeInputValue(v: any): NodeInputValue {
+  if (v && typeof v === "object" && "isExpression" in v) {
+    return v as NodeInputValue;
+  }
+  return { value: v, isExpression: false };
+}
+
 export function FormItemWithExpression(props: {
   Componet: ComponentType<any>;
   value?: NodeInputValue;
   onChange?: (value: NodeInputValue) => void;
   placeholder?: string;
 }) {
-  const {
-    Componet,
-    value: valueWithExpression,
-    onChange,
-    ...restProps
-  } = props;
-  const { isExpression, value, expression } = valueWithExpression || {};
+  const { Componet, value: rawValue, onChange, ...restProps } = props;
+
+  // 统一规范化 value
+  const valueWithExpression = normalizeToNodeInputValue(rawValue);
+  const { isExpression, value, expression } = valueWithExpression;
   const workflowStoreApi = useWorkflowStoreApi();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -145,7 +155,7 @@ export function FormItemWithExpression(props: {
               }}
               transition={{ duration: 0.1 }}
               className={classNames(
-                "z-10 max-h-[400px] overflow-auto absolute right-0 bottom-0 w-full box-border bg-white shadow-md rounded-b-md border border-t-0 border-gray-200"
+                "z-10 max-h-[400px] overflow-auto absolute right-0 bottom-0 w-full box-border bg-white shadow-md rounded-b-md border border-t-0 border-gray-200",
               )}
             >
               {/* 标题栏 */}
@@ -191,8 +201,8 @@ export function FormItemWithExpression(props: {
                             isMock
                               ? "cm-viewer-expr-pending"
                               : error
-                              ? "cm-viewer-expr-invalid"
-                              : "cm-viewer-expr-valid"
+                                ? "cm-viewer-expr-invalid"
+                                : "cm-viewer-expr-valid",
                           )}
                         >
                           {getTextBySegment(it)}

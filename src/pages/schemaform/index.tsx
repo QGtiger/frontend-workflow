@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -699,7 +699,7 @@ const scenes: SceneConfig[] = [
 // ============================================================
 function ArrayDebugPanel() {
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
-  const formRef = useRef<any>(null);
+  const [form] = Form.useForm();
 
   const debugSchema: SchemaFormItemType[] = [
     {
@@ -792,7 +792,7 @@ function ArrayDebugPanel() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <SchemaForm
-            ref={formRef}
+            form={form}
             schema={debugSchema}
             onValuesChange={(changedValues, allValues) => {
               console.log(
@@ -806,14 +806,14 @@ function ArrayDebugPanel() {
             <Button
               type="primary"
               onClick={() => {
-                const values = formRef.current?.getFieldsValue();
+                const values = form.getFieldsValue();
                 setFormData(values);
                 console.log("当前表单值:", JSON.stringify(values));
               }}
             >
               打印当前值
             </Button>
-            <Button onClick={() => formRef.current?.resetFields()}>重置</Button>
+            <Button onClick={() => form.resetFields()}>重置</Button>
           </Space>
         </div>
         <div>
@@ -836,42 +836,36 @@ export default function SchemaFormDemo() {
   const [activeScene, setActiveScene] = useState<string>("basic");
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [schemaJson, setSchemaJson] = useState<string>("");
-  const formRef = useRef<any>(null);
+  const [form] = Form.useForm();
 
   const currentScene = scenes.find((s) => s.key === activeScene)!;
 
   const handleSubmit = () => {
-    if (formRef.current) {
-      formRef.current
-        .validateFields()
-        .then((values: any) => {
-          setFormData(values);
-          setSchemaJson(JSON.stringify(currentScene.schema, null, 2));
-        })
-        .catch((err: any) => {
-          console.error("校验失败:", err);
-        });
-    }
+    form
+      .validateFields()
+      .then((values: any) => {
+        setFormData(values);
+        setSchemaJson(JSON.stringify(currentScene.schema, null, 2));
+      })
+      .catch((err: any) => {
+        console.error("校验失败:", err);
+      });
   };
 
   const handleReset = () => {
-    if (formRef.current) {
-      formRef.current.resetFields();
-      setFormData(null);
-      setSchemaJson("");
-    }
+    form.resetFields();
+    setFormData(null);
+    setSchemaJson("");
   };
 
   const handleSetFormData = () => {
-    if (formRef.current) {
-      formRef.current.setFieldsValue({
-        username: "预设用户",
-        age: 25,
-        enabled: true,
-        email: "test@example.com",
-        phone: "13800138000",
-      });
-    }
+    form.setFieldsValue({
+      username: "预设用户",
+      age: 25,
+      enabled: true,
+      email: "test@example.com",
+      phone: "13800138000",
+    });
   };
 
   return (
@@ -921,7 +915,7 @@ export default function SchemaFormDemo() {
           }
         >
           <SchemaForm
-            ref={formRef}
+            form={form}
             schema={currentScene.schema}
             onValuesChange={(changedValues, allValues) => {
               console.log(
