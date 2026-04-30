@@ -10,7 +10,7 @@ import type { CustomNodeData } from "../../types";
 import { useRequest } from "ahooks";
 import { FormItemWithExpression } from "./components/FormItemWithExpression";
 import ConditionEditor from "./components/ConditionEditor";
-import { ConnectorSelectorModel } from "../../models";
+import { ConnectorSelectorModel } from "../../../ConnectorSelectorModel";
 
 const extraEditorMap: Record<string, ComponentType<any>> = {
   ConditionEditor,

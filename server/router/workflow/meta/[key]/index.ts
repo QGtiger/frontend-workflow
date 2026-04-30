@@ -29,6 +29,8 @@ async function handleGet(userId: number, db: any, key: string) {
       name: workflowMetaTable.name,
       description: workflowMetaTable.description,
       meta: workflowMetaTable.meta,
+      createdAt: workflowMetaTable.createdAt,
+      updatedAt: workflowMetaTable.updatedAt,
     })
     .from(workflowMetaTable)
     .where(
@@ -40,10 +42,18 @@ async function handleGet(userId: number, db: any, key: string) {
     .limit(1);
 
   if (result.length === 0) {
-    return { workflowKey: key, name: "", description: "", meta: [] };
+    throw new Error("工作流不存在");
   }
 
-  return result[0];
+  const d = result[0];
+
+  return {
+    ...d,
+    id: d.workflowKey,
+    nodes: d.meta,
+    // TODO 没有实现 先补位
+    status: "draft",
+  };
 }
 
 async function handleUpdate(

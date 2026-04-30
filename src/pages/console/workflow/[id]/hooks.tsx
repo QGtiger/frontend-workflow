@@ -17,12 +17,13 @@ import {
 import classNames from "classnames";
 import { ScrollArea } from "@/components/ScrollArea";
 import { generateCustomNodeData } from "./utils";
-import { ConnectorSelectorModel, WorkflowDetailModel } from "./models";
+import { WorkflowDetailModel } from "./models";
 import {
   FlowNodeEntity,
   useClientContext,
 } from "@flowgram.ai/fixed-layout-editor";
 import type { NodeOutputStructItem } from "./types";
+import { ConnectorSelectorModel } from "../ConnectorSelectorModel";
 
 function ConnectorSelectorContent({
   builtInLogicNodes,

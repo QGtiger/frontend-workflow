@@ -9,17 +9,16 @@ import type { MenuProps } from "antd";
 import { WorkflowLayoutModel } from "./models";
 import { useWorkflowId } from "./hooks";
 import WorkflowTree from "./components/WorkflowTree";
+import {
+  ConnectorSelectorModel,
+  useCreateWorkflow,
+} from "./ConnectorSelectorModel";
 
 function WorkflowLayoutContent() {
   const workflowId = useWorkflowId();
-  const {
-    collapsed,
-    collapsedAction,
-    treeData,
-    firstLoading,
-    createFolder,
-    createWorkflow,
-  } = WorkflowLayoutModel.useModel();
+  const { collapsed, collapsedAction, treeData, firstLoading, createFolder } =
+    WorkflowLayoutModel.useModel();
+  const { createWorkflow } = useCreateWorkflow();
 
   const newItems: MenuProps["items"] = [
     {
@@ -54,7 +53,7 @@ function WorkflowLayoutContent() {
         {/* 头部 */}
         <div className="p-3 border-b border-gray-200 flex items-center justify-between">
           <span className="font-medium text-gray-700">工作流</span>
-          <Dropdown menu={{ items: newItems }} trigger={["hover"]}>
+          <Dropdown menu={{ items: newItems }} trigger={["click"]}>
             <Button type="primary" size="small" icon={<PlusOutlined />}>
               新建
             </Button>
@@ -83,7 +82,9 @@ function WorkflowLayoutContent() {
 export default function WorkflowLayout() {
   return (
     <WorkflowLayoutModel.Provider>
-      <WorkflowLayoutContent />
+      <ConnectorSelectorModel.Provider>
+        <WorkflowLayoutContent />
+      </ConnectorSelectorModel.Provider>
     </WorkflowLayoutModel.Provider>
   );
 }

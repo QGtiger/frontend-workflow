@@ -1,5 +1,8 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { workflowDirectoryTable } from "../../../../schema/index.js";
+import {
+  workflowDirectoryTable,
+  workflowMetaTable,
+} from "../../../../schema/index.js";
 import { withCommonParams } from "../../../../utils/withCommonParams.js";
 
 /**
@@ -8,7 +11,7 @@ import { withCommonParams } from "../../../../utils/withCommonParams.js";
 async function getAllDescendantKeys(
   db: any,
   userId: number,
-  parentKey: string
+  parentKey: string,
 ): Promise<string[]> {
   const children = await db
     .select({ key: workflowDirectoryTable.key })
@@ -16,8 +19,8 @@ async function getAllDescendantKeys(
     .where(
       and(
         eq(workflowDirectoryTable.userId, userId),
-        eq(workflowDirectoryTable.parentKey, parentKey)
-      )
+        eq(workflowDirectoryTable.parentKey, parentKey),
+      ),
     );
 
   const keys: string[] = [];
@@ -41,14 +44,24 @@ export default withCommonParams(async ({ userId, db }, c) => {
   const descendantKeys = await getAllDescendantKeys(db, userId, key);
   const allKeys = [key, ...descendantKeys];
 
-  // 批量删除
+  // 批量删除目录树记录
   await db
     .delete(workflowDirectoryTable)
     .where(
       and(
         eq(workflowDirectoryTable.userId, userId),
-        inArray(workflowDirectoryTable.key, allKeys)
-      )
+        inArray(workflowDirectoryTable.key, allKeys),
+      ),
+    );
+
+  // 批量删除 meta 数据
+  await db
+    .delete(workflowMetaTable)
+    .where(
+      and(
+        eq(workflowMetaTable.userId, userId),
+        inArray(workflowMetaTable.workflowKey, allKeys),
+      ),
     );
 
   return { message: "ok" };

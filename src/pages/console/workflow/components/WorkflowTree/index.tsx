@@ -11,6 +11,7 @@ import { Dropdown, Modal, Input, message } from "antd";
 import type { MenuProps } from "antd";
 import type { TreeNode } from "../../models";
 import { WorkflowLayoutModel } from "../../models";
+import { useCreateWorkflow } from "../../ConnectorSelectorModel";
 
 interface WorkflowTreeProps {
   treeData: TreeNode[];
@@ -33,8 +34,9 @@ function TreeNodeItem({
   const isFolder = node.type === "folder";
   const isSelected = selectedKey === node.key;
 
-  const { createFolder, createWorkflow, renameNode, deleteNode } =
+  const { createFolder, renameNode, deleteWorkflow } =
     WorkflowLayoutModel.useModel();
+  const { createWorkflow } = useCreateWorkflow();
 
   const handleClick = () => {
     if (isFolder) {
@@ -83,7 +85,7 @@ function TreeNodeItem({
       }`,
       okText: "删除",
       okType: "danger",
-      onOk: () => deleteNode(node.key),
+      onOk: () => deleteWorkflow(node.key),
     });
   };
 
@@ -98,8 +100,9 @@ function TreeNodeItem({
         {
           key: "new-workflow",
           label: "新建工作流",
-          onClick: () => createWorkflow(node.key),
+          onClick: () => createWorkflow?.(node.key),
         },
+
         { type: "divider" },
         {
           key: "rename",
@@ -211,7 +214,7 @@ export default function WorkflowTree({
     (key: string) => {
       navigate(`/console/workflow/${key}`);
     },
-    [navigate]
+    [navigate],
   );
 
   return (

@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { createCustomModel } from "@/common/createModel";
 import { useBoolean, useRequest } from "ahooks";
 import { lightfishRequest } from "@/api/lightfishApi";
+import { useNavigate } from "react-router-dom";
+import { useWorkflowId } from "./hooks";
 
 export interface TreeNode {
   title: string;
@@ -13,6 +15,8 @@ export interface TreeNode {
 export const WorkflowLayoutModel = createCustomModel(() => {
   const [collapsed, collapsedAction] = useBoolean(false);
   const loadedRef = useRef(false);
+  const nav = useNavigate();
+  const workflowId = useWorkflowId();
 
   const {
     data: treeData,
@@ -40,23 +44,7 @@ export const WorkflowLayoutModel = createCustomModel(() => {
       onSuccess: () => {
         refreshWorkflows();
       },
-    }
-  );
-
-  // 新建工作流
-  const { run: createWorkflow } = useRequest(
-    async (parentKey?: string) => {
-      return lightfishRequest("/workflow/tree/create", {
-        method: "POST",
-        data: { title: "新建工作流", parentKey, type: "workflow" },
-      });
     },
-    {
-      manual: true,
-      onSuccess: () => {
-        refreshWorkflows();
-      },
-    }
   );
 
   // 重命名
@@ -72,15 +60,20 @@ export const WorkflowLayoutModel = createCustomModel(() => {
       onSuccess: () => {
         refreshWorkflows();
       },
-    }
+    },
   );
 
   // 删除
-  const { run: deleteNode } = useRequest(
+  const { run: deleteWorkflow } = useRequest(
     async (key: string) => {
       return lightfishRequest("/workflow/tree/delete", {
         method: "POST",
         data: { key },
+      }).then(() => {
+        // 删除当前workflow 就跳转到 通用页面
+        if (key === workflowId) {
+          nav("/console/workflow");
+        }
       });
     },
     {
@@ -88,7 +81,7 @@ export const WorkflowLayoutModel = createCustomModel(() => {
       onSuccess: () => {
         refreshWorkflows();
       },
-    }
+    },
   );
 
   return {
@@ -97,8 +90,8 @@ export const WorkflowLayoutModel = createCustomModel(() => {
     treeData,
     firstLoading,
     createFolder,
-    createWorkflow,
     renameNode,
-    deleteNode,
+    deleteWorkflow,
+    refreshWorkflows,
   };
 });

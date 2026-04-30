@@ -1,5 +1,4 @@
 import { createCustomModel } from "@/common/createModel";
-import type { IPaasFormSchema } from "@/components/IPaaSForm";
 
 import { useRequest } from "ahooks";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
@@ -9,8 +8,6 @@ import { message, Modal } from "antd";
 import type { WorkflowDetailData, WorkflowNoes } from "./types";
 import { checkNameIsExist, trarverseNodes } from "./utils";
 import { lightfishRequest } from "@/api/lightfishApi";
-
-import type { Connector, ConnectorAction } from "@server/shared/connector";
 
 export const WorkflowDetailModel = createCustomModel(() => {
   const { id } = useParams();
@@ -27,160 +24,9 @@ export const WorkflowDetailModel = createCustomModel(() => {
 
   const { data, loading } = useRequest(
     async (): Promise<WorkflowDetailData> => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // TODO 查询接口
-      const wfData: WorkflowDetailData = {
-        id: id!,
-        nodes: [
-          {
-            id: "start_0",
-            type: "start",
-            data: {
-              name: "Start",
-            },
-            blocks: [],
-          },
-          {
-            id: "custom_58whW",
-            type: "custom",
-            data: {
-              name: "执行查询",
-              description: "执行 SQL 查询并返回结果",
-              connectorCode: "connector1",
-              actionCode: "action1",
-              version: 1,
-              icon: "https://api.iconify.design/mdi:api.svg",
-              outputStruct: [
-                {
-                  code: "result",
-                  type: "object",
-                  label: "结果",
-                  children: [
-                    {
-                      code: "data",
-                      label: "数据",
-                      type: "string",
-                    },
-                  ],
-                },
-              ],
-
-              sampleData: {
-                result: {
-                  data: "123",
-                },
-              },
-            },
-            blocks: [],
-          },
-          {
-            id: "switch_Gro26",
-            type: "switch",
-            data: {
-              name: "Switch",
-            },
-            blocks: [
-              {
-                id: "G2AY2",
-                type: "case",
-                data: {
-                  name: "Case_0",
-                },
-                blocks: [
-                  {
-                    id: "custom_96gkk",
-                    type: "custom",
-                    data: {
-                      name: "执行查询3",
-                      description: "执行 SQL 查询并返回结果",
-                      connectorCode: "connector1",
-                      actionCode: "action1",
-                      version: 1,
-                      icon: "https://api.iconify.design/mdi:api.svg",
-                      outputStruct: [
-                        {
-                          code: "result",
-                          type: "object",
-                          label: "结果",
-                          children: [
-                            {
-                              code: "data",
-                              label: "数据",
-                              type: "string",
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    blocks: [],
-                  },
-                ],
-              },
-              {
-                id: "vPmBH",
-                type: "case",
-                data: {
-                  name: "Case_1",
-                },
-                blocks: [],
-              },
-              {
-                id: "WBwr9",
-                type: "caseDefault",
-                data: {
-                  name: "Default",
-                },
-                blocks: [],
-              },
-            ],
-          },
-          {
-            id: "custom_3b2AN",
-            type: "custom",
-            data: {
-              name: "执行查询2",
-              description: "执行 SQL 查询并返回结果",
-              connectorCode: "connector1",
-              actionCode: "action1",
-              version: 1,
-              icon: "https://api.iconify.design/mdi:api.svg",
-              outputStruct: [
-                {
-                  code: "result",
-                  type: "object",
-                  label: "结果",
-                  children: [
-                    {
-                      code: "data",
-                      label: "数据",
-                      type: "string",
-                    },
-                  ],
-                },
-              ],
-              inputs: {
-                query: {
-                  isExpression: true,
-                },
-              },
-            },
-            blocks: [],
-          },
-          {
-            id: "end_0",
-            type: "end",
-            data: {
-              name: "End",
-            },
-            blocks: [],
-          },
-        ],
-        name: "Workflow 1",
-        description: "Workflow 1 description",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        status: "unpublished",
-      };
+      const wfData = await lightfishRequest<WorkflowDetailData>(
+        `/workflow/meta/${id}`,
+      );
       latestNodesRef.current = wfData.nodes;
       return wfData;
     },
@@ -277,79 +123,5 @@ export const WorkflowDetailModel = createCustomModel(() => {
       latestNodesRef.current = latestNodes;
     },
     getUniqueName,
-  };
-});
-
-export const ConnectorSelectorModel = createCustomModel(() => {
-  // 缓存 Map: key = `${code}@${version}`
-  const actionsCache = useRef<Map<string, ConnectorAction[]>>(new Map());
-
-  const { data: connectorList } = useRequest(() => {
-    return lightfishRequest<Connector[]>("/connector/list").then((d) => {
-      d.forEach((it) => {
-        actionsCache.current.set(`${it.code}@${it.version}`, it.actions ?? []);
-      });
-      return d;
-    });
-  });
-
-  const { runAsync: _queryIPaaSConnectorActions } = useRequest(
-    async (opts: { code: string; version: string }) => {
-      // 查询特定版本的 Actions
-      message.error(`暂不考虑支持${opts.code}:${opts.version}`);
-      return [];
-    },
-    {
-      manual: true,
-    },
-  );
-
-  // 带缓存的查询函数
-  const queryIPaaSConnectorActions = useCallback(
-    async (opts: { code: string; version: string }) => {
-      const cacheKey = `${opts.code}@${opts.version}`;
-
-      // 命中缓存，直接返回
-      if (actionsCache.current.has(cacheKey)) {
-        return actionsCache.current.get(cacheKey)!;
-      }
-
-      // 请求数据并缓存
-      const result = await _queryIPaaSConnectorActions(opts);
-      actionsCache.current.set(cacheKey, result);
-      return result;
-    },
-    [_queryIPaaSConnectorActions],
-  );
-
-  const queryIPaaSConnectorAction = useCallback(
-    async (opts: { code: string; version: string; actionCode: string }) => {
-      const actions = await queryIPaaSConnectorActions(opts);
-      const action = actions.find((a) => a.code === opts.actionCode);
-      if (action) {
-        return action;
-      } else {
-        throw new Error(`Action ${opts.actionCode} not found`);
-      }
-    },
-    [queryIPaaSConnectorActions],
-  );
-
-  // 清除缓存（可选，用于刷新数据）
-  const clearActionsCache = useCallback((key?: string) => {
-    if (key) {
-      actionsCache.current.delete(key);
-    } else {
-      actionsCache.current.clear();
-    }
-  }, []);
-
-  return {
-    appConnectorList: connectorList?.filter((it) => it.actions?.length) || [],
-    triggerConnectorList:
-      connectorList?.filter((it) => it.triggers?.length) || [],
-    queryIPaaSConnectorActions,
-    queryIPaaSConnectorAction,
-    clearActionsCache,
   };
 });

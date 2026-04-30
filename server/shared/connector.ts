@@ -24,3 +24,6 @@ export interface Connector {
   actions?: ConnectorAction[];
   triggers?: ConnectorAction[];
 }
+
+export type ConnectorTrigger = Omit<Connector, "triggers"> &
+  Required<Pick<Connector, "triggers">>;
