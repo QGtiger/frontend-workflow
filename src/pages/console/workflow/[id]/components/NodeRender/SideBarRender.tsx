@@ -12,67 +12,6 @@ import { FormItemWithExpression } from "./components/FormItemWithExpression";
 import ConditionEditor from "./components/ConditionEditor";
 import { ConnectorSelectorModel } from "../../models";
 
-// // 提取常量，避免重复
-// const COMMON_DESCRIPTION =
-//   "请输入有效的标识符，仅支持 **字母**、**数字** 和 **下划线**。[查看文档](https://docs.example.com)";
-
-// // 动态表单脚本
-// const DYNAMIC_FORM_SCRIPT = `async function main() {
-//   await new Promise(resolve => setTimeout(resolve, 1000));
-//   return [
-//     {
-//       code: 'va',
-//       name: '测试2',
-//       type: 'string',
-//       required: true,
-//       description: "${COMMON_DESCRIPTION}",
-//       editor: {
-//         kind: "Input",
-//         config: {
-//           placeholder: "测试2",
-//           defaultValue: "测试2",
-//         },
-//       },
-//     },
-//   ]
-// }`;
-
-// [
-//   {
-//     code: "a",
-//     name: "测试",
-//     type: "string",
-//     required: true,
-//     description: COMMON_DESCRIPTION,
-//     editor: {
-//       kind: "Select",
-//       config: {
-//         placeholder: "请输入22",
-//         defaultValue: "123",
-//         options: [
-//           {
-//             label: "123",
-//             value: "123",
-//           },
-//         ],
-//       },
-//     },
-//   },
-//   {
-//     code: "params",
-//     name: "测试2",
-//     type: "object",
-//     required: false,
-//     description: COMMON_DESCRIPTION,
-//     editor: {
-//       kind: "DynamicActionForm",
-//       config: {
-//         dynamicScript: DYNAMIC_FORM_SCRIPT,
-//       },
-//     },
-//   },
-// ]
-
 const extraEditorMap: Record<string, ComponentType<any>> = {
   ConditionEditor,
 };
@@ -98,12 +37,12 @@ export function SideBarRender() {
     },
     {
       loadingDelay: 500,
-    }
+    },
   );
 
   const handleDynamicScript = useCallback(
     ({ script }: { script: string }) => executeScript(script),
-    []
+    [],
   );
 
   return (

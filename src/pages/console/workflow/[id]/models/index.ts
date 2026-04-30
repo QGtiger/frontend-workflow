@@ -5,9 +5,12 @@ import { useRequest } from "ahooks";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import type { NodeOutputStructItem } from "../types";
-import { Modal } from "antd";
+import { message, Modal } from "antd";
 import type { WorkflowDetailData, WorkflowNoes } from "./types";
 import { checkNameIsExist, trarverseNodes } from "./utils";
+import { lightfishRequest } from "@/api/lightfishApi";
+
+import type { Connector, ConnectorAction } from "@server/shared/connector";
 
 export const WorkflowDetailModel = createCustomModel(() => {
   const { id } = useParams();
@@ -183,7 +186,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
     },
     {
       refreshDeps: [id],
-    }
+    },
   );
 
   const { runAsync: updateWorkflowNodes } = useRequest(
@@ -193,7 +196,7 @@ export const WorkflowDetailModel = createCustomModel(() => {
     },
     {
       manual: true,
-    }
+    },
   );
 
   const checkChange = useCallback(() => {
@@ -277,123 +280,33 @@ export const WorkflowDetailModel = createCustomModel(() => {
   };
 });
 
-export interface IPaaSConnector {
-  code: string;
-  name: string;
-  description: string;
-  icon: string;
-  version: number;
-}
-
-export interface IPaaSConnectorAction {
-  code: string;
-  name: string;
-  description: string;
-  inputsSchema?: IPaasFormSchema[];
-  outputsSchema?: NodeOutputStructItem[];
-}
-
 export const ConnectorSelectorModel = createCustomModel(() => {
-  const { data } = useRequest(async () => {
-    return [
-      {
-        code: "connector1",
-        name: "HTTP 请求",
-        description: "发送 HTTP 请求到外部 API",
-        icon: "https://api.iconify.design/mdi:api.svg",
-        version: 1,
-      },
-      {
-        code: "connector2",
-        name: "数据库",
-        description: "连接并操作数据库",
-        icon: "https://api.iconify.design/mdi:database.svg",
-        version: 1,
-      },
-    ] as IPaaSConnector[];
+  // 缓存 Map: key = `${code}@${version}`
+  const actionsCache = useRef<Map<string, ConnectorAction[]>>(new Map());
+
+  const { data: connectorList } = useRequest(() => {
+    return lightfishRequest<Connector[]>("/connector/list").then((d) => {
+      d.forEach((it) => {
+        actionsCache.current.set(`${it.code}@${it.version}`, it.actions ?? []);
+      });
+      return d;
+    });
   });
 
-  // 缓存 Map: key = `${code}@${version}`
-  const actionsCache = useRef<Map<string, IPaaSConnectorAction[]>>(new Map());
-
   const { runAsync: _queryIPaaSConnectorActions } = useRequest(
-    async (opts: { code: string; version: number }) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return [
-        {
-          code: `action1`,
-          name: "执行查询",
-          description: "执行 SQL 查询并返回结果",
-          inputsSchema: [
-            {
-              code: "query",
-              name: "查询",
-              type: "string",
-              required: true,
-              editor: {
-                kind: "Input",
-              },
-            },
-          ],
-          outputsSchema: [
-            {
-              code: "result",
-              type: "object",
-              label: "结果",
-              children: [
-                {
-                  code: "data",
-                  label: "数据",
-                  type: "string",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          code: `action2`,
-          name: "插入数据",
-          description: "向数据库表中插入新记录",
-          inputsSchema: [
-            {
-              code: "data",
-              name: "数据",
-              type: "object",
-              required: true,
-              editor: {
-                kind: "Input",
-              },
-            },
-            {
-              code: "table",
-              name: "表",
-              type: "string",
-              required: true,
-              editor: {
-                kind: "Select",
-                config: {
-                  options: [
-                    {
-                      label: "表1",
-                      value: "table1",
-                    },
-                  ],
-                  placeholder: "请选择表",
-                },
-              },
-            },
-          ],
-        },
-      ] as IPaaSConnectorAction[];
+    async (opts: { code: string; version: string }) => {
+      // 查询特定版本的 Actions
+      message.error(`暂不考虑支持${opts.code}:${opts.version}`);
+      return [];
     },
     {
       manual: true,
-    }
+    },
   );
 
   // 带缓存的查询函数
   const queryIPaaSConnectorActions = useCallback(
-    async (opts: { code: string; version: number }) => {
+    async (opts: { code: string; version: string }) => {
       const cacheKey = `${opts.code}@${opts.version}`;
 
       // 命中缓存，直接返回
@@ -406,11 +319,11 @@ export const ConnectorSelectorModel = createCustomModel(() => {
       actionsCache.current.set(cacheKey, result);
       return result;
     },
-    [_queryIPaaSConnectorActions]
+    [_queryIPaaSConnectorActions],
   );
 
   const queryIPaaSConnectorAction = useCallback(
-    async (opts: { code: string; version: number; actionCode: string }) => {
+    async (opts: { code: string; version: string; actionCode: string }) => {
       const actions = await queryIPaaSConnectorActions(opts);
       const action = actions.find((a) => a.code === opts.actionCode);
       if (action) {
@@ -419,7 +332,7 @@ export const ConnectorSelectorModel = createCustomModel(() => {
         throw new Error(`Action ${opts.actionCode} not found`);
       }
     },
-    [queryIPaaSConnectorActions]
+    [queryIPaaSConnectorActions],
   );
 
   // 清除缓存（可选，用于刷新数据）
@@ -432,7 +345,9 @@ export const ConnectorSelectorModel = createCustomModel(() => {
   }, []);
 
   return {
-    iPaaSConnectors: data,
+    appConnectorList: connectorList?.filter((it) => it.actions?.length) || [],
+    triggerConnectorList:
+      connectorList?.filter((it) => it.triggers?.length) || [],
     queryIPaaSConnectorActions,
     queryIPaaSConnectorAction,
     clearActionsCache,

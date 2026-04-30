@@ -33,14 +33,14 @@ function ConnectorSelectorContent({
   builtInLogicNodes: FlowNodeRegistry[];
   from: FlowNodeEntity;
 }) {
-  const { iPaaSConnectors, queryIPaaSConnectorActions } =
+  const { appConnectorList, queryIPaaSConnectorActions } =
     ConnectorSelectorModel.useModel();
 
   const [connectorSearch, setConnectorSearch] = useState("");
   const [actionSearch, setActionSearch] = useState("");
   const [category, setCategory] = useState<"all" | "built-in" | "app">("all");
   const [activeConnector, setActiveConnector] = useState<ConnectorItem | null>(
-    null
+    null,
   );
 
   const context = useClientContext();
@@ -62,7 +62,7 @@ function ConnectorSelectorContent({
   // 转换 iPaaS 连接器为统一格式
   const appConnectors: ConnectorItem[] = useMemo(() => {
     return (
-      iPaaSConnectors?.map((c) => ({
+      appConnectorList?.map((c) => ({
         code: c.code,
         name: c.name,
         description: c.description,
@@ -71,7 +71,7 @@ function ConnectorSelectorContent({
         version: c.version,
       })) ?? []
     );
-  }, [iPaaSConnectors]);
+  }, [appConnectorList]);
 
   // 根据搜索和分类过滤连接器
   const filteredConnectors = useMemo(() => {
@@ -129,7 +129,7 @@ function ConnectorSelectorContent({
     },
     {
       refreshDeps: [activeConnector?.code],
-    }
+    },
   );
 
   // 过滤操作列表
@@ -139,7 +139,7 @@ function ConnectorSelectorContent({
     return actions.filter(
       (a) =>
         a.name.toLowerCase().includes(q) ||
-        a.description.toLowerCase().includes(q)
+        a.description.toLowerCase().includes(q),
     );
   }, [actions, actionSearch]);
 
@@ -174,7 +174,7 @@ function ConnectorSelectorContent({
             version: 1,
             icon: activeConnector.icon,
             outputStruct: action.outputsSchema,
-          })
+          }),
         );
       }
     }

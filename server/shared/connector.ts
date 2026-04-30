@@ -1,4 +1,4 @@
-import { SchemaFormItemType } from "./schemaFormType";
+import type { SchemaFormItemType } from "./schemaFormType";
 
 export interface OutputStructItem {
   code: string;
@@ -7,7 +7,7 @@ export interface OutputStructItem {
   children?: OutputStructItem[];
 }
 
-interface ConnectorAction {
+export interface ConnectorAction {
   code: string;
   name: string;
   description: string;

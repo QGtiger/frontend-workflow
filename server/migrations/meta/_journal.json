@@ -8,6 +8,13 @@
       "when": 1777264044179,
       "tag": "0000_wise_johnny_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777534398068,
+      "tag": "0001_solid_ma_gnuci",
+      "breakpoints": true
     }
   ]
 }
