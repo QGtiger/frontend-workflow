@@ -14,12 +14,12 @@ export interface BaseSchemaFormItem {
   type: "string" | "number" | "boolean" | "object" | "array";
 
   /** 是否可见 */
-  visible: boolean;
+  visible?: boolean;
   /** 显示规则，是一段表达式  code === '22' */
   visibleRules?: string;
 
   /** 是否必填 */
-  required: boolean;
+  required?: boolean;
   /** 校验规则，是一段js 脚本 function main(value, formValue) {//...} */
   validateRules?: string;
 }

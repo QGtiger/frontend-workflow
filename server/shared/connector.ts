@@ -1,6 +1,6 @@
 import { SchemaFormItemType } from "./schemaFormType";
 
-interface OutputStructItem {
+export interface OutputStructItem {
   code: string;
   type: string;
   label: string;
@@ -15,11 +15,12 @@ interface ConnectorAction {
   outputsSchema: OutputStructItem[];
 }
 
-interface Connector {
+export interface Connector {
   code: string;
   name: string;
   description: string;
   icon: string;
-  version: number;
-  actions: ConnectorAction[];
+  version: string;
+  actions?: ConnectorAction[];
+  triggers?: ConnectorAction[];
 }
