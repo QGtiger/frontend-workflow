@@ -60,7 +60,7 @@ function InputWithOutlined(
         }
       }}
       className={classNames(
-        "-mx-1 !p-0 !px-1 transition-all duration-300  focus:ring-1 ring-blue-300 !rounded-xs",
+        "-mx-1 !p-0 !px-1 transition-all duration-300  focus:ring-1 ring-blue-300 !rounded-[2px]",
         props.className,
       )}
     />

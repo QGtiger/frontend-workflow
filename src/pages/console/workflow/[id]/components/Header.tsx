@@ -34,7 +34,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <Typography.Title
             level={5}
-            className="mb-0! truncate max-w-md"
+            className="!mb-0 truncate max-w-md"
             title={name}
           >
             {name}

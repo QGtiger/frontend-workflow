@@ -16,7 +16,7 @@ export function CustomNode() {
           e.stopPropagation();
         }}
         className={classNames(
-          " flex justify-between items-center w-full rounded-lg p-2 cursor-move overflow-hidden"
+          " flex justify-between items-center w-full rounded-lg p-2 cursor-move overflow-hidden",
         )}
         style={{
           background: "linear-gradient(#f2f2ff 0%, rgb(251, 251, 251) 100%)",
@@ -35,7 +35,7 @@ export function CustomNode() {
             expandable: "collapsible",
             tooltip: true,
           }}
-          className=" text-xs! text-gray-500! mb-0! leading-[18px]"
+          className=" text-xs! text-gray-500! !mb-0 leading-[18px]"
         >
           {description}
         </Typography.Paragraph>

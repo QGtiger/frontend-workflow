@@ -25,7 +25,7 @@ function ConsoleMenu() {
       onSelect={(item) => {
         navigate(item.key);
       }}
-      className=" border-none!"
+      className=" !border-none"
       items={[
         {
           key: "/console/workflow",
@@ -56,13 +56,14 @@ export default function ConsoleLayout() {
         <Layout className="h-screen">
           <Sider
             width={68}
-            className=" bg-white! border-0 border-r! border-gray-200! border-solid!"
+            className=" !bg-white border-0 !border-r !border-gray-200 !border-solid"
+            theme="light"
           >
             <div className="flex h-full flex-col">
               <div className="p-4 flex justify-between items-center border-0 border-b border-gray-200 border-solid">
                 <div className="flex gap-2 items-center">
                   <div className="bg-[#4878f3] rounded-md w-8 h-8 flex items-center justify-center">
-                    <ApartmentOutlined className=" text-white!" />
+                    <ApartmentOutlined className=" text-white" />
                   </div>
                 </div>
               </div>

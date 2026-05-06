@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { CodeInspectorPlugin } from "code-inspector-plugin";
 import { apiServerPlugin } from "@lightfish/server/plugin";
@@ -43,7 +42,6 @@ export default defineConfig(({ mode }) => {
     base,
     plugins: [
       injectRouterAppConfigDev(),
-      tailwindcss(),
       react(),
       apiServerPlugin(),
       CodeInspectorPlugin({
