@@ -70,7 +70,7 @@ export default function ConsoleLayout() {
               <ConsoleMenu />
             </div>
           </Sider>
-          <Layout className=" bg-[#f8f9fa82]!">
+          <Layout className="!bg-[#f8f9fa82]">
             <Content className="">{outlet}</Content>
           </Layout>
         </Layout>

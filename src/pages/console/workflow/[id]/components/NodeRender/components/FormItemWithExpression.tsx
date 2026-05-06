@@ -141,8 +141,8 @@ export function FormItemWithExpression(props: {
                   expression: v,
                 });
               }}
-              className={classNames(" hover:border-blue-500!", {
-                "border-blue-500! rounded-t-md! rounded-b-none!": focus,
+              className={classNames("hover:!border-blue-500", {
+                "!border-blue-500 !rounded-t-md !rounded-b-none": focus,
               })}
             />
 
@@ -159,7 +159,7 @@ export function FormItemWithExpression(props: {
               )}
             >
               {/* 标题栏 */}
-              <div className="sticky top-0 bg-linear-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-gray-200 flex items-center justify-between">
+              <div className="sticky top-0 bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <svg
                     className="w-4 h-4 text-blue-600"
@@ -275,7 +275,7 @@ export function FormItemWithExpression(props: {
       >
         <Segmented
           size="small"
-          className="bg-gray-300 text-xs!"
+          className="bg-gray-300 !text-xs"
           value={isExpression}
           onChange={(v) => {
             onChange?.({

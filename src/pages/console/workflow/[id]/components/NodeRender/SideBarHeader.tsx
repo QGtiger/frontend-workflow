@@ -74,7 +74,7 @@ export function SideBarHeader() {
     <div>
       <div
         className={classNames(
-          " flex justify-between items-center w-full p-4 pb-2",
+          " flex justify-between items-center w-full p-4 pb-2 gap-2",
         )}
         style={{
           background: "linear-gradient(#f2f2ff 0%, rgb(251, 251, 251) 100%)",
@@ -110,7 +110,7 @@ export function SideBarHeader() {
       <div className="px-4">
         <InputWithOutlined
           placeholder="请输入描述"
-          className=" text-xs! py-1! -mx-1! px-1!"
+          className="!text-xs !py-1 !-mx-1 !px-1"
           updateKey="description"
         />
       </div>

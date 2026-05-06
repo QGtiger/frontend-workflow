@@ -35,14 +35,14 @@ export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
       {/* 中间内容：居中显示 */}
       <div className="flex-1 flex items-center">
         <div className="w-full max-w-5xl mx-auto px-6">
           {/* Hero 区域 */}
           <div className="text-center">
-            <Typography.Title level={1} className="mb-4!">
-              <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <Typography.Title level={1} className="!mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Workflow Editor
               </span>
             </Typography.Title>
@@ -78,7 +78,7 @@ export default function Index() {
                         {feature.icon}
                       </div>
                       <div>
-                        <Typography.Title level={5} className="mb-1!">
+                        <Typography.Title level={5} className="!mb-1">
                           {feature.title}
                         </Typography.Title>
                         <Typography.Text type="secondary">

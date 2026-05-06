@@ -35,7 +35,7 @@ export function CustomNode() {
             expandable: "collapsible",
             tooltip: true,
           }}
-          className=" text-xs! text-gray-500! !mb-0 leading-[18px]"
+          className="!text-xs !text-gray-500 !mb-0 leading-[18px]"
         >
           {description}
         </Typography.Paragraph>

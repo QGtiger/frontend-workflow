@@ -45,7 +45,7 @@ export default function Header() {
             icon={<EditOutlined />}
             className="text-gray-400 hover:text-gray-600"
           />
-          <Tag color={statusInfo.color} className="m-0!">
+          <Tag color={statusInfo.color} className="!m-0">
             {statusInfo.label}
           </Tag>
         </div>
@@ -61,7 +61,7 @@ export default function Header() {
               >
                 {description}
               </Typography.Text>
-              <Divider type="vertical" className="h-3! mx-0!" />
+              <Divider type="vertical" className="!h-3 !mx-0" />
             </>
           )}
 
@@ -83,7 +83,7 @@ export default function Header() {
         <Button type="primary" icon={<SendOutlined />}>
           发布
         </Button>
-        <Divider type="vertical" className="h-5! mx-0!" />
+        <Divider type="vertical" className="!h-5 !mx-0" />
         <Button type="text" icon={<MoreOutlined />} />
       </Space>
     </div>

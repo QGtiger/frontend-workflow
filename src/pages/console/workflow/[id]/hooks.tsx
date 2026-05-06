@@ -194,7 +194,7 @@ function ConnectorSelectorContent({
           {/* 分类切换 */}
           <Segmented
             block
-            className=" mb-3!"
+            className="!mb-3"
             value={category}
             onChange={(val) => setCategory(val as "all" | "built-in" | "app")}
             options={[
@@ -437,7 +437,7 @@ export function useConnectorSelectorModal() {
       maskClosable: false,
       className: "connector-selector-modal",
       classNames: {
-        container: "p-0! overflow-hidden",
+        container: "!p-0 overflow-hidden",
       },
       content: (
         <ConnectorSelectorContent

@@ -10,7 +10,7 @@ export default function CustomSelect(
     value: any;
     name: string;
   } & IPaasFormFieldEditorConfig["Select"] &
-    SelectProps
+    SelectProps,
 ) {
   const {
     depItems,
@@ -56,7 +56,7 @@ export default function CustomSelect(
     },
     {
       manual: true,
-    }
+    },
   );
 
   const { run: debounceRun } = useDebounceFn(
@@ -65,7 +65,7 @@ export default function CustomSelect(
     },
     {
       wait: dynamicDebounce,
-    }
+    },
   );
 
   const preDepValuesRef = useRef<any[]>([]);

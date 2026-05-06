@@ -236,10 +236,7 @@ export function useEditorProps({
        * Playground render
        */
       onAllLayersRendered: (ctx) => {
-        setTimeout(() => {
-          // fitView all nodes
-          ctx.tools.fitView();
-        }, 10);
+        ctx.tools.fitView(false);
         console.log(ctx.document.toString(true)); // Get the document tree
       },
       /**
@@ -297,6 +294,6 @@ export function useEditorProps({
         // createVariablePanelPlugin({}),
       ],
     }),
-    [initialData, nodeRegistries, onHistoryChange]
+    [initialData, nodeRegistries, onHistoryChange],
   );
 }
