@@ -57,8 +57,9 @@ export interface TextareaConfig extends CommonStringInputConfig {
   maxRows?: number;
 }
 
-export interface InputWithCopyConfig extends CommonStringInputConfig {
+export interface InputWithCopyConfig {
   copyText?: string;
+  btnText?: string;
 }
 
 export interface RichEditorConfig {

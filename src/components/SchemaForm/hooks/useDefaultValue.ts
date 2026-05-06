@@ -30,7 +30,6 @@ export function useDefaultValue(props: {
       defaultValue !== undefined &&
       value === undefined
     ) {
-      console.log("????");
       onChange?.(defaultValue);
       isFirstRender.current = false;
     }

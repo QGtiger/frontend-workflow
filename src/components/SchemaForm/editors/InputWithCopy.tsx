@@ -13,23 +13,23 @@ export default function InputWithCopy(
   props: CommonEditorProps<string, InputWithCopyConfig>,
 ) {
   const {
-    config: { copyText },
+    config: { copyText, btnText = "复制" },
     editorProps,
   } = useRealEditorProps(props);
-
-  const copyLabel = copyText || "复制";
 
   return (
     <Input
       {...editorProps}
+      value={copyText}
+      readOnly
       addonAfter={
         <span
           style={{ cursor: "pointer" }}
           onClick={() => {
-            navigator.clipboard.writeText(editorProps.value || "");
+            navigator.clipboard.writeText(copyText || "");
           }}
         >
-          {copyLabel}
+          {btnText}
         </span>
       }
     />

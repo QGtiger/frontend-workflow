@@ -1,5 +1,4 @@
 import React from "react";
-import { Input, InputNumber } from "antd";
 import { withDefaultValue } from "../hocs/withDefaultValue";
 import StringInput from "./StringInput";
 import Textarea from "./Textarea";
@@ -22,7 +21,7 @@ export const defaultEditorRegistry: Record<string, React.ComponentType<any>> = {
   // String
   input: withDefaultValue(StringInput),
   textarea: withDefaultValue(Textarea),
-  inputWithCopy: withDefaultValue(InputWithCopy),
+  inputWithCopy: InputWithCopy,
   richEditor: RichEditor,
 
   // Number

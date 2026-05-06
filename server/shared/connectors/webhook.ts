@@ -37,9 +37,9 @@ const webhookFormItem: SchemaFormItemType = {
   name: "回调地址",
   type: "string",
   editor: {
-    kind: "input",
+    kind: "inputWithCopy",
     config: {
-      placeholder: "请输入回调地址",
+      copyText: "https://example.com/webhook/233",
     },
   },
 };
