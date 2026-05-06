@@ -19,7 +19,7 @@ import {
 } from "./models/workflowStore";
 
 function SideBarPanel() {
-  const { selectedId, setSelectedId } = NodeSelectModel.useModel();
+  const { selectedId, closePanel, showPanelFlag } = NodeSelectModel.useModel();
   const {
     workflowData: { id, name },
   } = WorkflowDetailModel.useModel();
@@ -36,15 +36,15 @@ function SideBarPanel() {
   useEffect(() => {
     if (node) {
       const toDispose = node.onDispose(() => {
-        setSelectedId("");
+        closePanel();
       });
       return () => toDispose.dispose();
     }
     return () => {};
-  }, [node, setSelectedId]);
+  }, [node, closePanel]);
 
   useEffect(() => {
-    if (selectedId) {
+    if (showPanelFlag) {
       // 如果有选中的节点，设置动画为进入状态
       controls.start({
         opacity: 1,
@@ -57,7 +57,7 @@ function SideBarPanel() {
         x: "100%", // 向右移动100%
       });
     }
-  }, [selectedId, controls]);
+  }, [showPanelFlag, controls]);
 
   if (!node || !registry) return null;
 
@@ -86,7 +86,7 @@ function SideBarPanel() {
               id="config-panel"
               className={classNames(
                 " mr-2 flex flex-col absolute right-0 top-0 z-10  h-full   py-2",
-                { " pointer-events-none": !selectedId }
+                { " pointer-events-none": !selectedId },
               )}
             >
               <Resizable
@@ -118,7 +118,7 @@ function SideBarPanel() {
 
 function WorkflowDetail() {
   const { workflowData, updateNodes } = WorkflowDetailModel.useModel();
-  const { selectedId, setSelectedId } = NodeSelectModel.useModel();
+  const { selectedId, showPanel } = NodeSelectModel.useModel();
   const {
     showConnectorSelectorModal,
     showConnectorSelectorModalContextHolder,
@@ -137,7 +137,7 @@ function WorkflowDetail() {
             showConnectorSelectorModal({
               builtInNodes: builtInNodes,
               addBlock(dataJson) {
-                setSelectedId(dataJson.id);
+                showPanel(dataJson.id);
                 return addBlock(dataJson);
               },
               from,
@@ -151,7 +151,7 @@ function WorkflowDetail() {
               </CustomNodeRenderModel.Provider>
             );
           }}
-          onNodeSelect={setSelectedId}
+          onNodeSelect={showPanel}
           renderNodeStyle={(node) => {
             return selectedId === node.id ? { borderColor: "#82A7FC" } : {};
           }}

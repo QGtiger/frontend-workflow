@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+import { CodeInspectorPlugin } from "code-inspector-plugin";
 import { apiServerPlugin } from "@lightfish/server/plugin";
 
 function normalizeBase(raw: string | undefined): string {
@@ -45,6 +46,10 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       react(),
       apiServerPlugin(),
+      CodeInspectorPlugin({
+        bundler: "vite",
+        editor: "code",
+      }),
     ],
     resolve: {
       alias: {

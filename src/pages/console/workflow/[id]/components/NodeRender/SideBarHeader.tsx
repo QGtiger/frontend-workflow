@@ -1,16 +1,18 @@
 import classNames from "classnames";
-import { Input, Typography, type InputProps } from "antd";
+import { Button, Divider, Input, Typography, type InputProps } from "antd";
 import { NodeDropdown } from "./NodeDropdown";
 import { CustomNodeRenderModel, useCustomNodeData } from "./model";
 import { useState } from "react";
 import { WorkflowDetailModel } from "../../models";
 import { trarverseNodes } from "../../models/utils";
 import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
+import { NodeSelectModel } from "../../nodeSelectModel";
+import { BookOutlined, CloseOutlined } from "@ant-design/icons";
 
 function InputWithOutlined(
   props: InputProps & {
     updateKey: "name" | "description" | "icon";
-  }
+  },
 ) {
   const { updateKey, ...inputProps } = props;
   const data = useCustomNodeData();
@@ -24,6 +26,7 @@ function InputWithOutlined(
   return (
     <Input
       {...inputProps}
+      variant="borderless"
       value={value}
       onChange={(e) => {
         setValue(e.target.value);
@@ -42,7 +45,7 @@ function InputWithOutlined(
               const updatedInputs = JSON.parse(
                 JSON.stringify(_inputs)
                   .replaceAll(`$("${finalValue}")`, `$("${uniqueName}")`)
-                  .replaceAll(`$('${finalValue}')`, `$('${uniqueName}')`)
+                  .replaceAll(`$('${finalValue}')`, `$('${uniqueName}')`),
               );
 
               // 通过 operation 服务更新
@@ -56,10 +59,9 @@ function InputWithOutlined(
           setValue(finalValue);
         }
       }}
-      variant="underlined"
       className={classNames(
-        "p-0! transition-all duration-300 bg-transparent! border-b-transparent! focus:border-b-[#aaa8a829]! focus:shadow-xs",
-        props.className
+        "-mx-1 !p-0 !px-1 transition-all duration-300  focus:ring-1 ring-blue-300 !rounded-xs",
+        props.className,
       )}
     />
   );
@@ -67,11 +69,12 @@ function InputWithOutlined(
 
 export function SideBarHeader() {
   const { name, icon } = useCustomNodeData();
+  const { closePanel } = NodeSelectModel.useModel();
   return (
     <div>
       <div
         className={classNames(
-          " flex justify-between items-center w-full p-4 pb-2"
+          " flex justify-between items-center w-full p-4 pb-2",
         )}
         style={{
           background: "linear-gradient(#f2f2ff 0%, rgb(251, 251, 251) 100%)",
@@ -85,7 +88,24 @@ export function SideBarHeader() {
             updateKey="name"
           />
         </div>
-        <NodeDropdown />
+        <div className="flex items-center">
+          <Button
+            onClick={closePanel}
+            className=" text-gray-600 text-xs"
+            size="small"
+            type="text"
+            icon={<BookOutlined />}
+          />
+          <NodeDropdown />
+          <Divider type="vertical" />
+          <Button
+            onClick={closePanel}
+            className=" text-gray-600 text-xs"
+            size="small"
+            type="text"
+            icon={<CloseOutlined />}
+          />
+        </div>
       </div>
       <div className="px-4">
         <InputWithOutlined
