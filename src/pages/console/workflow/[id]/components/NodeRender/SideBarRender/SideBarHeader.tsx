@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { Button, Divider, Input, Typography, type InputProps } from "antd";
-import { NodeDropdown } from "./NodeDropdown";
-import { CustomNodeRenderModel, useCustomNodeData } from "./model";
+import { NodeDropdown } from "../NodeDropdown";
+import { CustomNodeRenderModel, useCustomNodeData } from "../model";
 import { useState } from "react";
-import { WorkflowDetailModel } from "../../models";
-import { trarverseNodes } from "../../models/utils";
+import { WorkflowDetailModel } from "../../../models";
+import { trarverseNodes } from "../../../models/utils";
 import { useClientContext } from "@flowgram.ai/fixed-layout-editor";
-import { NodeSelectModel } from "../../nodeSelectModel";
+import { NodeSelectModel } from "../../../nodeSelectModel";
 import { BookOutlined, CloseOutlined } from "@ant-design/icons";
 
 function InputWithOutlined(
