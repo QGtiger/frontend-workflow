@@ -49,13 +49,39 @@ const regexes = {
 const DATATYPE_REGEX = new RegExp(
   Object.values(regexes)
     .map((regex) => regex.source)
-    .join("|")
+    .join("|"),
 );
 
 type AutoCompletionInput = {
   base: string;
   baseData: any;
+  // TODO 为了动态去解析对应key 的label
+  dollarOutputStruct?: NodeOutputStructItem[];
 };
+
+function findKeyByDollarOutputStruct(
+  key: string,
+  dollarOutputStruct?: NodeOutputStructItem[],
+): [string, NodeOutputStructItem[]] | undefined {
+  if (!dollarOutputStruct) return;
+
+  for (const item of dollarOutputStruct) {
+    // 1. 当前节点匹配 → 直接返回结果
+    if (item.code === key) {
+      return [item.label, dollarOutputStruct];
+    }
+
+    // 2. 不匹配 → 递归查子节点
+    const childResult = findKeyByDollarOutputStruct(key, item.children);
+
+    // 3. 子节点找到了 → 向上传递结果
+    if (childResult) {
+      return childResult;
+    }
+  }
+
+  return;
+}
 
 function getCustomOptions(autoCompletionInput: AutoCompletionInput) {
   const { base } = autoCompletionInput;
@@ -75,7 +101,7 @@ function getCustomOptions(autoCompletionInput: AutoCompletionInput) {
         },
         {
           section: PROPERTIES_SECTION,
-        }
+        },
       ),
       createCompletion(
         {
@@ -86,7 +112,7 @@ function getCustomOptions(autoCompletionInput: AutoCompletionInput) {
         },
         {
           section: PROPERTIES_SECTION,
-        }
+        },
       ),
     ];
   }
@@ -120,6 +146,16 @@ function datatypeOptions(autoCompletionInput: AutoCompletionInput) {
         const resolvedProp = baseData[key];
         const isFunction = typeof resolvedProp === "function";
 
+        const r = findKeyByDollarOutputStruct(
+          key,
+          autoCompletionInput.dollarOutputStruct,
+        );
+        let description = "";
+        // 假如存在子节点，并且子节点的 key 都在 rawKeys 中，则说明是该属性
+        if (r && r[1].every((it) => rawKeys.includes(it.code))) {
+          description = r[0];
+        }
+
         // 方法的 label 是 key() ，属性是 key
         const label = isFunction ? `${key}()` : key;
         // it.label 可能是 属性 或者 方法，避免重复
@@ -132,7 +168,7 @@ function datatypeOptions(autoCompletionInput: AutoCompletionInput) {
             name: key,
             isFunction,
             returnType: isFunction ? "unknown" : getDisplayType(resolvedProp),
-            description: "",
+            description,
             args: isFunction
               ? Array.from(
                   {
@@ -144,18 +180,18 @@ function datatypeOptions(autoCompletionInput: AutoCompletionInput) {
                       type: "any",
                       description: "",
                     };
-                  }
+                  },
                 )
               : [],
           },
           {
             section: isFunction ? METHODS_SECTION : PROPERTIES_SECTION,
-          }
+          },
         );
         acc.push(completion);
         return acc;
       },
-      [...prototypeOptions]
+      [...prototypeOptions],
     );
   }
 
@@ -191,11 +227,13 @@ export function datatypeCompletions(_workflowStoreApi: WorkflowStoreApi) {
     } else if (base === "Array") {
       options = getOptionsByStaticMethodDoc(ArrayStaticMethodsDoc);
     } else {
-      const { error, result } = _workflowStoreApi.evaluateExpression(base);
+      const { error, result, dollarOutputStruct } =
+        _workflowStoreApi.evaluateExpression(base);
       if (error) return null;
       options = datatypeOptions({
         base,
         baseData: result,
+        dollarOutputStruct,
       });
     }
 

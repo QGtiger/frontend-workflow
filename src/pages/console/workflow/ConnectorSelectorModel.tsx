@@ -117,21 +117,14 @@ function generateInitWorkflow({
         connectorCode: triggerConnector.code,
         actionCode: triggerItem.code,
         version: triggerConnector.version,
+        outputStruct: triggerItem.outputsSchema,
       },
       blocks: [],
     },
     {
       id: "end_0",
       type: "end",
-      data: {
-        // TODO 结果节点
-        name: "结束",
-        description: "结束节点描述",
-        icon: "https://api.iconify.design/mdi:responsive.svg",
-        version: "1.0.0",
-        connectorCode: "end",
-        actionCode: "end",
-      },
+      data: {},
       blocks: [],
     },
   ];

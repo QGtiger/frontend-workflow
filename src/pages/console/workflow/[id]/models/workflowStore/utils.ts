@@ -1,51 +1,55 @@
-import type { FlowDocument } from "@flowgram.ai/fixed-layout-editor";
+import type {
+  FlowDocument,
+  FlowNodeEntity,
+} from "@flowgram.ai/fixed-layout-editor";
 import type { CustomNodeData, NodeOutputStructItem } from "../../types";
-import type { FlowNodeJSON } from "@/components/WorkflowLayout/typings";
+import { getBuiltInRegistryOutputsSchema } from "./constant";
 
 export function getAllPreviousNodesByDocument(
   nodeId: string,
-  document: FlowDocument
+  document: FlowDocument,
 ): CustomNodeData[] {
   const results: CustomNodeData[] = [];
+  const visitedNodeIds = new Set<string>();
+
+  function collectNodeData(node: FlowNodeEntity) {
+    if (visitedNodeIds.has(node.id)) return;
+    visitedNodeIds.add(node.id);
+
+    const { data, type } = node.toJSON() || {};
+    if (data?.outputStruct || getBuiltInRegistryOutputsSchema(type as any)) {
+      results.push(data as CustomNodeData);
+    }
+  }
 
   // 递归向上找到根节点，同时收集前面的兄弟节点
-  function collectPrevSiblings(currentId: string) {
+  // includeSelf: 是否收集当前节点自己（第一次调用不收集，递归时收集父节点）
+  function collectPrevSiblings(currentId: string, includeSelf = false) {
     const current = document.getNode(currentId);
     if (!current) {
       throw new Error(`Node ${currentId} not found`);
     }
-    // 收集当前节点之前的所有兄弟
+
+    if (includeSelf) {
+      collectNodeData(current);
+    }
+
+    // 收集当前节点之前的所有兄弟节点（pre 链）
     let prev = current.pre;
     while (prev) {
-      const { data, blocks } = prev.toJSON() || {};
-      // 只收集有 outputStruct 的业务节点
-      if (data?.outputStruct) {
-        results.push(data as CustomNodeData);
-      }
-      // 如果是复合节点（loop/switch/if），递归收集其内部节点
-      collectFromBlocks(blocks);
+      collectNodeData(prev);
       prev = prev.pre;
     }
 
     // 继续向上遍历
-    // 使用 originParent 跳过内部容器节点
-    const parent = current.parent;
+    // 优先使用 originParent（跳过内部容器节点），否则使用 parent
+    const parent = current.originParent || current.parent;
     if (parent && parent.flowNodeType !== "root") {
-      collectPrevSiblings(parent.id);
+      collectPrevSiblings(parent.id, true);
     }
   }
 
-  function collectFromBlocks(blocks: FlowNodeJSON["blocks"]) {
-    if (!blocks) return;
-    for (const block of blocks) {
-      if (block.data?.outputStruct) {
-        results.push(block.data as CustomNodeData);
-      }
-      collectFromBlocks(block.blocks);
-    }
-  }
-
-  collectPrevSiblings(nodeId);
+  collectPrevSiblings(nodeId, false);
   return results;
 }
 
@@ -134,7 +138,7 @@ function generateSingleItem(item: NodeOutputStructItem): any {
  * // { id: 1, name: "模拟字符串", items: Proxy([...]) }
  */
 export function generateMockDataByOutputStruct(
-  outputStruct: NodeOutputStructItem[]
+  outputStruct: NodeOutputStructItem[],
 ): any {
   // 检查缓存
   const cached = mockDataCache.get(outputStruct);
@@ -143,10 +147,13 @@ export function generateMockDataByOutputStruct(
   }
 
   // 生成模拟数据
-  const result = outputStruct.reduce((acc, cur) => {
-    acc[cur.code] = generateSingleItem(cur);
-    return acc;
-  }, {} as Record<string, any>);
+  const result = outputStruct.reduce(
+    (acc, cur) => {
+      acc[cur.code] = generateSingleItem(cur);
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 
   // 存入缓存
   mockDataCache.set(outputStruct, result);

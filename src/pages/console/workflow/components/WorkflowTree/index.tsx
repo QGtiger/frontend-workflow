@@ -155,7 +155,7 @@ function TreeNodeItem({
             <CaretRightFilled />
           </span>
         )}
-        {/* {!isFolder && <span className="w-3" />} */}
+        {!isFolder && <span className="w-3" />}
 
         {/* 图标 */}
         <span className="text-sm shrink-0">

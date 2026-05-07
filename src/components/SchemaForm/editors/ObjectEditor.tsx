@@ -22,8 +22,6 @@ export default function ObjectEditor(props: any) {
     throw new Error("ObjectEditor: 动态对象不支持");
   }
 
-  console.log("ObjectEditor", props);
-
   if (!properties || properties.length === 0) {
     return null;
   }

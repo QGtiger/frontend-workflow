@@ -21,7 +21,7 @@ export const EndNodeRegistry: FlowNodeRegistry = {
   info: {
     icon: iconEnd,
     name: "结束",
-    description: "流程结束节点",
+    description: "工作流的最终节点，用于在工作流运行结束后返回结果信息。",
   },
   canAdd(ctx, from) {
     // You can only add to the last node of the branch
@@ -49,7 +49,7 @@ export const EndNodeRegistry: FlowNodeRegistry = {
       // Determine whether the last node of all branch is end, All branches are not allowed to be end
       const branchEndCount = allBranches.filter(
         (block) =>
-          block.blocks[block.blocks.length - 1]?.getNodeMeta().isNodeEnd
+          block.blocks[block.blocks.length - 1]?.getNodeMeta().isNodeEnd,
       ).length;
       return branchEndCount < allBranches.length - 1;
     }
@@ -63,9 +63,8 @@ export const EndNodeRegistry: FlowNodeRegistry = {
       id: `end_${nanoid()}`,
       type: "end",
       data: {
-        name: "End",
-        description:
-          "The final node of the workflow, used to return the result information after the workflow is run.",
+        name: "结束",
+        description: "工作流的最终节点，用于在工作流运行结束后返回结果信息。",
       },
     };
   },

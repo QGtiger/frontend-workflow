@@ -22,6 +22,9 @@ export interface BaseSchemaFormItem {
   required?: boolean;
   /** 校验规则，是一段js 脚本 function main(value, formValue) {//...} */
   validateRules?: string;
+
+  // 编辑器类型 all 是既可以表达式，也是基础 ， 默认是all
+  editorType?: "expression" | "base";
 }
 
 interface CommonEditorConfig {

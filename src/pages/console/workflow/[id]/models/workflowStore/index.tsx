@@ -19,6 +19,7 @@ import {
   parseTemplateForSegments,
 } from "./parseTemplateWithExpression";
 import type { EvaluateExpressionResult, TemplateSegment } from "./types";
+import { getBuiltInRegistryOutputsSchema } from "./constant";
 
 interface WorkflowStoreState {
   flowDocument: FlowDocument;
@@ -32,51 +33,74 @@ interface WorkflowStoreAction {
   setStoreState(state: Partial<WorkflowStoreState>): void;
   evaluateExpression(expression: string): EvaluateExpressionResult<any>;
   parseTemplateForSegments(
-    template?: string
+    template?: string,
   ): (string | EvaluateExpressionResult<any>)[];
   evaluateTemplateBySegments(segments: TemplateSegment[]): any;
 }
 
 export type WorkflowStoreApi = WorkflowStoreAction & WorkflowStoreState;
 
+function getRealNodeOutputStruct(
+  o: NodeOutputStructItem[],
+): NodeOutputStructItem[] {
+  return [
+    {
+      code: "outputs",
+      label: "输出结构",
+      type: "object",
+      children: o,
+    },
+    {
+      code: "inputs",
+      label: "节点输入数据",
+      type: "object",
+    },
+  ];
+}
+
 export function createWorkflowStore(config: WorkflowStoreState) {
   const store = createStore<WorkflowStoreApi>((set, get) => {
     type DollarFunction<T extends (...args: any[]) => any> = T & {
       __isMock__?: boolean;
+      __outputStruct__?: NodeOutputStructItem[];
     };
-    const $: DollarFunction<
-      (nodeName: string) => { isExecuted: boolean; outputs: any }
-    > = function (nodeName) {
+    const $: DollarFunction<(nodeName: string) => { outputs: any }> = function (
+      nodeName,
+    ) {
       if (!nodeName) {
         throw new Error("当使用 $ 符号时，必须传入节点名称");
       }
       const { flowDocument } = get();
       // 通过 nodeName 找到节点
       let nodeJson: CustomNodeData | undefined;
+      let nodeType: any;
       flowDocument.traverse((it) => {
         const itJson = it.toJSON();
         if (itJson?.data?.name === nodeName) {
           nodeJson = itJson.data as CustomNodeData;
+          nodeType = itJson.type;
           return true;
         }
       });
       if (!nodeJson) {
         throw new Error(`节点 ${nodeName} 不存在`);
       }
-      const { outputStruct, sampleData } = nodeJson;
+      const { outputStruct: op, sampleData, inputs } = nodeJson;
+      const outputStruct = op || getBuiltInRegistryOutputsSchema(nodeType);
       if (!outputStruct && !sampleData) {
         throw new Error(`节点 ${nodeName} 没有输出结构或样本数据`);
       }
       $.__isMock__ = !sampleData;
+      $.__outputStruct__ = getRealNodeOutputStruct(outputStruct || []);
       return {
-        isExecuted: !!sampleData,
         outputs:
           sampleData || generateMockDataByOutputStruct(outputStruct || []),
+        inputs,
       };
     };
 
     function evaluateExpression(
-      expression: string
+      expression: string,
     ): EvaluateExpressionResult<any> {
       const r = executeSandboxSync(expression, {
         $,
@@ -92,7 +116,7 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       if (typeof r.result === "function") {
         return {
           error: new Error(
-            `未将 “${expression}” 作为函数调用时，无法访问该符号`
+            `未将 “${expression}” 作为函数调用时，无法访问该符号`,
           ),
         };
       }
@@ -101,9 +125,13 @@ export function createWorkflowStore(config: WorkflowStoreState) {
       const isMock = $.__isMock__;
       delete $.__isMock__;
 
+      const dollarOutputStruct = $.__outputStruct__;
+      delete $.__outputStruct__;
+
       return {
         ...r,
         isMock,
+        dollarOutputStruct,
       };
     }
 
@@ -166,7 +194,7 @@ export function useUpdateWorkflowStore(props: Partial<WorkflowStoreState>) {
 export function UpdateWorkflowStoreProvider(
   props: PropsWithChildren<{
     updateProps: Partial<WorkflowStoreState>;
-  }>
+  }>,
 ) {
   const { updateProps, children } = props;
   useUpdateWorkflowStore(updateProps);
@@ -174,7 +202,7 @@ export function UpdateWorkflowStoreProvider(
 }
 
 export function WorkflowStoreProvider(
-  props: PropsWithChildren<WorkflowStoreState>
+  props: PropsWithChildren<WorkflowStoreState>,
 ) {
   const storeRef = useRef<WorkflowStoreType>(null);
   if (storeRef.current == null) {

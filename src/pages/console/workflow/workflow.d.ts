@@ -14,10 +14,37 @@ interface NodeOutputStructItem {
   children?: NodeOutputStructItem[];
 }
 
-type WorkflowNodeBlock = {
+type WorkflowNodeBlock = WorkflowBuiltInBlock | WorkflowAppNodeBlock;
+
+type WorkflowBuiltInBlock = {
   id: string;
   // 后续拓展
-  type: "start" | "end";
+  type:
+    | "end"
+    | "switch"
+    | "case"
+    | "caseDefault"
+    | "loop"
+    | "breakLoop"
+    | "tryCatch"
+    | "catchBlock"
+    | "if"
+    | "ifBlock";
+  blocks: WorkflowNodeBlock[];
+  data: {
+    // 节点名称
+    name?: string;
+    // 节点描述
+    description?: string;
+    // 节点参数
+    inputs?: NodeInputs;
+  };
+};
+
+type WorkflowAppNodeBlock = {
+  id: string;
+  // 后续拓展
+  type: "start" | "custom";
   blocks: WorkflowNodeBlock[];
   data: {
     icon: string;
@@ -34,6 +61,6 @@ type WorkflowNodeBlock = {
     // 节点参数
     inputs?: NodeInputs;
     // 节点输出结构
-    outputStruct?: NodeOutputStructItem[];
+    outputStruct: NodeOutputStructItem[];
   };
 };

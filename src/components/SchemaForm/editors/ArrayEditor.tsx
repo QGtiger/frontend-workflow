@@ -38,7 +38,7 @@ export default function ArrayEditor(props: any) {
     <MyFormItemGroup prefix={schema.code}>
       <div className="flex flex-col gap-2">
         {checkValue?.map((_: any, index: number) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center gap-2 ">
             <div className="flex-1">
               <SchemaFormItem
                 schema={{

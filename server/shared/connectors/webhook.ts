@@ -39,9 +39,11 @@ const webhookFormItem: SchemaFormItemType = {
   editor: {
     kind: "inputWithCopy",
     config: {
-      copyText: "https://example.com/webhook/233",
+      copyText:
+        "http://api.lightfish.top/api/frontend-workflow/latest/trigger/webhook/{{workflowId}}",
     },
   },
+  editorType: "base",
 };
 
 export const webhookTrigger: Connector = {

@@ -23,7 +23,12 @@ export const CustomNodeRenderModel = createCustomModel(
 );
 
 export function useCustomNodeData<
-  T extends { name: string; description?: string; icon: string },
+  T extends {
+    name: string;
+    description?: string;
+    icon: string;
+    [x: string]: any;
+  },
 >(): T {
   const {
     registry,

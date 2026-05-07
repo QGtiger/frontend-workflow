@@ -9,6 +9,7 @@ import { useWorkflowStoreApi } from "../../../models/workflowStore";
 import type { SandboxResult } from "@/common/sandbox";
 import "./FormItemWithExpression.less";
 import type { TemplateSegment } from "../../../models/workflowStore/types";
+import type { SchemaFormItemType } from "@server/shared/schemaFormType";
 
 /**
  * 获取值的类型
@@ -87,11 +88,14 @@ function ResultViewer(props: { segments: TemplateSegment[] }) {
  * - 如果已经是 { value, isExpression, expression } 结构，直接使用
  * - 如果是原始值（string/number/boolean/object），包装为 { value: rawValue, isExpression: false }
  */
-function normalizeToNodeInputValue(v: any): NodeInputValue {
+function normalizeToNodeInputValue(
+  v: any,
+  editorType?: SchemaFormItemType["editorType"],
+): NodeInputValue {
   if (v && typeof v === "object" && "isExpression" in v) {
     return v as NodeInputValue;
   }
-  return { value: v, isExpression: false };
+  return { value: v, isExpression: editorType === "expression" ? true : false };
 }
 
 export function FormItemWithExpression(props: {
@@ -99,11 +103,14 @@ export function FormItemWithExpression(props: {
   value?: NodeInputValue;
   onChange?: (value: NodeInputValue) => void;
   placeholder?: string;
+  schema: SchemaFormItemType;
 }) {
   const { Componet, value: rawValue, onChange, ...restProps } = props;
 
+  const { editorType } = props.schema;
+
   // 统一规范化 value
-  const valueWithExpression = normalizeToNodeInputValue(rawValue);
+  const valueWithExpression = normalizeToNodeInputValue(rawValue, editorType);
   const { isExpression, value, expression } = valueWithExpression;
   const workflowStoreApi = useWorkflowStoreApi();
 
@@ -116,6 +123,12 @@ export function FormItemWithExpression(props: {
   }, [expression, workflowStoreApi]);
 
   const isShowExpression = hover || focus;
+
+  // 根据 editorType 控制是否显示表达式切换
+  // "expression" → 强制表达式模式，隐藏切换器
+  // "base" → 强制基础模式，隐藏切换器
+  // undefined → 保持现有行为，显示切换器
+  const showExpressionToggle = !editorType;
 
   // 点击外部时隐藏
   useClickAway(() => {
@@ -263,38 +276,40 @@ export function FormItemWithExpression(props: {
           }}
         />
       )}
-      <motion.div
-        initial={{ opacity: 0, y: -18 }}
-        animate={{
-          opacity: isShowExpression ? 1 : 0,
-          y: isShowExpression ? `-100%` : -18,
-          pointerEvents: isShowExpression ? "auto" : "none",
-        }}
-        transition={{ duration: 0.1 }}
-        className={classNames("absolute right-0 top-0 pb-1")}
-      >
-        <Segmented
-          size="small"
-          className="bg-gray-300 !text-xs"
-          value={isExpression}
-          onChange={(v) => {
-            onChange?.({
-              ...valueWithExpression,
-              isExpression: v,
-            });
+      {showExpressionToggle && (
+        <motion.div
+          initial={{ opacity: 0, y: -18 }}
+          animate={{
+            opacity: isShowExpression ? 1 : 0,
+            y: isShowExpression ? `-100%` : -18,
+            pointerEvents: isShowExpression ? "auto" : "none",
           }}
-          options={[
-            {
-              value: false,
-              label: "常规",
-            },
-            {
-              value: true,
-              label: "高级",
-            },
-          ]}
-        />
-      </motion.div>
+          transition={{ duration: 0.1 }}
+          className={classNames("absolute right-0 top-0 pb-1")}
+        >
+          <Segmented
+            size="small"
+            className="bg-gray-300 !text-xs"
+            value={isExpression}
+            onChange={(v) => {
+              onChange?.({
+                ...valueWithExpression,
+                isExpression: v,
+              });
+            }}
+            options={[
+              {
+                value: false,
+                label: "常规",
+              },
+              {
+                value: true,
+                label: "高级",
+              },
+            ]}
+          />
+        </motion.div>
+      )}
     </div>
   );
 }
