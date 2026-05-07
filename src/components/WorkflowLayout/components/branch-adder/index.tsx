@@ -33,7 +33,7 @@ export default function BranchAdder(props: PropsType) {
         : CatchBlockNodeRegistry.onAdd!(),
       {
         index: 0,
-      }
+      },
     );
 
     setTimeout(() => {

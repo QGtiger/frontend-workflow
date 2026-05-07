@@ -201,8 +201,8 @@ export function useEditorProps({
         },
         renderDefaultNode: BaseNode, // node render
         renderTexts: {
-          "loop-end-text": "Loop End",
-          "loop-traverse-text": "Loop",
+          "loop-end-text": "循环结束",
+          "loop-traverse-text": "循环",
           "try-start-text": "Try Start",
           "try-end-text": "Try End",
           "catch-text": "Catch Error",

@@ -24,7 +24,7 @@ export const LoopNodeRegistry: FlowNodeRegistry = {
       id: `loop_${nanoid(5)}`,
       type: "loop",
       data: {
-        name: "Loop",
+        name: "循环",
       },
     };
   },

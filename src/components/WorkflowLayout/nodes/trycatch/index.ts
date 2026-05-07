@@ -37,7 +37,7 @@ export const TryCatchNodeRegistry: FlowNodeRegistry = {
           type: "catchBlock",
           blocks: [],
           data: {
-            name: "Catch Block 1",
+            name: "异常捕获分支",
           },
         },
       ],

@@ -8,6 +8,7 @@ import { BaseNodeStyle, ErrorIcon } from "./styles";
 import { NodeRenderModel } from "../../models/NodeRenderModal";
 import { WorkflowLayoutEditorModel } from "../../models/WorkflowLayoutEditorModel";
 import classNames from "classnames";
+import { FlowNodeRegistries } from "../../nodes";
 
 // const { selection, playground, document } = useClientContext();
 //   const refresh = useRefresh();
@@ -33,6 +34,12 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    */
   const form = nodeRender.form;
 
+  const nodeType = nodeRender.type;
+
+  const registry = FlowNodeRegistries.find((it) => it.type === nodeType);
+
+  const { sidebarDisable } = registry?.meta || {};
+
   return (
     <ConfigProvider
       /**
@@ -54,7 +61,7 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
           if (nodeRender.dragging) {
             return;
           }
-          if (nodeRender.node.id) {
+          if (nodeRender.node.id && !sidebarDisable) {
             onNodeSelect?.(nodeRender.node.id);
           }
         }}

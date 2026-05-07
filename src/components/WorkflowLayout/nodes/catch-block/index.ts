@@ -28,8 +28,8 @@ export const CatchBlockNodeRegistry: FlowNodeRegistry = {
       id: `Catch_${nanoid(5)}`,
       type: "catchBlock",
       data: {
-        name: `Catch Block ${id++}`,
-        description: "Execute the catch branch when the condition is met.",
+        name: `异常捕获分支 ${id++}`,
+        description: "当条件满足时，执行捕获分支。",
       },
     };
   },

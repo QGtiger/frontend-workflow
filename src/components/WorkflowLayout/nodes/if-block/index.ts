@@ -20,7 +20,7 @@ export const IFBlockNodeRegistry: FlowNodeRegistry = {
     sidebarDisable: true,
     defaultExpanded: false,
     style: {
-      width: 66,
+      width: 46,
       height: 20,
       borderRadius: 4,
     },

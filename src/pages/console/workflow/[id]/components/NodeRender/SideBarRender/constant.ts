@@ -21,13 +21,14 @@ export function getBuiltInRegistryInputsSchema(
         editorType: "expression",
       },
     ];
-  } else if (type === "case") {
+  } else if (type === "case" || type === "catchBlock" || type === "if") {
     return [
       {
         code: "condition",
         name: "条件",
         description: "请输入条件表达式",
         type: "string",
+        required: true,
         editor: {
           kind: "input",
           config: {

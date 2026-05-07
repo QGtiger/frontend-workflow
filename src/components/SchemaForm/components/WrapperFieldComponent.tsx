@@ -27,7 +27,7 @@ export default function WrapperFieldComponent(props: {
 }) {
   const { editorLayout, renderEditor, editors } = useSchemaFormContext();
   const { schema, ...otherProps } = props;
-  const { editor, name, description } = schema;
+  const { editor, name, description, required } = schema;
   const form = Form.useFormInstance();
 
   // 获取编辑器组件
@@ -62,7 +62,12 @@ export default function WrapperFieldComponent(props: {
             <ReactMarkdown>{description}</ReactMarkdown>
           </div>
         ),
-        title: name,
+        title: (
+          <div className="flex gap-1">
+            <div className="">{name}</div>
+            <span className=" text-red-500">{required ? "*" : ""}</span>
+          </div>
+        ),
       })}
     </div>
   );

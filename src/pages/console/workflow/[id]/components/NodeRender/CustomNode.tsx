@@ -5,9 +5,12 @@ import { NodeDropdown } from "./NodeDropdown";
 
 export function CustomNode() {
   const {
-    nodeRender: { startDrag },
+    nodeRender: { startDrag, type },
   } = CustomNodeRenderModel.useModel();
   const { name, description, icon } = useCustomNodeData();
+  if (type === "ifBlock") {
+    return <div className="w-full text-center">{name}</div>;
+  }
   return (
     <div className=" w-full">
       <div
